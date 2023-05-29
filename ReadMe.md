@@ -17,5 +17,12 @@
 2. Personal Financial Goals (Bot Advice + Notification to enable bot insert function)
 3. Add source of income, investment, protection details
 4. Add payment gateway function (for setting up auto-payment like giro)
+5. Add security layer for account deletion to prevent sabotage
+
+# For storage
+1. Mongo: records db: to store statement or summary
+2. MySQL: finance db, account: to store hashed pwd and salt
+3. MySQL: finance db, user: to store user details
+3. MySQL: finance db, activity: to store 
 
 
