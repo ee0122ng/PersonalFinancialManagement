@@ -4,7 +4,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.crypto.SecretKeyFactory;
@@ -47,8 +46,10 @@ public class AccountActivationRepository {
 
             // generate salt
             byte[] salt = generateSalt();
+            System.out.println(">>> salt: " + salt.toString());
             // generate hash string
             String hashString = generateHashString(pwd, salt);
+            System.out.println(">>> salt: " + hashString);
             // create user account
             newAccountCreated = jdbcTemplate.update(CREATE_NEW_ACCOUNT_SQL, account.getAccountId(), user.getUserId(), salt.toString(), hashString, account.getIsValid()) > 0;
 
@@ -59,7 +60,6 @@ public class AccountActivationRepository {
             } else {
 
                 throw new AccountCreationException("Failed to generate user entity");
-
             }
 
         } else {
