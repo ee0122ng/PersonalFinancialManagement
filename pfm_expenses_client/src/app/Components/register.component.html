@@ -1,1 +1,49 @@
-<p>register works!</p>
+<div class="register-class">
+
+    <h1>Registration System</h1>
+
+    <form [formGroup]="registerForm">
+
+        <p>
+            <mat-form-field appearance="fill">
+
+                <mat-label>Your email</mat-label>
+                <input matInput formControlName="email">
+
+            </mat-form-field>
+        </p>
+
+        <p>
+            <mat-form-field appearance="fill">
+
+                <mat-label>Your username</mat-label>
+                <input matInput formControlName="username">
+
+            </mat-form-field>
+        </p>
+
+        <p>
+            <mat-form-field appearance="fill">
+
+                <mat-label>Your password</mat-label>
+                <input matInput formControlName="password" type="password">
+
+            </mat-form-field>
+        </p>
+
+        <p>
+            <mat-form-field appearance="fill">
+
+                <mat-label>Confirmed password</mat-label>
+                <input matInput formControlName="confirmedPwd" type="password">
+
+            </mat-form-field>
+        </p>
+
+        <div>
+            <button mat-raised-button color="primary" [disabled]="!isFormValid()">Register</button>
+        </div>
+
+    </form>
+
+</div>

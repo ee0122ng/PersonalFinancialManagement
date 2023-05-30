@@ -9,6 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { RegisterComponent } from './Components/register.component';
 import { LoginComponent } from './Components/login.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { LoginComponent } from './Components/login.component';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    ReactiveFormsModule,
     MaterialModule,
     HttpClientModule,
     ServiceWorkerModule.register('ngsw-worker.js', {

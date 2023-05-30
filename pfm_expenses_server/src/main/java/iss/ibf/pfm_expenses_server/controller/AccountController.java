@@ -8,17 +8,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import iss.ibf.pfm_expenses_server.exception.AccountCreationException;
 import iss.ibf.pfm_expenses_server.model.User;
 import iss.ibf.pfm_expenses_server.service.AccountActivationService;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 
 @Controller
-@RequestMapping(path={"/api/account"})
+@RequestMapping(path={"/api/register"})
 public class AccountController {
 
     @Autowired
@@ -26,7 +26,7 @@ public class AccountController {
     
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<String> createUserAccount(String form) {
+    public ResponseEntity<String> registerUserAccount(@RequestBody String form) {
 
         JsonObject json = accActivateSvc.convertStringToJsonObject(form);
 
