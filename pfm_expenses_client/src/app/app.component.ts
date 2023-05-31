@@ -7,4 +7,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'pfm_expenses_client';
+
+  loginSuccess : Boolean = false;
 }

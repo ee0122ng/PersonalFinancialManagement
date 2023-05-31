@@ -2,7 +2,7 @@
 
     <h1>Registration System</h1>
 
-    <form [formGroup]="registerForm">
+    <form [formGroup]="registerForm" (ngSubmit)="registerAccount()">
 
         <p>
             <mat-form-field appearance="fill">

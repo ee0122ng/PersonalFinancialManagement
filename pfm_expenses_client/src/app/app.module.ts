@@ -10,12 +10,16 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { RegisterComponent } from './Components/register.component';
 import { LoginComponent } from './Components/login.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { RegisterAccountService } from './Services/register-account.service';
+import { ActivateComponent } from './Components/activate.component';
+import { ActivateAccountService } from './Services/activate-account.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     RegisterComponent,
-    LoginComponent
+    LoginComponent,
+    ActivateComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +35,10 @@ import { ReactiveFormsModule } from '@angular/forms';
       registrationStrategy: 'registerWhenStable:30000'
     })
   ],
-  providers: [],
+  providers: [ 
+    RegisterAccountService,
+    ActivateAccountService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

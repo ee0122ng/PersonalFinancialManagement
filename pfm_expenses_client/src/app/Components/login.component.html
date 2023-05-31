@@ -1,1 +1,36 @@
-<p>login works!</p>
+<div>
+    <h1>User Login</h1>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <table>
+            <tr>
+                <td>Username:</td>
+                <td>
+                    <input type="text" formControlName="username" placeholder="your username">
+                </td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td>
+                    <input type="password" formControlName="password" placeholder="your password">
+                </td>
+            </tr>
+
+            <tr>
+                <td></td>
+                <td>
+                    <button>Login</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <div>
+        <code>Don't have an account yet?</code>
+        &nbsp;
+        <span>
+            <a [routerLink]="['/register']">Register here!</a>
+        </span>
+    </div>
+
+</div>

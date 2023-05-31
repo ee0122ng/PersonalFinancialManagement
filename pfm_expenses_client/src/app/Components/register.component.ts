@@ -1,5 +1,7 @@
 import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RegisterAccountService } from '../Services/register-account.service';
 
 @Component({
   selector: 'app-register',
@@ -9,8 +11,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class RegisterComponent implements OnInit {
 
   registerForm !: FormGroup;
+  accId !: string;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private router: Router, private regAccSvc: RegisterAccountService) {}
 
   ngOnInit(): void {
     this.registerForm = this.createForm()
@@ -31,6 +34,20 @@ export class RegisterComponent implements OnInit {
     const isPwdMatch : Boolean = (this.registerForm.get("password")?.value === this.registerForm.get("confirmedPwd")?.value)
 
     return this.registerForm.valid && isPwdMatch
+  }
+
+  registerAccount() {
+    this.regAccSvc.registerAccount(this.registerForm)
+      .then( (p: any) => {
+        return p["payload"]
+      })
+      .then( p => {
+        this.accId = p.split("=")[1].trim()
+        this.router.navigate(['/activate', this.accId])
+      })
+      .catch( e => {
+        console.info(e["error"]["error"])
+      })
   }
 
 }

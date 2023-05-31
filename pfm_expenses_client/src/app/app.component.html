@@ -4,6 +4,17 @@
       <mat-icon>menu</mat-icon>
     </button>
     <span>My Wealth Stack</span>
+    <span class="example-spacer"></span>
+    <button mat-icon-button class="home-icon register-icon" aria-label="Home icon-button with register icon" [routerLink]="['/register']">
+      <mat-icon></mat-icon>
+    </button>
+    <span class="example-spacer"></span>
+    <button mat-icon-button class="home-icon login-icon" aria-label="Home icon-button with login icon" [routerLink]="['/login']" *ngIf="!loginSuccess">
+      <mat-icon>login</mat-icon>
+    </button>
+    <button mat-icon-button class="home-icon logout-icon" aria-label="Home icon-button with logout icon" [routerLink]="['/login']" *ngIf="loginSuccess">
+      <mat-icon>logout</mat-icon>
+    </button>
   </mat-toolbar>
 </p>
 
