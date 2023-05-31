@@ -24,12 +24,12 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(req -> req
                                             .requestMatchers("/api/register/**").permitAll()
-                                            .requestMatchers("/login/**").permitAll())
-            .formLogin(form -> form
-                                .loginPage("/login")
-                                .loginProcessingUrl("/login")
-                                .defaultSuccessUrl("/home")
-                                .permitAll())
+                                            .requestMatchers("/api/login/**").permitAll())
+            // .formLogin(form -> form
+            //                     .loginPage("/login")
+            //                     .loginProcessingUrl("/login")
+            //                     .defaultSuccessUrl("/home")
+            //                     .permitAll())
             .logout(logout -> logout
                                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                                 .permitAll());                       

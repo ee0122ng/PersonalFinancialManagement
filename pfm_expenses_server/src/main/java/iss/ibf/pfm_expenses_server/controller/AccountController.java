@@ -110,7 +110,7 @@ public class AccountController {
 
         } catch (Exception ex) {
 
-            JsonObject error = Json.createObjectBuilder().add("error", "Bad credential").build();
+            JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
 
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error.toString());
 

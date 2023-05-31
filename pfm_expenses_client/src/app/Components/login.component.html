@@ -1,6 +1,10 @@
 <div>
     <h1>User Login</h1>
 
+    <div *ngIf="!!errorMessage">
+        <p style="color: red;"><code>{{ errorMessage }}</code></p>
+    </div>
+
     <form [formGroup]="loginForm" (ngSubmit)="login()">
         <table>
             <tr>

@@ -12,7 +12,7 @@
     <button mat-icon-button class="home-icon login-icon" aria-label="Home icon-button with login icon" [routerLink]="['/login']" *ngIf="!loginSuccess">
       <mat-icon>login</mat-icon>
     </button>
-    <button mat-icon-button class="home-icon logout-icon" aria-label="Home icon-button with logout icon" [routerLink]="['/login']" *ngIf="loginSuccess">
+    <button mat-icon-button class="home-icon logout-icon" aria-label="Home icon-button with logout icon" (click)="logout()" *ngIf="loginSuccess">
       <mat-icon>logout</mat-icon>
     </button>
   </mat-toolbar>

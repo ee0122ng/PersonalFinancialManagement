@@ -13,13 +13,16 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RegisterAccountService } from './Services/register-account.service';
 import { ActivateComponent } from './Components/activate.component';
 import { ActivateAccountService } from './Services/activate-account.service';
+import { HomeComponent } from './Components/home.component';
+import { LoginAccountService } from './Services/login-account.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     RegisterComponent,
     LoginComponent,
-    ActivateComponent
+    ActivateComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
@@ -37,7 +40,8 @@ import { ActivateAccountService } from './Services/activate-account.service';
   ],
   providers: [ 
     RegisterAccountService,
-    ActivateAccountService
+    ActivateAccountService,
+    LoginAccountService
   ],
   bootstrap: [AppComponent]
 })

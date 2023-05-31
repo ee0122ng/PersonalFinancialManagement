@@ -15,7 +15,7 @@ public class AccountAuthenticationRepository {
     JdbcTemplate jdbcTemplate;
 
     private final String GET_USERID_SQL = "select user_id from users where username=?";
-    private final String GET_ACCOUNT_STATUS_SQL = "select is_valid from accounts where userId=?";
+    private final String GET_ACCOUNT_STATUS_SQL = "select is_valid from accounts where user_id=?";
     private final String GET_ACCOUNT_SQL = "select * from accounts where user_id=?";
 
 
@@ -23,7 +23,7 @@ public class AccountAuthenticationRepository {
 
         String userId = this.getUserId(username);
 
-        return jdbcTemplate.query(GET_ACCOUNT_STATUS_SQL, BeanPropertyRowMapper.newInstance(Boolean.class), userId).get(0);
+        return jdbcTemplate.queryForList(GET_ACCOUNT_STATUS_SQL,Boolean.class, userId).get(0);
     }
 
     public Boolean verifyIfPasswordValid(String username, String pwd) {
@@ -39,7 +39,7 @@ public class AccountAuthenticationRepository {
 
     public String getUserId(String username) {
 
-        return jdbcTemplate.query(GET_USERID_SQL, BeanPropertyRowMapper.newInstance(String.class), username).get(0);
+        return jdbcTemplate.queryForList(GET_USERID_SQL, String.class, username).get(0);
     }
 
     public Account getAccount(String userId) {

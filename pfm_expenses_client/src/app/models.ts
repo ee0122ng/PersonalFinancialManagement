@@ -9,7 +9,7 @@ export interface Country {
     flag: string;
 }
 
-export interface Credential {
+export interface AccountCredential {
     username: string;
     password: string;
 }

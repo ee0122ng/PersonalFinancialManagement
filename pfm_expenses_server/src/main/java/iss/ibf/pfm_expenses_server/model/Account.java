@@ -11,10 +11,22 @@ public class Account {
     private Boolean isValid;
     private String deletionToken;
 
+    public Account() {
+    }
+
     public Account(String userId) {
         this.accountId = generateAccountId();
         this.saltString = generateSaltString();
         this.isValid = true;
+    }
+
+    public Account(String accountId, String userId, String saltString, String hashedString, Boolean isValid, String deletionToken) {
+        this.accountId = accountId;
+        this.userId = userId;
+        this.saltString = saltString;
+        this.hashedString = hashedString;
+        this.isValid = isValid;
+        this.deletionToken = deletionToken;
     }
 
     public String getAccountId() {

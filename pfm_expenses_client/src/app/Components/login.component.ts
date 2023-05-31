@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { LoginAccountService } from '../Services/login-account.service';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-login',
@@ -11,8 +14,13 @@ export class LoginComponent implements OnInit {
 
   loginForm !: FormGroup;
   accountId !: string | any;
+  loginStatus : Boolean = false
+  errorMessage !: string
 
-  constructor(private fb: FormBuilder, private router: ActivatedRoute, private activatedRoute: ActivatedRoute) {}
+  @Output()
+  onSuccessfulLogin = new Subject<Boolean>();
+
+  constructor(private fb: FormBuilder, private loginSvc: LoginAccountService, private router: Router) {}
 
   ngOnInit(): void {
       this.loginForm = this.createFrom()
@@ -22,12 +30,29 @@ export class LoginComponent implements OnInit {
 
     return this.fb.group({
       username: this.fb.control<string>('', [Validators.required]),
-      password: this.fb.control<string>('')
+      password: this.fb.control<string>('', [Validators.required])
     })
   }
 
   login() {
     
+    if (this.loginForm.valid) {
+
+      this.loginSvc.loginAccount(this.loginForm)
+      .then( (p:any) => {
+        this.loginStatus = true
+
+        // update the parent status
+        AppComponent.loginStatus.next(this.loginStatus)
+        
+        this.router.navigate(['/home'])
+      })
+      .catch( (e:any) => {
+        console.info(">>> error: " + e["error"]["error"])
+        this.errorMessage = e["error"]["error"]
+      })
+
+    }
   }
 
 }
