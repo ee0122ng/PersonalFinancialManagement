@@ -51,10 +51,8 @@ export class ActivateComponent implements OnInit {
 
   selectCountry() {
     this.selectedCountry = this.activateForm.get("country")?.value
-    console.info(">>> sample flag: " + this.selectedCountry)
     if (this.selectedCountry) {
       this.countries.filter( c => c.name == this.selectedCountry).map( c => this.countryImageUrl = c.flag)
-      console.info(">>> sample flag: " + this.countryImageUrl)
     }
   }
 
