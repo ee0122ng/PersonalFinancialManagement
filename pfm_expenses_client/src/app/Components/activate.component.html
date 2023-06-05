@@ -6,7 +6,43 @@
             <table>
                 <tr>
                     <td>Your Account Id:</td>
-                    <td>{{ accountId }}</td>
+                    <td>
+                        {{ accountId }}
+                        <span *ngIf="!!selectedCountry">
+                            <img [src]="countryImageUrl" alt="" width="20px" height="10px">
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>First Name:</td>
+                    <td>
+                        <input type="text" formControlName="firstname">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Last Name:</td>
+                    <td>
+                        <input type="text" formControlName="lastname">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Date of Birth:</td>
+                    <td>
+                        <input type="date" formControlName="dob">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Country of Residence:</td>
+                    <td>
+                        <select name="" id="" formControlName="country" (change)="selectCountry()">
+                            <option value="" hidden="true">Select Here</option>
+                            <option *ngFor="let c of countries" [value]="c.name">{{ c.name }}</option>
+                        </select>
+                    </td>
                 </tr>
             </table>
         </div>

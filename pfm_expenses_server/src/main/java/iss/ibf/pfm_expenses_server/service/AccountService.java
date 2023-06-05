@@ -8,7 +8,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import iss.ibf.pfm_expenses_server.model.Account;
 import iss.ibf.pfm_expenses_server.model.User;
 import iss.ibf.pfm_expenses_server.repository.AccountAuthenticationRepository;
 import iss.ibf.pfm_expenses_server.repository.AccountRegistrationRepository;

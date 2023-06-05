@@ -19,6 +19,7 @@ export class AppComponent implements OnDestroy {
   }
 
   logout() {
+    AppComponent.loginStatus.unsubscribe()
     this.loginSuccess = false;
     this.router.navigate(['/login'])
   }

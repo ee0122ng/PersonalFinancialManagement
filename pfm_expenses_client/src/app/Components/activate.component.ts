@@ -14,7 +14,9 @@ export class ActivateComponent implements OnInit {
 
   accountId !: string;
   activateForm !: FormGroup;
-  countries : Country[] = []
+  countries : Country[] = [];
+  selectedCountry !: string;
+  countryImageUrl !: string;
 
   constructor(private activatedRoute: ActivatedRoute, private fb: FormBuilder, private activateAccSvc: ActivateAccountService) {}
 
@@ -33,14 +35,8 @@ export class ActivateComponent implements OnInit {
                             })
                         })
                         .then( (l: Country[]) => {
-                          l.map(
-                            (c: Country) => {
-                              this.countries.push(c)
-                            }
-                          )
+                          this.countries = l.sort( (a : Country, b: Country) => a.name.localeCompare(b.name) )
                         })
-      
-      console.info(">>> sample countries list: " + this.countries.at(0))
   }
 
   createForm() : FormGroup {
@@ -51,6 +47,15 @@ export class ActivateComponent implements OnInit {
       occupation: this.fb.control<string>(''),
       country: this.fb.control<string>('')
     })
+  }
+
+  selectCountry() {
+    this.selectedCountry = this.activateForm.get("country")?.value
+    console.info(">>> sample flag: " + this.selectedCountry)
+    if (this.selectedCountry) {
+      this.countries.filter( c => c.name == this.selectedCountry).map( c => this.countryImageUrl = c.flag)
+      console.info(">>> sample flag: " + this.countryImageUrl)
+    }
   }
 
 }
