@@ -47,6 +47,7 @@ export class RegisterComponent implements OnInit {
         this.router.navigate(['/activate', this.accId])
       })
       .catch( e => {
+        console.info(">>> front end error: " + JSON.stringify(e));
         this.failedMessage = e["error"]["error"]
       })
   }

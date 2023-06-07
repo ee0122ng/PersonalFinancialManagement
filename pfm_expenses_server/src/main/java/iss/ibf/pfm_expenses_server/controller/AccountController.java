@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import iss.ibf.pfm_expenses_server.exception.NoEmailFoundException;
 import iss.ibf.pfm_expenses_server.exception.NoUserDetailsFoundException;
-import iss.ibf.pfm_expenses_server.exception.UserDetailsException;
 import iss.ibf.pfm_expenses_server.exception.UsernameException;
 import iss.ibf.pfm_expenses_server.model.User;
 import iss.ibf.pfm_expenses_server.service.AccountService;
@@ -34,7 +33,6 @@ public class AccountController {
     public ResponseEntity<String> registerUserAccount(@RequestBody String form) {
 
         JsonObject json = accSvc.convertStringToJsonObject(form);
-        System.out.println(">>> request: " + json.toString());
 
         try {
             User user = new User(json.getString("username"));
@@ -51,7 +49,6 @@ public class AccountController {
                 JsonObject payload = Json.createObjectBuilder()
                                             .add("accountId", accId)
                                             .build();
-
                 return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
             } catch (UsernameException ex) {
@@ -152,7 +149,6 @@ public class AccountController {
         } catch (Exception ex) {
 
             JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
-            System.out.println(">>> error caught: " + error.toString());
 
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error.toString());
 
@@ -166,7 +162,6 @@ public class AccountController {
     public ResponseEntity<String> completeUserInfo(@RequestBody String userInfoForm) {
 
         JsonObject jsonUserInfo = this.accSvc.convertStringToJsonObject(userInfoForm);
-        System.out.println(">>> user info form: " + jsonUserInfo.toString());
 
         try {
             Boolean userInfoUpdated = this.accSvc.completeUserAccount(jsonUserInfo);
@@ -180,7 +175,7 @@ public class AccountController {
             }
 
         } catch (Exception ex) {
-            System.out.println(">>> exception caught: " + ex.getMessage());
+            
             JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.toString());
         }

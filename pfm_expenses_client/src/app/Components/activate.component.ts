@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivateAccountService } from '../Services/activate-account.service';
@@ -6,16 +6,17 @@ import { Country } from '../models';
 import { COUNTRY_API_URL } from '../constants';
 import { AppComponent } from '../app.component';
 import { Subject } from 'rxjs';
+import { RegisterAccountService } from '../Services/register-account.service';
 
 @Component({
   selector: 'app-activate',
   templateUrl: './activate.component.html',
   styleUrls: ['./activate.component.css']
 })
-export class ActivateComponent implements OnInit {
+export class ActivateComponent implements OnInit, AfterViewChecked {
 
   accountId !: string;
-  userEmail !: string;
+  userEmail : string = "";
   activateForm !: FormGroup;
   countries : Country[] = [];
   selectedCountry !: string;
@@ -23,13 +24,15 @@ export class ActivateComponent implements OnInit {
   userInfoCompleted: Boolean = false;
   updateError !: string;
 
-  constructor(private activatedRoute: ActivatedRoute, private router: Router, private fb: FormBuilder, private activateAccSvc: ActivateAccountService) {}
+  constructor(private activatedRoute: ActivatedRoute, private router: Router, private fb: FormBuilder, private activateAccSvc: ActivateAccountService, private registerAccSvc: RegisterAccountService) {}
 
   ngOnInit(): void {
-     this.accountId = this.activatedRoute.snapshot.params['accountId']
-     this.activateForm = this.createForm()
+    this.accountId = this.activatedRoute.snapshot.params['accountId']
+    this.userEmail = this.registerAccSvc.getRegisteredEmail();
 
-     this.activateAccSvc.getCountriesList()
+    this.activateForm = this.createForm()
+
+    this.activateAccSvc.getCountriesList()
                         .then( (p: any[]) => {
                           return p.map (
                               (c: any) => {
@@ -42,7 +45,10 @@ export class ActivateComponent implements OnInit {
                         .then( (l: Country[]) => {
                           this.countries = l.sort( (a : Country, b: Country) => a.name.localeCompare(b.name) )
                         })
-      AppComponent.currentUserEmail.subscribe((email:any) => { this.userEmail = email })
+  }
+
+  ngAfterViewChecked(): void {
+    
   }
 
   createForm() : FormGroup {

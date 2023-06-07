@@ -1,31 +1,32 @@
 <p>
   <mat-toolbar color="primary">
-    <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="loginSuccess" [routerLink]="['/home']">
-      <mat-icon>menu</mat-icon>
+    <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="loginSuccess" [routerLink]="['/home']" title="Home">
+      <mat-icon>home</mat-icon>
     </button>
-    <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="!loginSuccess" [routerLink]="['']">
+    <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="!loginSuccess" [routerLink]="['']" title="User Login">
       <mat-icon>menu</mat-icon>
     </button>
 
+    &nbsp;
+
     <span>My Wealth Stack</span>
+
     <span class="example-spacer"></span>
-    <button mat-icon-button class="home-icon register-icon" aria-label="Home icon-button with register icon" [routerLink]="['/register']">
-      <mat-icon></mat-icon>
-    </button>
+
     <span class="example-spacer"></span>
 
     <!--TODO: add user details summary-->
-    <button mat-icon-button class="home-icon account-icon" aria-label="Home icon-button with account icon" *ngIf="accountCompleted">
+    <button mat-icon-button class="home-icon account-icon" aria-label="Home icon-button with account icon" *ngIf="accountCompleted" title="My Profile">
       <mat-icon>account_circle</mat-icon>
     </button>
-    <button mat-flat-button color="accent" class="home-icon-myinfo-icon" aria-label="Home icon-button with myinfo icon" *ngIf="!accountCompleted && accountCompleted != undefined || null" [routerLink]="['/activate', accountId]">
-      <code style="color: darkslateblue">Add MyInfo</code>
+    <button mat-flat-button color="accent" class="add-profile-icon" aria-label="Home icon-button with myinfo icon" *ngIf="!accountCompleted && accountCompleted != undefined || null" [routerLink]="['/activate', accountId]" title="Add Profile">
+      <code style="color: darkslateblue">Add Profile</code>
     </button>
 
-    <button mat-icon-button class="home-icon login-icon" aria-label="Home icon-button with login icon" [routerLink]="['/login']" *ngIf="!loginSuccess">
+    <button mat-icon-button class="home-icon login-icon" aria-label="Home icon-button with login icon" [routerLink]="['/login']" *ngIf="!loginSuccess" title="Login">
       <mat-icon>login</mat-icon>
     </button>
-    <button mat-icon-button class="home-icon logout-icon" aria-label="Home icon-button with logout icon" (click)="logout()" *ngIf="loginSuccess">
+    <button mat-icon-button class="home-icon logout-icon" aria-label="Home icon-button with logout icon" (click)="logout()" *ngIf="loginSuccess" title="Logout">
       <mat-icon>logout</mat-icon>
     </button>
 

@@ -10,6 +10,8 @@ import { REGISTER_API_URL } from '../constants';
 })
 export class RegisterAccountService {
 
+  email : string = "";
+
   constructor(private http: HttpClient) { }
 
   public registerAccount(form: FormGroup) : Promise<any> {
@@ -20,8 +22,14 @@ export class RegisterAccountService {
       email: form.get("email")?.value,
     }
 
+    this.email = registerForm.email
+
     return lastValueFrom(this.http.post<any>(REGISTER_API_URL, registerForm));
 
+  }
+
+  public getRegisteredEmail() : string {
+    return this.email;
   }
 
 }

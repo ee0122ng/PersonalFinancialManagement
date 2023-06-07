@@ -2,11 +2,6 @@
     flex: 1 1 auto;
   }
 
-a.active {
-  -webkit-text-fill-color: darkslateblue;
-  font-size: 14px;
-}
-
-.home-icon-myinfo-icon {
+.add-profile-icon {
   width: 120px;
 }
