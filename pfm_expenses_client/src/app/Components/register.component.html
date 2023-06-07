@@ -2,6 +2,10 @@
 
     <h1>Registration System</h1>
 
+    <div *ngIf="!!failedMessage">
+        <p style="color: red;"><code>{{ failedMessage }}</code></p>
+    </div>
+
     <form [formGroup]="registerForm" (ngSubmit)="registerAccount()">
 
         <p>
@@ -11,7 +15,16 @@
                 <input matInput formControlName="email">
 
             </mat-form-field>
+
+            &nbsp;
+
+            <span *ngIf="registerForm.get('email')?.dirty && registerForm.get('email')?.invalid">
+                <code style="color:red" *ngIf="!registerForm.get('email')?.value else invalidEmail">Email cannot be blank</code>
+            </span>
+
         </p>
+
+        <ng-template #invalidEmail><code style="color:red">Invalid email format</code></ng-template>
 
         <p>
             <mat-form-field appearance="fill">
@@ -20,7 +33,16 @@
                 <input matInput formControlName="username">
 
             </mat-form-field>
+
+            &nbsp;
+
+            <span *ngIf="registerForm.get('username')?.dirty && registerForm.get('username')?.invalid">
+                <code style="color: red;" *ngIf="!registerForm.get('username')?.value else invalidUsername">Username cannot be blank</code>
+            </span>
+
         </p>
+
+        <ng-template #invalidUsername><code style="color:red">Username must be at least 3 characters length</code></ng-template>
 
         <p>
             <mat-form-field appearance="fill">
@@ -29,6 +51,7 @@
                 <input matInput formControlName="password" type="password">
 
             </mat-form-field>
+
         </p>
 
         <p>
@@ -38,6 +61,13 @@
                 <input matInput formControlName="confirmedPwd" type="password">
 
             </mat-form-field>
+
+            &nbsp;
+
+            <span *ngIf="registerForm.get('confirmedPwd')?.dirty && registerForm.get('password')?.value!==registerForm.get('confirmedPwd')?.value">
+                <code style="color: red;">Confirmed password does not match</code>
+            </span>
+
         </p>
 
         <div>

@@ -24,6 +24,7 @@ public class AccountRegistrationRepository {
     private final String VERIFY_USERNAME_SQL = "select * from users where username=?";
     private final String CREATE_NEW_USER_SQL = "insert into users(user_id, username) values(?, ?)";
     private final String CREATE_NEW_ACCOUNT_SQL = "insert into accounts(account_id, user_id, salt_string, hashed_string, is_valid) values(?, ?, ?, ?, ?)";
+    private final String CREATE_NEW_USER_DETAILS_SQL = "insert into user_details(user_id, email) values(?, ?)";
 
     @ Transactional
     public String createUserAccount(User user, String pwd, String email) {
@@ -31,6 +32,7 @@ public class AccountRegistrationRepository {
         Boolean usernameExists = verifyIfUsernameExist(user.getUsername());
         Boolean newUserCreated = false;
         Boolean newAccountCreated = false;
+        Boolean newUserInfoCreated = false;
 
         if (!usernameExists) {
 
@@ -46,7 +48,10 @@ public class AccountRegistrationRepository {
             Account account = new Account(user.getUserId());
             newAccountCreated = jdbcTemplate.update(CREATE_NEW_ACCOUNT_SQL, account.getAccountId(), user.getUserId(), saltString, hashString, account.getIsValid()) > 0;
 
-            if (newUserCreated && newAccountCreated) {
+            // insert new user details
+            newUserInfoCreated = jdbcTemplate.update(CREATE_NEW_USER_DETAILS_SQL, user.getUserId(), email) > 0;
+
+            if (newUserCreated && newAccountCreated && newUserInfoCreated) {
 
                 return account.getAccountId();
 

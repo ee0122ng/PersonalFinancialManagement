@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
-import { LOGIN_API_URL } from '../constants';
+import { COMPLETE_API_URL, LOGIN_API_URL } from '../constants';
 import { AccountCredential, RegisterForm } from '../models';
 
 @Injectable({

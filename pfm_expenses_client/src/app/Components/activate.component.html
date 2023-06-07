@@ -1,7 +1,11 @@
 <div>
     <h2>We want to know you</h2>
 
-    <form [formGroup]="activateForm">
+    <div *ngIf="!!updateError">
+        <code style="color: red">{{ updateError }}</code>
+    </div>
+
+    <form [formGroup]="activateForm" (ngSubmit)="completeAccount()">
         <div>
             <table>
                 <tr>
@@ -15,10 +19,28 @@
                 </tr>
 
                 <tr>
+                    <td>Your Email:</td>
+                    <td>
+                        <input type="email" formControlName="email">
+                        &nbsp;
+
+                        <span *ngIf="activateForm.get('email')?.dirty && activateForm.get('email')?.invalid">
+                            <code style="color: darkslateblue">Something is missing here?</code>
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
                     <td>First Name:</td>
                     <td>
                         <input type="text" formControlName="firstname" placeholder="your firstname">
+                        &nbsp;
+
+                        <span *ngIf="activateForm.get('firstname')?.dirty && activateForm.get('firstname')?.invalid">
+                            <code style="color: darkslateblue">How to address you?</code>
+                        </span>
                     </td>
+
                 </tr>
 
                 <tr>
@@ -49,6 +71,14 @@
                     <td>Occupation:</td>
                     <td>
                         <input type="text" formControlName="occupation" placeholder="your occupation">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td></td>
+                    <td>
+                        <button type="submit" [disabled]="activateForm.invalid">That's me!</button>
+                        <button (click)="routeToHome()">Next time</button>
                     </td>
                 </tr>
 

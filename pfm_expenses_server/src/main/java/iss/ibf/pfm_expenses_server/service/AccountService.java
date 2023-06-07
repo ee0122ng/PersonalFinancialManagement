@@ -3,13 +3,16 @@ package iss.ibf.pfm_expenses_server.service;
 import java.io.StringReader;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.text.ParseException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import iss.ibf.pfm_expenses_server.model.Account;
 import iss.ibf.pfm_expenses_server.model.User;
 import iss.ibf.pfm_expenses_server.repository.AccountAuthenticationRepository;
+import iss.ibf.pfm_expenses_server.repository.AccountCompletionRepository;
 import iss.ibf.pfm_expenses_server.repository.AccountRegistrationRepository;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -19,14 +22,17 @@ import jakarta.json.JsonReader;
 public class AccountService {
 
     @Autowired
-    private AccountRegistrationRepository accActivateRepo;
+    private AccountRegistrationRepository accRegisterRepo;
 
     @Autowired
     private AccountAuthenticationRepository accAuthRepo;
 
-    public Optional<String> activateUserAccount(User user, String pwd, String email) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    @Autowired
+    private AccountCompletionRepository accCpltRepo;
 
-        String accountId = accActivateRepo.createUserAccount(user, pwd, email);
+    public Optional<String> registerUserAccount(User user, String pwd, String email) throws NoSuchAlgorithmException, InvalidKeySpecException {
+
+        String accountId = accRegisterRepo.createUserAccount(user, pwd, email);
         
         return Optional.of(accountId);
     }
@@ -42,12 +48,38 @@ public class AccountService {
 
     //check if username valid
     public Boolean checkUsername(String username) {
-        return this.accActivateRepo.verifyIfUsernameExist(username) && this.accAuthRepo.verifyIfAccountValid(username);
+        return this.accRegisterRepo.verifyIfUsernameExist(username) && this.accAuthRepo.verifyIfAccountValid(username);
     }
 
     //verify if password valid
     public Boolean checkPassword(String username, String pwd) {
         return this.accAuthRepo.verifyIfPasswordValid(username, pwd);
+    }
+
+    //check account completion status
+    public Boolean checkAccountCompletion(String username) {
+        return this.accCpltRepo.verifyAccountCompletionStatus(username);
+    }
+
+    //get account
+    public Account getUserAccount(String username) {
+        Optional<String> opt = this.accCpltRepo.getUserIdByUsername(username);
+        String userId = opt.get();
+
+        return this.accAuthRepo.getAccount(userId);
+    }
+
+    //complete user info
+    public Boolean completeUserAccount(JsonObject userInfoForm) throws ParseException {
+
+        return this.accCpltRepo.updateUserDetails(userInfoForm);
+    }
+
+    //get email
+    public String getUserEmail(String username) {
+        String email = this.accCpltRepo.getUserEmailByUsername(username);
+
+        return email;
     }
     
 }

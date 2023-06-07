@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import iss.ibf.pfm_expenses_server.exception.NoEmailFoundException;
+import iss.ibf.pfm_expenses_server.exception.NoUserDetailsFoundException;
+import iss.ibf.pfm_expenses_server.exception.UserDetailsException;
 import iss.ibf.pfm_expenses_server.exception.UsernameException;
 import iss.ibf.pfm_expenses_server.model.User;
 import iss.ibf.pfm_expenses_server.service.AccountService;
@@ -25,7 +28,7 @@ public class AccountController {
     @Autowired
     private AccountService accSvc;
     
-    // controller for handling user registration
+    // controller to register user
     @PostMapping(path={"/register"}, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> registerUserAccount(@RequestBody String form) {
@@ -40,12 +43,14 @@ public class AccountController {
             // TODO: add email sending for account activation
             String email = json.getString("email");
 
-            Optional<String> opt = accSvc.activateUserAccount(user, pwd, email);
+            Optional<String> opt = accSvc.registerUserAccount(user, pwd, email);
 
             try {
                 
                 String accId = opt.get();
-                JsonObject payload = Json.createObjectBuilder().add("payload", "your acocunt id = %s".formatted(accId)).build();
+                JsonObject payload = Json.createObjectBuilder()
+                                            .add("accountId", accId)
+                                            .build();
 
                 return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
@@ -89,9 +94,45 @@ public class AccountController {
                 Boolean validPwd = this.accSvc.checkPassword(username, pwd);
 
                 if (validPwd) {
-                    JsonObject payload = Json.createObjectBuilder().add("payload", "Login succeeded").build();
 
-                    return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+                    String accountId = this.accSvc.getUserAccount(username).getAccountId();
+
+                    // check if user info completed
+                    // 4 possible outcome: completed + hasEmail, completed + noEmail, incomplete + hasEmail, incomplete + noEmail
+                    try {
+                        Boolean accCompleted = this.accSvc.checkAccountCompletion(username);
+                        String email = this.accSvc.getUserEmail(username);
+                        JsonObject payload = Json.createObjectBuilder()
+                                                    .add("accCompleted", accCompleted)
+                                                    .add("accountId", accountId)
+                                                    .add("email", email)
+                                                    .build();
+                        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+
+                    } catch (NoUserDetailsFoundException ex) {
+                        JsonObject payload = Json.createObjectBuilder()
+                                                    .add("accCompleted", false)
+                                                    .add("accountId", accountId)
+                                                    .add("email", "")
+                                                    .build();
+                        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+                    
+                    } catch (NoEmailFoundException ex) {
+                        Boolean accCompleted = this.accSvc.checkAccountCompletion(username);
+                        JsonObject payload = Json.createObjectBuilder()
+                                                    .add("accCompleted", accCompleted)
+                                                    .add("accountId", accountId)
+                                                    .add("email", "")
+                                                    .build();
+                        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+
+                    } catch (Exception ex) {
+
+                        JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error.toString());
+
+                    }
 
                 } else {
 
@@ -111,10 +152,37 @@ public class AccountController {
         } catch (Exception ex) {
 
             JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+            System.out.println(">>> error caught: " + error.toString());
 
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error.toString());
 
         }
 
+    }
+
+    // controller to complete user account
+    @PostMapping(path={"/complete"}, consumes=MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> completeUserInfo(@RequestBody String userInfoForm) {
+
+        JsonObject jsonUserInfo = this.accSvc.convertStringToJsonObject(userInfoForm);
+        System.out.println(">>> user info form: " + jsonUserInfo.toString());
+
+        try {
+            Boolean userInfoUpdated = this.accSvc.completeUserAccount(jsonUserInfo);
+
+            if (userInfoUpdated) {
+                JsonObject payload = Json.createObjectBuilder().add("payload", "Update succeeded").build();
+                return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+            } else {
+                JsonObject error = Json.createObjectBuilder().add("error", "Update failed").build();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error.toString());
+            }
+
+        } catch (Exception ex) {
+            System.out.println(">>> exception caught: " + ex.getMessage());
+            JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.toString());
+        }
     }
 }

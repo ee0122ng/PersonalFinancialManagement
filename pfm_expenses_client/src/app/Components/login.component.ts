@@ -13,9 +13,11 @@ import { AppComponent } from '../app.component';
 export class LoginComponent implements OnInit {
 
   loginForm !: FormGroup;
+  loginStatus : Boolean = false;
+  errorMessage !: string;
+  accountCompleted : Boolean = false;
   accountId !: string | any;
-  loginStatus : Boolean = false
-  errorMessage !: string
+  userEmail !: string | any;
 
   @Output()
   onSuccessfulLogin = new Subject<Boolean>();
@@ -41,15 +43,19 @@ export class LoginComponent implements OnInit {
       this.loginSvc.loginAccount(this.loginForm)
       .then( (p:any) => {
         this.loginStatus = true
-
-        // update the parent status
+        this.accountCompleted = p["accCompleted"]
+        this.accountId = p["accountId"]
+        this.userEmail = p["email"]
+        //update the parent status
         AppComponent.loginStatus.next(this.loginStatus)
-        
+        AppComponent.infoCompletionStatus.next(this.accountCompleted)
+        AppComponent.currentAccountId.next(this.accountId)
+        AppComponent.currentUserEmail.next(this.userEmail)
         this.router.navigate(['/home'])
       })
       .catch( (e:any) => {
-        console.info(">>> error: " + e["error"]["error"])
-        this.errorMessage = e["error"]["error"]
+        console.info(">>> error: " + JSON.stringify(e))
+        this.errorMessage = e['error']['error']
       })
 
     }

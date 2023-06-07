@@ -1,9 +1,9 @@
 package iss.ibf.pfm_expenses_server.model;
 
+import java.util.Date;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
-import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -24,7 +24,7 @@ public class UserDetails {
     @Email(message="Invalid email format")
     private String email;
 
-    @DateTimeFormat(pattern="MM-dd-yyyy")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date dob;
 
     private Integer age;
@@ -33,9 +33,21 @@ public class UserDetails {
 
     public UserDetails() {}
 
-    public UserDetails(String userId, String email) {
+    public UserDetails(String userId) {
         this.userId = userId;
+    }
+
+    public UserDetails(String userId, String email) {
+        this(userId);
         this.email = email;
+    }
+
+    public UserDetails(String firstname, String lastname, Date dob, String occupation, String country) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.setDob(dob);
+        this.occupation = occupation;
+        this.country = country;
     }
 
     public UserDetails(String userId, String firstname, String lastname, String email, Date dob, Integer age, String occupation, String country) {
@@ -43,11 +55,9 @@ public class UserDetails {
         this.firstname = firstname;
         this.lastname = lastname;
         this.dob = dob;
-        this.age = age;
         this.occupation = occupation;
         this.country = country;
     }
-    
 
     public String getUserId() {
         return this.userId;
@@ -121,5 +131,21 @@ public class UserDetails {
     public void setCountry(String country) {
         this.country = country;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+            " userId='" + getUserId() + "'" +
+            ", id='" + getId() + "'" +
+            ", firstname='" + getFirstname() + "'" +
+            ", lastname='" + getLastname() + "'" +
+            ", email='" + getEmail() + "'" +
+            ", dob='" + getDob() + "'" +
+            ", age='" + getAge() + "'" +
+            ", occupation='" + getOccupation() + "'" +
+            ", country='" + getCountry() + "'" +
+            "}";
+    }
+
     
 }

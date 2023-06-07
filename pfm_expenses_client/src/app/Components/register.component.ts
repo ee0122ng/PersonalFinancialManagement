@@ -2,6 +2,7 @@ import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RegisterAccountService } from '../Services/register-account.service';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-register',
@@ -12,6 +13,7 @@ export class RegisterComponent implements OnInit {
 
   registerForm !: FormGroup;
   accId !: string;
+  failedMessage !: string;
 
   constructor(private fb: FormBuilder, private router: Router, private regAccSvc: RegisterAccountService) {}
 
@@ -39,14 +41,13 @@ export class RegisterComponent implements OnInit {
   registerAccount() {
     this.regAccSvc.registerAccount(this.registerForm)
       .then( (p: any) => {
-        return p["payload"]
-      })
-      .then( p => {
-        this.accId = p.split("=")[1].trim()
+        this.accId = p["accountId"]
+        AppComponent.currentAccountId.next(this.accId)
+        AppComponent.currentUserEmail.next(this.registerForm.get('email')?.value)
         this.router.navigate(['/activate', this.accId])
       })
       .catch( e => {
-        console.info(e["error"]["error"])
+        this.failedMessage = e["error"]["error"]
       })
   }
 
