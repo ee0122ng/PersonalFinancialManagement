@@ -1,12 +1,10 @@
-import { AfterViewChecked, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ActivateAccountService } from '../Services/activate-account.service';
-import { Country } from '../models';
-import { COUNTRY_API_URL } from '../constants';
-import { AppComponent } from '../app.component';
-import { Subject } from 'rxjs';
 import { RegisterAccountService } from '../Services/register-account.service';
+import { UserProfileService } from '../Services/user-profile.service';
+import { AppComponent } from '../app.component';
+import { Country } from '../models';
 
 @Component({
   selector: 'app-activate',
@@ -24,27 +22,26 @@ export class ActivateComponent implements OnInit, AfterViewChecked {
   userInfoCompleted: Boolean = false;
   updateError !: string;
 
-  constructor(private activatedRoute: ActivatedRoute, private router: Router, private fb: FormBuilder, private activateAccSvc: ActivateAccountService, private registerAccSvc: RegisterAccountService) {}
+  constructor(private activatedRoute: ActivatedRoute, private router: Router, private fb: FormBuilder, private activateAccSvc: UserProfileService, private registerAccSvc: RegisterAccountService) {}
 
   ngOnInit(): void {
     this.accountId = this.activatedRoute.snapshot.params['accountId']
     this.userEmail = this.registerAccSvc.getRegisteredEmail();
 
     this.activateForm = this.createForm()
-
-    this.activateAccSvc.getCountriesList()
-                        .then( (p: any[]) => {
-                          return p.map (
-                              (c: any) => {
-                                return {
-                                name: c["name"]["common"],
-                                flag: c["flags"]["png"]
-                              } as Country
-                            })
-                        })
-                        .then( (l: Country[]) => {
-                          this.countries = l.sort( (a : Country, b: Country) => a.name.localeCompare(b.name) )
-                        })
+    this.activateAccSvc.getCountriesList()      
+      .then( (p: any[]) => {
+        return p.map (
+            (c: any) => {
+              return {
+              name: c["name"]["common"],
+              flag: c["flags"]["png"]
+            } as Country
+          })
+      })
+      .then( (l: Country[]) => {
+        this.countries = l.sort( (a : Country, b: Country) => a.name.localeCompare(b.name) )
+      })
   }
 
   ngAfterViewChecked(): void {

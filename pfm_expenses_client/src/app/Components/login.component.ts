@@ -1,7 +1,8 @@
-import { Component, OnInit, Output } from '@angular/core';
+import { Component, OnInit, Output, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
 import { Subject } from 'rxjs';
+import { AuthoriseAccountService } from '../Services/authorise-account.service';
 import { LoginAccountService } from '../Services/login-account.service';
 import { AppComponent } from '../app.component';
 
@@ -22,7 +23,7 @@ export class LoginComponent implements OnInit {
   @Output()
   onSuccessfulLogin = new Subject<Boolean>();
 
-  constructor(private fb: FormBuilder, private loginSvc: LoginAccountService, private router: Router) {}
+  constructor(private fb: FormBuilder, private loginSvc: LoginAccountService, private router: Router, private authAccount: AuthoriseAccountService) {}
 
   ngOnInit(): void {
       this.loginForm = this.createFrom()
@@ -47,11 +48,19 @@ export class LoginComponent implements OnInit {
         this.accountId = p["accountId"]
         this.userEmail = p["email"]
         console.info(">>> frontend user email: " + this.userEmail)
+
+        // authenticate the user
+        const canActivateAccount: CanActivateFn =
+        (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+          return inject(AuthoriseAccountService).canActivate(inject(this.loginSvc.getUsername), this.accountId);
+        };
+
         //update the parent status
         AppComponent.loginStatus.next(this.loginStatus)
         AppComponent.infoCompletionStatus.next(this.accountCompleted)
         AppComponent.currentAccountId.next(this.accountId)
         AppComponent.currentUserEmail.next(this.userEmail)
+        AppComponent.currentUsername.next(this.loginSvc.getUsername())
         this.router.navigate(['/home'])
       })
       .catch( (e:any) => {

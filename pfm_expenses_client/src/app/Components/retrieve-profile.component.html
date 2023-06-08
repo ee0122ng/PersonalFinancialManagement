@@ -1,1 +1,51 @@
-<p>retrieve-profile works!</p>
+<mat-card *ngIf="!!profile">
+    <mat-card-header>
+        <div mat-card-avatar class="my-profile-pic"></div>
+        <mat-card-title>{{ profile.firstname | uppercase }}</mat-card-title>
+        <mat-card-subtitle>Username: {{ username | lowercase }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+        <table>
+
+            <tr>
+                <td>Account Id</td>
+                <td>:</td>
+                <td>{{ accountId }}</td>
+            </tr>
+
+            <tr>
+                <td>Family Name</td>
+                <td>:</td>
+                <td>{{ profile.lastname | titlecase }}</td>
+            </tr>
+
+            <tr>
+                <td>Age</td>
+                <td>:</td>
+                <td>{{ profile.age }}</td>
+            </tr>
+
+            <tr>
+                <td>Date of Birth</td>
+                <td>:</td>
+                <td>{{ profile.dob | date: 'd MMM, y' }}</td>
+            </tr>
+
+            <tr>
+                <td>Occupation</td>
+                <td>:</td>
+                <td>{{ profile.occupation }}</td>
+            </tr>
+
+            <tr>
+                <td style="vertical-align: top;">Country of Residence</td>
+                <td style="vertical-align: top;">:</td>
+                <td>
+                    <img *ngIf="!!profile.country" mat-card-sm-image [src]="flag" alt="" title="{{ profile.country }}" style="width:100px; height:50px">
+                </td>
+            </tr>
+
+        </table>
+    </mat-card-content>
+</mat-card>

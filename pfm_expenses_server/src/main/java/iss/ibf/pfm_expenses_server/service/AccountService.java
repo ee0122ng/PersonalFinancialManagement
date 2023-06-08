@@ -11,11 +11,9 @@ import org.springframework.stereotype.Service;
 
 import iss.ibf.pfm_expenses_server.model.Account;
 import iss.ibf.pfm_expenses_server.model.User;
-import iss.ibf.pfm_expenses_server.model.UserDetails;
 import iss.ibf.pfm_expenses_server.repository.AccountAuthenticationRepository;
 import iss.ibf.pfm_expenses_server.repository.AccountRegistrationRepository;
-import iss.ibf.pfm_expenses_server.repository.ProfileCompletionRepository;
-import iss.ibf.pfm_expenses_server.repository.ProfileRetrievalRepository;
+import iss.ibf.pfm_expenses_server.repository.UserProfileRepository;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
@@ -30,10 +28,7 @@ public class AccountService {
     private AccountAuthenticationRepository accAuthRepo;
 
     @Autowired
-    private ProfileCompletionRepository accCpltRepo;
-
-    @Autowired
-    private ProfileRetrievalRepository profileRetRepo;
+    private UserProfileRepository userProfileRepo;
 
     public Optional<String> registerUserAccount(User user, String pwd, String email) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
@@ -63,12 +58,12 @@ public class AccountService {
 
     //check account completion status
     public Boolean checkAccountCompletion(String username) {
-        return this.accCpltRepo.verifyAccountCompletionStatus(username);
+        return this.userProfileRepo.verifyAccountCompletionStatus(username);
     }
 
     //get account
     public Account getUserAccount(String username) {
-        Optional<String> opt = this.accCpltRepo.getUserIdByUsername(username);
+        Optional<String> opt = this.userProfileRepo.getUserIdByUsername(username);
         String userId = opt.get();
 
         return this.accAuthRepo.getAccount(userId);
@@ -77,20 +72,20 @@ public class AccountService {
     //complete user info
     public Boolean completeUserAccount(JsonObject userInfoForm) throws ParseException {
 
-        return this.accCpltRepo.updateUserDetails(userInfoForm);
+        return this.userProfileRepo.updateUserDetails(userInfoForm);
     }
 
     //get email
     public String getUserEmail(String username) {
-        String email = this.accCpltRepo.getUserEmailByUsername(username);
+        String email = this.userProfileRepo.getUserEmailByUsername(username);
 
         return email;
     }
 
     //retrieve profile
-    public UserDetails getUserProfile(String username) {
+    public JsonObject getUserProfile(String username) {
 
-        return this.profileRetRepo.retrieveUserProfile(username);
+        return this.userProfileRepo.retrieveUserProfile(username);
     }
     
 }

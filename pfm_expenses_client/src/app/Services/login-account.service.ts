@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
-import { COMPLETE_API_URL, LOGIN_API_URL } from '../constants';
+import { LOGIN_API_URL } from '../constants';
 import { AccountCredential, RegisterForm } from '../models';
 
 @Injectable({
@@ -10,7 +10,9 @@ import { AccountCredential, RegisterForm } from '../models';
 })
 export class LoginAccountService {
 
+  $loginPromise !: Promise<any>;
   username !: string;
+  accountId !: string;
 
   constructor(private http: HttpClient) { }
 
@@ -23,11 +25,18 @@ export class LoginAccountService {
       password: form.get("password")?.value
     }
 
-    return lastValueFrom(this.http.post<any>(LOGIN_API_URL, credential))
+    this.$loginPromise = lastValueFrom(this.http.post<any>(LOGIN_API_URL, credential))
+    this.$loginPromise.then((p:any) => {this.accountId = p["accountId"]})
+
+    return this.$loginPromise;
   }
 
   getUsername() : string {
     return this.username
+  }
+
+  getAccountId() : string {
+    return this.accountId
   }
 
 }

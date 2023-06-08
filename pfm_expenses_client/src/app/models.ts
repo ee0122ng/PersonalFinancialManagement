@@ -23,3 +23,13 @@ export interface UserDetails {
     country: string;
     occupation: string;
 }
+
+export interface Profile {
+    firstname: string;
+    lastname: string;
+    email: string;
+    dob: Date;
+    age: number;
+    country: string;
+    occupation: string;
+}

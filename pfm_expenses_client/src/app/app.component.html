@@ -16,7 +16,7 @@
     <span class="example-spacer"></span>
 
     <!--TODO: add user details summary-->
-    <button mat-icon-button class="home-icon account-icon" aria-label="Home icon-button with account icon" *ngIf="accountCompleted" title="My Profile">
+    <button mat-icon-button class="home-icon account-icon" aria-label="Home icon-button with account icon" *ngIf="accountCompleted" title="My Profile" [routerLink]="['/profile']">
       <mat-icon>account_circle</mat-icon>
     </button>
     <button mat-flat-button color="accent" class="add-profile-icon" aria-label="Home icon-button with myinfo icon" *ngIf="!accountCompleted && accountCompleted != undefined || null" [routerLink]="['/activate', accountId]" title="Add Profile">

@@ -23,9 +23,8 @@ public class SecurityConfig {
         // note: more specific requestMatchers need to be on top
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(req -> req
-                                            .requestMatchers("/api/register/**").permitAll()
-                                            .requestMatchers("/api/login/**").permitAll()
-                                            .requestMatchers("/api/complete/**").permitAll()
+                                            .requestMatchers("/api/account/register/**").permitAll()
+                                            .requestMatchers("/api/account/login/**").permitAll()
                                             .requestMatchers("/api/profile/**").permitAll())
             // .formLogin(form -> form
             //                     .loginPage("http://localhost:4200/login")

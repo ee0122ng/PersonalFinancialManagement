@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import iss.ibf.pfm_expenses_server.exception.NoEmailFoundException;
@@ -30,11 +31,12 @@ public class AccountController {
     private AccountService accSvc;
     
     // controller to register user
-    @PostMapping(path={"/register"}, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path={"/account/register"}, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> registerUserAccount(@RequestBody String form) {
 
         JsonObject json = accSvc.convertStringToJsonObject(form);
+        System.out.println(">>> request: " + json.toString());
 
         try {
             User user = new User(json.getString("username"));
@@ -77,7 +79,7 @@ public class AccountController {
     }
 
     // controller to authenticate user
-    @PostMapping(path={"/login"}, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path={"/account/login"}, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> authenticateUser(@RequestBody String userLoginDetails) {
         JsonObject json = this.accSvc.convertStringToJsonObject(userLoginDetails);
@@ -161,7 +163,7 @@ public class AccountController {
     }
 
     // controller to complete user account
-    @PostMapping(path={"/complete"}, consumes=MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path={"/profile"}, consumes=MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> completeUserInfo(@RequestBody String userInfoForm) {
 
@@ -188,17 +190,18 @@ public class AccountController {
     // to solve errors
     @GetMapping(path={"/profile"})
     @ResponseBody
-    public ResponseEntity<Object> retrieveProfile(@RequestBody String username) {
+    public ResponseEntity<Object> retrieveProfile(@RequestParam String username) {
 
         try {
-            UserDetails userDetails = this.accSvc.getUserProfile(username);
-
-            return ResponseEntity.status(HttpStatus.OK).body(userDetails);
+            JsonObject payload = this.accSvc.getUserProfile(username);
+            return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
         } catch (Exception ex) {
 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+            JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error.toString());
         }
         
     }
+
 }

@@ -18,10 +18,11 @@ import iss.ibf.pfm_expenses_server.exception.UsernameException;
 import iss.ibf.pfm_expenses_server.model.Account;
 import iss.ibf.pfm_expenses_server.model.User;
 import iss.ibf.pfm_expenses_server.model.UserDetails;
+import jakarta.json.Json;
 import jakarta.json.JsonObject;
 
 @Repository
-public class ProfileCompletionRepository {
+public class UserProfileRepository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -136,11 +137,26 @@ public class ProfileCompletionRepository {
     }
 
     // dob null will throw error
-    public UserDetails retrieveUserProfile(String username) {
+    public JsonObject retrieveUserProfile(String username) {
 
-        UserDetails userDetails = this.jdbcTemplate.queryForObject(GET_USER_INFO_SQL, BeanPropertyRowMapper.newInstance(UserDetails.class), this.getUserIdByUsername(username));
+        UserDetails userDetails = this.jdbcTemplate.queryForObject(GET_USER_INFO_SQL, BeanPropertyRowMapper.newInstance(UserDetails.class), this.getUserIdByUsername(username).get());
+        
+        return this.convertProfileToJson(userDetails);
+    }
+    
+    public JsonObject convertProfileToJson(UserDetails profile) {
 
-        return userDetails;
+        JsonObject json = Json.createObjectBuilder()
+                                .add("firstname", profile.getFirstname())
+                                .add("lastname", profile.getLastname())
+                                .add("email", profile.getEmail())
+                                .add("country", profile.getCountry())
+                                .add("dob", profile.getDob().toString())
+                                .add("age", profile.getAge())
+                                .add("occupation", profile.getOccupation())
+                                .build();
+
+        return json;
     }
     
 }

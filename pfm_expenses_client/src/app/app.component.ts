@@ -15,6 +15,7 @@ export class AppComponent implements OnDestroy {
   public static infoCompletionStatus : Subject<Boolean> = new Subject();
   public static currentAccountId : Subject<String> = new Subject();
   public static currentUserEmail : Subject<String> = new Subject();
+  public static currentUsername : Subject<String> = new Subject();
 
   loginSuccess : Boolean = false;
   accountCompleted !: Boolean | undefined;
@@ -33,7 +34,8 @@ export class AppComponent implements OnDestroy {
     AppComponent.infoCompletionStatus.unsubscribe()
     AppComponent.currentAccountId.unsubscribe()
     AppComponent.currentUserEmail.unsubscribe()
-}
+    AppComponent.currentUsername.unsubscribe()
+  }
 
   logout() {
     this.loginSuccess = false;

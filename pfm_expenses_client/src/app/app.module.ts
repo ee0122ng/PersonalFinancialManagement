@@ -1,21 +1,22 @@
 import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
+import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { MaterialModule } from 'src/material.module';
+import { ActivateComponent } from './Components/activate.component';
+import { HomeComponent } from './Components/home.component';
+import { LoginComponent } from './Components/login.component';
+import { RegisterComponent } from './Components/register.component';
+import { RetrieveProfileComponent } from './Components/retrieve-profile.component';
+import { AuthoriseAccountService } from './Services/authorise-account.service';
+import { LoginAccountService } from './Services/login-account.service';
+import { RegisterAccountService } from './Services/register-account.service';
+import { UserProfileService } from './Services/user-profile.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MaterialModule } from 'src/material.module';
-import { HttpClientModule } from '@angular/common/http';
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { RegisterComponent } from './Components/register.component';
-import { LoginComponent } from './Components/login.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { RegisterAccountService } from './Services/register-account.service';
-import { ActivateComponent } from './Components/activate.component';
-import { ActivateAccountService } from './Services/activate-account.service';
-import { HomeComponent } from './Components/home.component';
-import { LoginAccountService } from './Services/login-account.service';
-import { RetrieveProfileComponent } from './Components/retrieve-profile.component';
 
 @NgModule({
   declarations: [
@@ -42,8 +43,9 @@ import { RetrieveProfileComponent } from './Components/retrieve-profile.componen
   ],
   providers: [ 
     RegisterAccountService,
-    ActivateAccountService,
-    LoginAccountService
+    UserProfileService,
+    LoginAccountService,
+    AuthoriseAccountService
   ],
   bootstrap: [AppComponent]
 })
