@@ -25,14 +25,15 @@ public class SecurityConfig {
             .authorizeHttpRequests(req -> req
                                             .requestMatchers("/api/register/**").permitAll()
                                             .requestMatchers("/api/login/**").permitAll()
-                                            .requestMatchers("/api/complete/**").permitAll())
+                                            .requestMatchers("/api/complete/**").permitAll()
+                                            .requestMatchers("/api/profile/**").permitAll())
             // .formLogin(form -> form
-            //                     .loginPage("/login")
-            //                     .loginProcessingUrl("/login")
-            //                     .defaultSuccessUrl("/home")
+            //                     .loginPage("http://localhost:4200/login")
+            //                     .loginProcessingUrl("/api/login")
+            //                     .defaultSuccessUrl("http://localhost:4200/home")
             //                     .permitAll())
             .logout(logout -> logout
-                                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                                .logoutRequestMatcher(new AntPathRequestMatcher("http://localhost:4200/login"))
                                 .permitAll());                       
 
         return http.build();

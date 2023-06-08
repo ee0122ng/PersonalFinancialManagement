@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 
 import iss.ibf.pfm_expenses_server.model.Account;
 import iss.ibf.pfm_expenses_server.model.User;
+import iss.ibf.pfm_expenses_server.model.UserDetails;
 import iss.ibf.pfm_expenses_server.repository.AccountAuthenticationRepository;
-import iss.ibf.pfm_expenses_server.repository.AccountCompletionRepository;
 import iss.ibf.pfm_expenses_server.repository.AccountRegistrationRepository;
+import iss.ibf.pfm_expenses_server.repository.ProfileCompletionRepository;
+import iss.ibf.pfm_expenses_server.repository.ProfileRetrievalRepository;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
@@ -28,7 +30,10 @@ public class AccountService {
     private AccountAuthenticationRepository accAuthRepo;
 
     @Autowired
-    private AccountCompletionRepository accCpltRepo;
+    private ProfileCompletionRepository accCpltRepo;
+
+    @Autowired
+    private ProfileRetrievalRepository profileRetRepo;
 
     public Optional<String> registerUserAccount(User user, String pwd, String email) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
@@ -80,6 +85,12 @@ public class AccountService {
         String email = this.accCpltRepo.getUserEmailByUsername(username);
 
         return email;
+    }
+
+    //retrieve profile
+    public UserDetails getUserProfile(String username) {
+
+        return this.profileRetRepo.retrieveUserProfile(username);
     }
     
 }

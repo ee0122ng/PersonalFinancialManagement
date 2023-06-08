@@ -12,7 +12,7 @@ import iss.ibf.pfm_expenses_server.model.Account;
 public class AccountAuthenticationRepository {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     private final String GET_USERID_SQL = "select user_id from users where username=?";
     private final String GET_ACCOUNT_STATUS_SQL = "select is_valid from accounts where user_id=?";

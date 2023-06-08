@@ -21,16 +21,17 @@ import iss.ibf.pfm_expenses_server.model.UserDetails;
 import jakarta.json.JsonObject;
 
 @Repository
-public class AccountCompletionRepository {
+public class ProfileCompletionRepository {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     private final String GET_USER_INFO_SQL = "select * from user_details where user_id=?";
     private final String GET_USER_ID_BY_USERNAME_SQL = "select * from users where username=?";
     private final String GET_ACCOUNT_BY_ID_SQL = "select * from accounts where account_id=?";
     private final String UPDATE_USER_INFO_SQL = "update user_details set firstname=?, lastname=?, email=?, dob=?, age=?, country=?, occupation=? where user_id=?";
     private final String INSETR_USER_INFO_SQL = "insert into user_details(user_id, firstname, lastname, email, dob, age, country, occupation) values(?, ?, ?, ?, ?, ?, ?, ?)";
+    private final String GET_USER_ID_BY_ACCID_SQL = "select * from accounts where account_id=?";
 
     public Boolean verifyAccountCompletionStatus(String username) {
 
@@ -45,10 +46,11 @@ public class AccountCompletionRepository {
 
             //return true if there is user details id, email and firstname found
             try {
-                UserDetails userDetails = jdbcTemplate.queryForObject(GET_USER_INFO_SQL, BeanPropertyRowMapper.newInstance(UserDetails.class), userId);
+                UserDetails userDetails = this.jdbcTemplate.queryForObject(GET_USER_INFO_SQL, BeanPropertyRowMapper.newInstance(UserDetails.class), userId);
                 return userDetails.getId() != null && !userDetails.getEmail().isBlank() && !userDetails.getFirstname().isBlank();
 
             } catch (Exception ex) {
+                System.out.println(">>> exception: " + ex.getMessage());
                 // return false if no user details found at all
                 throw new NoUserDetailsFoundException("No user details found");
             }
@@ -77,9 +79,7 @@ public class AccountCompletionRepository {
             return jdbcTemplate.update(UPDATE_USER_INFO_SQL, userDetails.getFirstname(), userDetails.getLastname(), userDetails.getEmail() ,userDetails.getDob(), userDetails.getAge(), userDetails.getCountry(), userDetails.getOccupation(), userDetails.getUserId()) > 0;
             
         } catch (UserDetailsException ex) {
-            System.out.println(">>> exception found during retrieval of user details: " + ex.getMessage());
             UserDetails userDetails = populateFormToUserDetails(new UserDetails(userId), form);
-            System.out.println(">>> user details: " + userDetails.toString());
             return jdbcTemplate.update(INSETR_USER_INFO_SQL, userDetails.getUserId(), userDetails.getFirstname(), userDetails.getLastname(), userDetails.getEmail(), userDetails.getDob(), userDetails.getAge(), userDetails.getCountry(), userDetails.getOccupation()) > 0;
 
         } 
@@ -111,7 +111,7 @@ public class AccountCompletionRepository {
 
         if (!form.getString("dob").isEmpty()) {
             Date dob = new SimpleDateFormat("yyyy-MM-dd").parse(form.getString("dob"));
-            userDetails.setDob(dob);
+            userDetails.setDob(new java.sql.Date(dob.getTime()));
         }
     
         return userDetails;
@@ -135,5 +135,12 @@ public class AccountCompletionRepository {
         
     }
 
+    // dob null will throw error
+    public UserDetails retrieveUserProfile(String username) {
+
+        UserDetails userDetails = this.jdbcTemplate.queryForObject(GET_USER_INFO_SQL, BeanPropertyRowMapper.newInstance(UserDetails.class), this.getUserIdByUsername(username));
+
+        return userDetails;
+    }
     
 }

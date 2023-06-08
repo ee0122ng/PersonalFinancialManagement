@@ -15,7 +15,6 @@ import { ActivateComponent } from './Components/activate.component';
 import { ActivateAccountService } from './Services/activate-account.service';
 import { HomeComponent } from './Components/home.component';
 import { LoginAccountService } from './Services/login-account.service';
-import { RetrieveProfileComponent } from './Components/retrieve-profile.component';
 
 @NgModule({
   declarations: [
@@ -23,8 +22,7 @@ import { RetrieveProfileComponent } from './Components/retrieve-profile.componen
     RegisterComponent,
     LoginComponent,
     ActivateComponent,
-    HomeComponent,
-    RetrieveProfileComponent
+    HomeComponent
   ],
   imports: [
     BrowserModule,

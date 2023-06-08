@@ -19,7 +19,7 @@ import iss.ibf.pfm_expenses_server.model.User;
 public class AccountRegistrationRepository {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     private final String VERIFY_USERNAME_SQL = "select * from users where username=?";
     private final String CREATE_NEW_USER_SQL = "insert into users(user_id, username) values(?, ?)";

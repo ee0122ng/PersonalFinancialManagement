@@ -1,9 +1,8 @@
 package iss.ibf.pfm_expenses_server.model;
 
-import java.util.Date;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.ZoneId;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -105,7 +104,7 @@ public class UserDetails {
 
     public void setDob(Date dob) {
         this.dob = dob;
-        this.age = Period.between(dob.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).getYears();
+        this.age = Period.between(dob.toLocalDate(), LocalDate.now()).getYears();
     }
 
     public Integer getAge() {

@@ -28,6 +28,8 @@ export class ActivateAccountService {
       occupation: form.get('occupation')?.value
     }
 
+    console.info(">>> user details: " + JSON.stringify(userDetails));
+
     return lastValueFrom(this.http.post<any>(COMPLETE_API_URL, userDetails))
 
   }

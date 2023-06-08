@@ -46,7 +46,6 @@ export class LoginComponent implements OnInit {
         this.accountCompleted = p["accCompleted"]
         this.accountId = p["accountId"]
         this.userEmail = p["email"]
-        console.info(">>> frontend user email: " + this.userEmail)
         //update the parent status
         AppComponent.loginStatus.next(this.loginStatus)
         AppComponent.infoCompletionStatus.next(this.accountCompleted)

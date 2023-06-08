@@ -10,13 +10,9 @@ import { AccountCredential, RegisterForm } from '../models';
 })
 export class LoginAccountService {
 
-  username !: string;
-
   constructor(private http: HttpClient) { }
 
   loginAccount(form: FormGroup) : Promise<any> {
-
-    this.username = form.get('username')?.value
 
     const credential : AccountCredential = {
       username: form.get("username")?.value,
@@ -25,9 +21,4 @@ export class LoginAccountService {
 
     return lastValueFrom(this.http.post<any>(LOGIN_API_URL, credential))
   }
-
-  getUsername() : string {
-    return this.username
-  }
-
 }

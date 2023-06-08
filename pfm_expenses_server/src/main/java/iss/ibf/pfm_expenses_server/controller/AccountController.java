@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import iss.ibf.pfm_expenses_server.exception.NoEmailFoundException;
 import iss.ibf.pfm_expenses_server.exception.NoUserDetailsFoundException;
 import iss.ibf.pfm_expenses_server.exception.UsernameException;
 import iss.ibf.pfm_expenses_server.model.User;
+import iss.ibf.pfm_expenses_server.model.UserDetails;
 import iss.ibf.pfm_expenses_server.service.AccountService;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -107,6 +109,7 @@ public class AccountController {
                         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
                     } catch (NoUserDetailsFoundException ex) {
+                        System.out.println(">>> no user details");
                         JsonObject payload = Json.createObjectBuilder()
                                                     .add("accCompleted", false)
                                                     .add("accountId", accountId)
@@ -116,6 +119,7 @@ public class AccountController {
                     
                     } catch (NoEmailFoundException ex) {
                         Boolean accCompleted = this.accSvc.checkAccountCompletion(username);
+                        System.out.println(">>> no user email");
                         JsonObject payload = Json.createObjectBuilder()
                                                     .add("accCompleted", accCompleted)
                                                     .add("accountId", accountId)
@@ -175,9 +179,26 @@ public class AccountController {
             }
 
         } catch (Exception ex) {
-            
+
             JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.toString());
         }
+    }
+
+    // to solve errors
+    @GetMapping(path={"/profile"})
+    @ResponseBody
+    public ResponseEntity<Object> retrieveProfile(@RequestBody String username) {
+
+        try {
+            UserDetails userDetails = this.accSvc.getUserProfile(username);
+
+            return ResponseEntity.status(HttpStatus.OK).body(userDetails);
+
+        } catch (Exception ex) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
+        
     }
 }
