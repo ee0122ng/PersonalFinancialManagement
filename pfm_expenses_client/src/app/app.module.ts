@@ -9,8 +9,8 @@ import { MaterialModule } from 'src/material.module';
 import { ActivateComponent } from './Components/activate.component';
 import { HomeComponent } from './Components/home.component';
 import { LoginComponent } from './Components/login.component';
+import { ProfileComponent } from './Components/profile.component';
 import { RegisterComponent } from './Components/register.component';
-import { RetrieveProfileComponent } from './Components/retrieve-profile.component';
 import { AuthoriseAccountService } from './Services/authorise-account.service';
 import { LoginAccountService } from './Services/login-account.service';
 import { RegisterAccountService } from './Services/register-account.service';
@@ -25,7 +25,7 @@ import { AppComponent } from './app.component';
     LoginComponent,
     ActivateComponent,
     HomeComponent,
-    RetrieveProfileComponent
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

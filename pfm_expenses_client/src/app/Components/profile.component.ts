@@ -10,10 +10,10 @@ import { Country } from '../models';
 
 @Component({
   selector: 'app-retrieve-profile',
-  templateUrl: './retrieve-profile.component.html',
-  styleUrls: ['./retrieve-profile.component.css']
+  templateUrl: './profile.component.html',
+  styleUrls: ['./profile.component.css']
 })
-export class RetrieveProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit {
 
   profile !: Profile
   username !: string;
