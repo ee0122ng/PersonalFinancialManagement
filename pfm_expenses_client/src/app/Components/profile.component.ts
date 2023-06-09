@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { filter, lastValueFrom, map } from 'rxjs';
 import { LoginAccountService } from '../Services/login-account.service';
@@ -15,10 +15,14 @@ import { Country } from '../models';
 })
 export class ProfileComponent implements OnInit {
 
+  @ViewChild('profilePic')
+  profileImage !: ElementRef;
+
   profile !: Profile
   username !: string;
   flag !: string;
   accountId !: string;
+  imageUploaded : Boolean = false;
 
   constructor(private userProfileSvc : UserProfileService, private loginAccSvc: LoginAccountService ,private router : Router, private http: HttpClient) {}
 
@@ -72,6 +76,18 @@ export class ProfileComponent implements OnInit {
         )
       }
     })
+  }
+
+  onFileUpload($event: any) {
+    let file = $event.target.files[0]
+
+    // upload image to bucket if there is file attached
+    if (file) {
+      this.imageUploaded = true;
+
+      const formData : FormData = new FormData();
+      formData.set("profilePic", this.profileImage.nativeElement.files[0])
+    }
   }
 
 }
