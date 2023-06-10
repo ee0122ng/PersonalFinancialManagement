@@ -7,6 +7,7 @@ import { UserProfileService } from '../Services/user-profile.service';
 import { COUNTRY_API_URL } from '../constants';
 import { Profile } from '../models';
 import { Country } from '../models';
+import { UploadProfilePictureService } from '../Services/upload-profile-picture.service';
 
 @Component({
   selector: 'app-retrieve-profile',
@@ -23,8 +24,10 @@ export class ProfileComponent implements OnInit {
   flag !: string;
   accountId !: string;
   imageUploaded : Boolean = false;
+  profilePicUrl !: string;
+  errorMessage !: string;
 
-  constructor(private userProfileSvc : UserProfileService, private loginAccSvc: LoginAccountService ,private router : Router, private http: HttpClient) {}
+  constructor(private userProfileSvc : UserProfileService, private loginAccSvc: LoginAccountService ,private router : Router, private uploadProfilePicSvc: UploadProfilePictureService) {}
 
   ngOnInit(): void {
     this.username = this.loginAccSvc.getUsername()
@@ -83,10 +86,26 @@ export class ProfileComponent implements OnInit {
 
     // upload image to bucket if there is file attached
     if (file) {
-      this.imageUploaded = true;
-
+      console.info(">>> file captured: " + this.profileImage.nativeElement.files[0])
       const formData : FormData = new FormData();
       formData.set("profilePic", this.profileImage.nativeElement.files[0])
+      formData.set("username", this.username)
+      formData.set("accountId", this.accountId)
+
+      this.uploadProfilePicSvc.uploadProfilePicture(formData)
+        .then(
+          (p:any) => {
+            this.imageUploaded = true
+            this.profilePicUrl = p["endpoint"]
+          }
+        )
+        .catch(
+          (err:any) => {
+            this.imageUploaded = false
+            this.errorMessage = err["error"]["error"]
+          }
+        )
+      
     }
   }
 

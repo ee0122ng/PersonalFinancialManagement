@@ -1,5 +1,6 @@
 package iss.ibf.pfm_expenses_server.controller;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +13,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import iss.ibf.pfm_expenses_server.exception.NoEmailFoundException;
 import iss.ibf.pfm_expenses_server.exception.NoUserDetailsFoundException;
 import iss.ibf.pfm_expenses_server.exception.UsernameException;
 import iss.ibf.pfm_expenses_server.model.User;
-import iss.ibf.pfm_expenses_server.model.UserDetails;
 import iss.ibf.pfm_expenses_server.service.AccountService;
+import iss.ibf.pfm_expenses_server.service.UploadProfilePictureService;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 
@@ -29,6 +32,9 @@ public class AccountController {
 
     @Autowired
     private AccountService accSvc;
+
+    @Autowired
+    private UploadProfilePictureService uploadPicSvc;
     
     // controller to register user
     @PostMapping(path={"/account/register"}, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -187,7 +193,7 @@ public class AccountController {
         }
     }
 
-    // to solve errors
+    // controller to retrieve user profile
     @GetMapping(path={"/profile"})
     @ResponseBody
     public ResponseEntity<Object> retrieveProfile(@RequestParam String username) {
@@ -201,7 +207,27 @@ public class AccountController {
             JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error.toString());
         }
-        
+    }
+
+    // controller to upload user profile picture
+    @PostMapping(path={"/profile/image-upload"}, consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> uploadProfilePicture(@RequestPart MultipartFile profilePic, @RequestPart String username, @RequestPart String accountId) throws IOException {
+
+        System.out.println(">>> file uploaded: " + profilePic.getName());
+
+        try {
+            String endpoint = this.uploadPicSvc.uploadProfilePicture(profilePic, username, accountId);
+            JsonObject payload = Json.createObjectBuilder().add("endpoint", endpoint).build();
+            return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+
+        } catch (Exception ex) {
+            System.out.println(">>> exception while uploading to S3: " + ex.getMessage());
+            JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error.toString());
+
+        }
+
     }
 
 }
