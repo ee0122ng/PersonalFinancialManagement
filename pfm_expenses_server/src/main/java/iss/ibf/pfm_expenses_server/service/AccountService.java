@@ -83,9 +83,9 @@ public class AccountService {
     }
 
     //retrieve profile
-    public JsonObject getUserProfile(String username) {
+    public JsonObject getUserProfile(String username, String accountId, String userId) {
 
-        return this.userProfileRepo.retrieveUserProfile(username);
+        return this.userProfileRepo.retrieveUserProfile(username, accountId, userId);
     }
     
 }

@@ -29,6 +29,7 @@ public class UserDetails {
     private Integer age;
     private String occupation;
     private String country;
+    private String imageUrl;
 
     public UserDetails() {}
 
@@ -131,6 +132,14 @@ public class UserDetails {
         this.country = country;
     }
 
+    public String getImageUrl() {
+        return this.imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -143,8 +152,10 @@ public class UserDetails {
             ", age='" + getAge() + "'" +
             ", occupation='" + getOccupation() + "'" +
             ", country='" + getCountry() + "'" +
+            ", imageUrl='" + getImageUrl() + "'" +
             "}";
     }
+    
 
     
 }

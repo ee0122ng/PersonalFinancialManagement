@@ -10,9 +10,9 @@ import { AuthoriseAccountService } from './Services/authorise-account.service';
 const routes: Routes = [
   {path: 'register', component: RegisterComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'activate/:accountId', component: ActivateComponent, canActivate: [AuthoriseAccountService]},
+  {path: 'activate/:accountId', component: ActivateComponent},
   {path: 'home', component: HomeComponent},
-  {path: 'profile', component: ProfileComponent, canActivate: [AuthoriseAccountService]},
+  {path: 'profile', component: ProfileComponent},
   {path: '**', redirectTo: 'login', pathMatch: 'full'}
 ];
 

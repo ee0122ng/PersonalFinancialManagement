@@ -14,9 +14,9 @@ public class UploadProfilePictureService {
     @Autowired
     private S3BucketRepository s3BucketRepo;
 
-    public String uploadProfilePicture(MultipartFile image, String username, String accountId) throws IOException {
+    public String uploadProfilePicture(MultipartFile image, String username, String accountId, String userId) throws IOException {
 
-        return s3BucketRepo.uploadPicture(image, username, accountId);
+        return s3BucketRepo.uploadPicture(image, username, accountId, userId);
     }
     
 }

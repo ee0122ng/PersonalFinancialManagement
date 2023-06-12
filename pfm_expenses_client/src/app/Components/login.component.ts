@@ -47,7 +47,6 @@ export class LoginComponent implements OnInit {
         this.accountCompleted = p["accCompleted"]
         this.accountId = p["accountId"]
         this.userEmail = p["email"]
-        console.info(">>> frontend user email: " + this.userEmail)
 
         // authenticate the user
         const canActivateAccount: CanActivateFn =
@@ -64,7 +63,6 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/home'])
       })
       .catch( (e:any) => {
-        console.info(">>> error: " + JSON.stringify(e))
         this.errorMessage = e['error']['error']
       })
 

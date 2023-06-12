@@ -5,11 +5,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 
 import iss.ibf.pfm_expenses_server.exception.NoEmailFoundException;
 import iss.ibf.pfm_expenses_server.exception.NoUserDetailsFoundException;
@@ -26,6 +33,18 @@ public class UserProfileRepository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Value("${do.storage.endpoint}")
+    private String ENDPOINT;
+
+    @Value("${do.storage.endpoint.region}")
+    private String REGION;
+
+    @Value("${do.storage.bucketname}")
+    private String BUCKET;
+
+    @Autowired
+    private AmazonS3 s3;
 
     private final String GET_USER_INFO_SQL = "select * from user_details where user_id=?";
     private final String GET_USER_ID_BY_USERNAME_SQL = "select * from users where username=?";
@@ -51,7 +70,6 @@ public class UserProfileRepository {
                 return userDetails.getId() != null && !userDetails.getEmail().isBlank() && !userDetails.getFirstname().isBlank();
 
             } catch (Exception ex) {
-                System.out.println(">>> exception: " + ex.getMessage());
                 // return false if no user details found at all
                 throw new NoUserDetailsFoundException("No user details found");
             }
@@ -136,15 +154,42 @@ public class UserProfileRepository {
         
     }
 
-    // dob null will throw error
-    public JsonObject retrieveUserProfile(String username) {
+    public JsonObject retrieveUserProfile(String username, String accountId, String userId) {
 
         UserDetails userDetails = this.jdbcTemplate.queryForObject(GET_USER_INFO_SQL, BeanPropertyRowMapper.newInstance(UserDetails.class), this.getUserIdByUsername(username).get());
+        String userProfileUrl = "";
+        String fileDirectory = "";
+
+        // retrieve user profile pic from S3
+        if(null != userDetails.getImageUrl()) {
+            userProfileUrl = userDetails.getImageUrl();
+        }
+
+        try {
+            // get the file directory from the endpoint string
+            Pattern pattern  = Pattern.compile("(?<=https://).*");
+            Matcher matcher = pattern.matcher(userProfileUrl);
+            
+            // note: match.find() will only return true once
+            if (matcher.find()) {
+                String matching = matcher.group().toString();
+                String[] arr = matching.split("/");
+                fileDirectory = arr[1] + "/" + arr[2];
+            }
+
+            GetObjectRequest getReq = new GetObjectRequest(BUCKET, fileDirectory);
+    
+        } catch (AmazonS3Exception ex) {
+            System.out.println(">>> No user profile pic found in S3");
+        } catch (Exception ex) {
+            System.out.println(">>> Exception captured: " + ex.getMessage());
+        }
+
+         return this.convertProfileToJson(userDetails, userProfileUrl);
         
-        return this.convertProfileToJson(userDetails);
     }
     
-    public JsonObject convertProfileToJson(UserDetails profile) {
+    public JsonObject convertProfileToJson(UserDetails profile, String profileUrl) {
 
         JsonObject json = Json.createObjectBuilder()
                                 .add("firstname", profile.getFirstname())
@@ -154,6 +199,7 @@ public class UserProfileRepository {
                                 .add("dob", profile.getDob().toString())
                                 .add("age", profile.getAge())
                                 .add("occupation", profile.getOccupation())
+                                .add("profileUrl", profileUrl)
                                 .build();
 
         return json;

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,10 +34,15 @@ public class S3BucketRepository {
     @Autowired
     private AmazonS3 s3;
 
-    public String uploadPicture(MultipartFile image, String username, String accountId) throws IOException {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private final String UPDATE_PROFILE_PIC_URL_SQL = "update user_details set image_url=? where user_id=?";
+
+    public String uploadPicture(MultipartFile image, String username, String accountId, String userId) throws IOException {
 
         Map<String, String> userData = new HashMap<>();
-        userData.put("uploadedDate", new SimpleDateFormat("dd MMM, yyyy").format(new Date()));
+        userData.put("uploadedDate", new SimpleDateFormat("dd MMM, yyyy HH:mm:ss").format(new Date()));
         userData.put("accountID", accountId);
         userData.put("username", username);
 
@@ -52,7 +58,12 @@ public class S3BucketRepository {
 
         try {
             s3.putObject(putReq);
-            return "https://" + BUCKET + "." + ENDPOINT + "/" + fileDirectory;
+            String endpoint = "https://" + BUCKET + "." + ENDPOINT + "/" + fileDirectory;
+            
+            // update user_detail table for the profile picture
+            this.jdbcTemplate.update(UPDATE_PROFILE_PIC_URL_SQL, endpoint, userId);
+
+            return endpoint;
 
         } catch (Exception ex) {
             System.out.println(">>> exception: " + ex.getMessage());

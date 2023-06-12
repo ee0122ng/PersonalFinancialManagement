@@ -32,4 +32,5 @@ export interface Profile {
     age: number;
     country: string;
     occupation: string;
+    imageUrl: string;
 }

@@ -25,6 +25,7 @@ import iss.ibf.pfm_expenses_server.service.AccountService;
 import iss.ibf.pfm_expenses_server.service.UploadProfilePictureService;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping(path={"/api"})
@@ -87,11 +88,13 @@ public class AccountController {
     // controller to authenticate user
     @PostMapping(path={"/account/login"}, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<String> authenticateUser(@RequestBody String userLoginDetails) {
+    public ResponseEntity<String> authenticateUser(@RequestBody String userLoginDetails, HttpSession session) {
         JsonObject json = this.accSvc.convertStringToJsonObject(userLoginDetails);
+        System.out.println(">>> sample request: " + json.toString());
 
         try {
             String username = json.getString("username");
+            session.setAttribute("username", username); // save current username to session
 
             // check if username and account are still valid
             if (this.accSvc.checkUsername(username)) {
@@ -103,6 +106,9 @@ public class AccountController {
                 if (validPwd) {
 
                     String accountId = this.accSvc.getUserAccount(username).getAccountId();
+                    String userId = this.accSvc.getUserAccount(username).getUserId();
+                    session.setAttribute("sessionAccountId", accountId);
+                    session.setAttribute("sessionUserId", userId);
 
                     // check if user info completed
                     // 4 possible outcome: completed + hasEmail, completed + noEmail, incomplete + hasEmail, incomplete + noEmail
@@ -117,7 +123,6 @@ public class AccountController {
                         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
                     } catch (NoUserDetailsFoundException ex) {
-                        System.out.println(">>> no user details");
                         JsonObject payload = Json.createObjectBuilder()
                                                     .add("accCompleted", false)
                                                     .add("accountId", accountId)
@@ -127,7 +132,6 @@ public class AccountController {
                     
                     } catch (NoEmailFoundException ex) {
                         Boolean accCompleted = this.accSvc.checkAccountCompletion(username);
-                        System.out.println(">>> no user email");
                         JsonObject payload = Json.createObjectBuilder()
                                                     .add("accCompleted", accCompleted)
                                                     .add("accountId", accountId)
@@ -168,6 +172,17 @@ public class AccountController {
 
     }
 
+    // controller to logout all session
+    @GetMapping(path={"/account/logout"})
+    @ResponseBody
+    public ResponseEntity<String> logoutSession(HttpSession session) {
+
+        session.invalidate();
+        JsonObject payload = Json.createObjectBuilder().add("payload", "Logout successfully").build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+    }
+
     // controller to complete user account
     @PostMapping(path={"/profile"}, consumes=MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -196,10 +211,13 @@ public class AccountController {
     // controller to retrieve user profile
     @GetMapping(path={"/profile"})
     @ResponseBody
-    public ResponseEntity<Object> retrieveProfile(@RequestParam String username) {
+    public ResponseEntity<Object> retrieveProfile(@RequestParam String username, HttpSession session) {
+        
+        String accountId = (String) session.getAttribute("sessionAccountId");
+        String userId = (String) session.getAttribute("sessionUserId");
 
         try {
-            JsonObject payload = this.accSvc.getUserProfile(username);
+            JsonObject payload = this.accSvc.getUserProfile(username, accountId, userId);
             return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
         } catch (Exception ex) {
@@ -212,17 +230,16 @@ public class AccountController {
     // controller to upload user profile picture
     @PostMapping(path={"/profile/image-upload"}, consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public ResponseEntity<String> uploadProfilePicture(@RequestPart MultipartFile profilePic, @RequestPart String username, @RequestPart String accountId) throws IOException {
+    public ResponseEntity<String> uploadProfilePicture(@RequestPart MultipartFile profilePic, @RequestPart String username, @RequestPart String accountId, HttpSession session) throws IOException {
 
-        System.out.println(">>> file uploaded: " + profilePic.getName());
+        String userId = (String) session.getAttribute("sessionUserId");
 
         try {
-            String endpoint = this.uploadPicSvc.uploadProfilePicture(profilePic, username, accountId);
+            String endpoint = this.uploadPicSvc.uploadProfilePicture(profilePic, username, accountId, userId);
             JsonObject payload = Json.createObjectBuilder().add("endpoint", endpoint).build();
             return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
         } catch (Exception ex) {
-            System.out.println(">>> exception while uploading to S3: " + ex.getMessage());
             JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error.toString());
 

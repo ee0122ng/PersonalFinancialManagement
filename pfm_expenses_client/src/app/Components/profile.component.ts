@@ -42,12 +42,14 @@ export class ProfileComponent implements OnInit {
         dob: new Date(p["dob"]),
         age: p["age"],
         country: p["country"],
-        occupation: p["occupation"]
+        occupation: p["occupation"],
+        imageUrl: p["profileUrl"]
       } as Profile
     })
     .then((p:Profile) => {
       this.profile = p
-      console.info(">>> sample retrieval: " + !!this.profile.country)
+      this.profilePicUrl = p.imageUrl
+      console.info(">>> profile pic from database: " + this.profilePicUrl);
 
       // if country name is not blank, get the flag url
       if (!!this.profile.country) {
@@ -71,7 +73,6 @@ export class ProfileComponent implements OnInit {
               (c:Country) => {
                 if(c.name === this.profile.country) {
                   this.flag = c.flag
-                  console.info(">>> sample flag: " + this.flag)
                 }
               }
             )
@@ -81,12 +82,11 @@ export class ProfileComponent implements OnInit {
     })
   }
 
-  onFileUpload($event: any) {
+  async onFileUpload($event: any) {
     let file = $event.target.files[0]
 
     // upload image to bucket if there is file attached
     if (file) {
-      console.info(">>> file captured: " + this.profileImage.nativeElement.files[0])
       const formData : FormData = new FormData();
       formData.set("profilePic", this.profileImage.nativeElement.files[0])
       formData.set("username", this.username)
@@ -96,7 +96,10 @@ export class ProfileComponent implements OnInit {
         .then(
           (p:any) => {
             this.imageUploaded = true
-            this.profilePicUrl = p["endpoint"]
+
+            // append a query text to act as image source refresh
+            this.profilePicUrl = `${p["endpoint"]}?time=${Date.now()}`
+
           }
         )
         .catch(

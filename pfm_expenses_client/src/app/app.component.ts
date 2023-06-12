@@ -2,6 +2,8 @@ import { AfterContentInit, AfterViewInit, Component, OnDestroy, ViewChild } from
 import { LoginComponent } from './Components/login.component';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
+import { LogoutAccountService } from './Services/logout-account.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +24,7 @@ export class AppComponent implements OnDestroy {
   accountId !: string | undefined;
   userEmail !: string | undefined;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private logoutAccountService: LogoutAccountService) {
     AppComponent.loginStatus.subscribe( (s:any) => { this.loginSuccess = s })
     AppComponent.infoCompletionStatus.subscribe( (a:any) => { this.accountCompleted = a})
     AppComponent.currentAccountId.subscribe( (c:any) => { this.accountId = c })
@@ -37,11 +39,12 @@ export class AppComponent implements OnDestroy {
     AppComponent.currentUsername.unsubscribe()
   }
 
-  logout() {
+  async logout() {
     this.loginSuccess = false;
     this.accountCompleted = undefined;
     this.accountId = undefined;
     this.userEmail = undefined;
+    this.logoutAccountService.logout();
     this.router.navigate(['/login'])
   }
 

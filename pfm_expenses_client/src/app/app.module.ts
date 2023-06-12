@@ -17,6 +17,7 @@ import { RegisterAccountService } from './Services/register-account.service';
 import { UserProfileService } from './Services/user-profile.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { LogoutAccountService } from './Services/logout-account.service';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { AppComponent } from './app.component';
     RegisterAccountService,
     UserProfileService,
     LoginAccountService,
-    AuthoriseAccountService
+    AuthoriseAccountService,
+    LogoutAccountService
   ],
   bootstrap: [AppComponent]
 })

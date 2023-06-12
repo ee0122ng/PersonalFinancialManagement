@@ -13,7 +13,7 @@
     <mat-card-header>
 
         <div mat-card-image class="profile-pic-container">
-            <div class="image-container"></div>
+            <div class="image-container" [style.background-image]="'url(' + profilePicUrl + ')'"></div>
             <label for="profile-pic-input-file">
                 <div class="icon-wrapper">
                     <form method="POST" enctype="multipart/form-data">
