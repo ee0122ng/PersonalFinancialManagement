@@ -32,5 +32,9 @@
 4. Generate SSL with the CSR using root CA and root CA private key
 5. Install CA in the browser
 
+### To get currency rate through sample api call
+1. get converter: https://free.currconv.com/api/v7/convert?q=USD_PHP&compact=ultra&apiKey=[_your_api_key]
+2. get currency: https://free.currconv.com/api/v7/currencies?apiKey=[_your_api_key]
+
 
 

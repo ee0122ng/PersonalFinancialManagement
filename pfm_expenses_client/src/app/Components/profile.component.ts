@@ -8,6 +8,7 @@ import { COUNTRY_API_URL } from '../constants';
 import { Profile } from '../models';
 import { Country } from '../models';
 import { UploadProfilePictureService } from '../Services/upload-profile-picture.service';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-retrieve-profile',
@@ -30,8 +31,16 @@ export class ProfileComponent implements OnInit {
   constructor(private userProfileSvc : UserProfileService, private loginAccSvc: LoginAccountService ,private router : Router, private uploadProfilePicSvc: UploadProfilePictureService) {}
 
   ngOnInit(): void {
-    this.username = this.loginAccSvc.getUsername()
-    this.accountId = this.loginAccSvc.getAccountId()
+
+    if (!!localStorage.getItem("loginStatus")) {
+
+      //@ts-ignore
+      let userData = JSON.parse(localStorage.getItem("loginStatus"))
+
+      this.username = userData.username
+      this.accountId = userData.accountId
+
+    }
 
     this.userProfileSvc.retrieveUserProfile(this.username)
     .then( (p:any) => {
@@ -48,8 +57,9 @@ export class ProfileComponent implements OnInit {
     })
     .then((p:Profile) => {
       this.profile = p
+
+      // check if there is latest profile pic uploaded
       this.profilePicUrl = p.imageUrl
-      console.info(">>> profile pic from database: " + this.profilePicUrl);
 
       // if country name is not blank, get the flag url
       if (!!this.profile.country) {

@@ -17,6 +17,7 @@ export class LogoutAccountService {
       .then(
         (p:any) => {
           this.message = p["payload"]
+          localStorage.clear();
           console.info(">>> front: " + this.message)
         }
       )

@@ -1,6 +1,7 @@
 package iss.ibf.pfm_expenses_server.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,10 @@ import iss.ibf.pfm_expenses_server.exception.NoUserDetailsFoundException;
 import iss.ibf.pfm_expenses_server.exception.UsernameException;
 import iss.ibf.pfm_expenses_server.model.User;
 import iss.ibf.pfm_expenses_server.service.AccountService;
+import iss.ibf.pfm_expenses_server.service.TransactionService;
 import iss.ibf.pfm_expenses_server.service.UploadProfilePictureService;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.servlet.http.HttpSession;
 
@@ -36,6 +39,9 @@ public class AccountController {
 
     @Autowired
     private UploadProfilePictureService uploadPicSvc;
+
+    @Autowired
+    private TransactionService transSvc;
     
     // controller to register user
     @PostMapping(path={"/account/register"}, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -43,7 +49,6 @@ public class AccountController {
     public ResponseEntity<String> registerUserAccount(@RequestBody String form) {
 
         JsonObject json = accSvc.convertStringToJsonObject(form);
-        System.out.println(">>> request: " + json.toString());
 
         try {
             User user = new User(json.getString("username"));
@@ -90,7 +95,6 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<String> authenticateUser(@RequestBody String userLoginDetails, HttpSession session) {
         JsonObject json = this.accSvc.convertStringToJsonObject(userLoginDetails);
-        System.out.println(">>> sample request: " + json.toString());
 
         try {
             String username = json.getString("username");
@@ -245,6 +249,27 @@ public class AccountController {
 
         }
 
+    }
+
+    // controller to get currencies list
+    @GetMapping(path={"/transaction/currencies"})
+    @ResponseBody
+    public ResponseEntity<String> getCurrencies() {
+
+        try {
+            List<String> currencies = this.transSvc.getCurrencies();
+            JsonArray jArr = Json.createArrayBuilder(currencies).build();
+            JsonObject payload = Json.createObjectBuilder().add("currencies", jArr).build();
+
+            return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+
+        } catch( Exception ex) {
+
+            JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error.toString());
+        }
+        
     }
 
 }

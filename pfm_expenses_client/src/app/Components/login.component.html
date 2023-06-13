@@ -8,26 +8,38 @@
     <form [formGroup]="loginForm" (ngSubmit)="login()">
         <table>
             <tr>
-                <td>Username:</td>
                 <td>
-                    <input type="text" formControlName="username" placeholder="your username">
+                    <mat-form-field appearance="fill">
+
+                        <mat-label>Your username</mat-label>
+                        <input matInput type="text" formControlName="username">
+        
+                    </mat-form-field>
                 </td>
             </tr>
             <tr>
-                <td>Password:</td>
                 <td>
-                    <input type="password" formControlName="password" placeholder="your password">
+                    <mat-form-field appearance="fill">
+
+                        <mat-label>Your password</mat-label>
+                        <input matInput [type]="hide ? 'password' : 'text' " formControlName="password">
+                        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                        </button>
+        
+                    </mat-form-field>
                 </td>
             </tr>
 
             <tr>
-                <td></td>
                 <td>
-                    <button>Login</button>
+                    <button mat-flat-button color="primary">Login</button>
                 </td>
             </tr>
         </table>
     </form>
+
+    &nbsp;
 
     <div>
         <code>Don't have an account yet?</code>

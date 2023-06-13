@@ -31,12 +31,4 @@ export class LoginAccountService {
     return this.$loginPromise;
   }
 
-  getUsername() : string {
-    return this.username
-  }
-
-  getAccountId() : string {
-    return this.accountId
-  }
-
 }

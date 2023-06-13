@@ -34,3 +34,21 @@ export interface Profile {
     occupation: string;
     imageUrl: string;
 }
+
+export interface PersistDetails {
+    username : string | null;
+    accountId : string | null;
+    email : string | null;
+    profileCompStatus : Boolean | null;
+    loginStatus : Boolean | null;
+}
+
+export interface Expense {
+    id: number;
+    userId: number;
+    category: string;
+    item: string;
+    amount: number;
+    transactionDate: Date;
+    currency: string;
+}

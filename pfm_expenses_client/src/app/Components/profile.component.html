@@ -1,7 +1,7 @@
 <mat-card *ngIf="!!profile">
 
     <div *ngIf="imageUploaded else uploadFail">
-        {{ profilePicUrl }}
+        <code style="color:darkslateblue">Profile picture uploaded successfully</code>
     </div>
 
     <ng-template #uploadFail>

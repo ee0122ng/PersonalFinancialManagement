@@ -8,7 +8,6 @@ import { PROFILEPICUPLOAD_API_URL } from '../constants';
 })
 export class UploadProfilePictureService {
 
-  profilePicUrl : string = '';
   $profilePicProm !: Promise<any>;
 
   constructor(private http: HttpClient) { }
@@ -16,13 +15,6 @@ export class UploadProfilePictureService {
   uploadProfilePicture(formData : FormData) : Promise<any> {
 
     this.$profilePicProm = lastValueFrom(this.http.post<any>(PROFILEPICUPLOAD_API_URL, formData))
-
-    this.$profilePicProm
-      .then(
-        (p:any) => {
-          this.profilePicUrl = p["endpoint"]
-        }
-      )
 
     return this.$profilePicProm
   }

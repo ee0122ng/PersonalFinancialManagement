@@ -19,11 +19,11 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(req -> req
-                                            .requestMatchers("http://localhost:4200/**").permitAll()
                                             .requestMatchers("/api/account/register/**").permitAll()
                                             .requestMatchers("/api/account/login/**").permitAll()
                                             .requestMatchers("/api/account/logout/**").permitAll()
-                                            .requestMatchers("/api/profile/**").permitAll())
+                                            .requestMatchers("/api/profile/**").permitAll()
+                                            .requestMatchers("/api/transaction/**").permitAll())
             // .formLogin(form -> form
             //                     .loginPage("http://localhost:4200/login")
             //                     .loginProcessingUrl("/api/login")

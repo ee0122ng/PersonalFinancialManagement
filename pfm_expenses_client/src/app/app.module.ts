@@ -18,6 +18,8 @@ import { UserProfileService } from './Services/user-profile.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LogoutAccountService } from './Services/logout-account.service';
+import { UserExpensesService } from './Services/user-expenses.service';
+import { UploadProfilePictureService } from './Services/upload-profile-picture.service';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,9 @@ import { LogoutAccountService } from './Services/logout-account.service';
     UserProfileService,
     LoginAccountService,
     AuthoriseAccountService,
-    LogoutAccountService
+    LogoutAccountService,
+    UserExpensesService,
+    UploadProfilePictureService,
   ],
   bootstrap: [AppComponent]
 })

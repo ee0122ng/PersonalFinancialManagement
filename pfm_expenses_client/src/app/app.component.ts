@@ -1,4 +1,4 @@
-import { AfterContentInit, AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { LoginComponent } from './Components/login.component';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnDestroy {
+export class AppComponent implements OnInit ,OnDestroy {
   title = 'pfm_expenses_client';
 
   public static loginStatus : Subject<Boolean> = new Subject();
@@ -31,6 +31,23 @@ export class AppComponent implements OnDestroy {
     AppComponent.currentUserEmail.subscribe( (e:any) => { this.userEmail = e })
   }
 
+  ngOnInit(): void {
+
+    // check cached user data at local storage
+    if(!!localStorage.getItem("loginStatus")) {
+
+      //@ts-ignore
+      let persistDetails = JSON.parse(localStorage.getItem('loginStatus'))
+
+      AppComponent.loginStatus.next(persistDetails.loginStatus)
+      AppComponent.infoCompletionStatus.next(persistDetails.profileCompStatus)
+      AppComponent.currentAccountId.next(persistDetails.accountId)
+      AppComponent.currentUserEmail.next(persistDetails.email)
+      AppComponent.currentUsername.next(persistDetails.username)
+    }
+
+  }
+
   ngOnDestroy(): void {
     AppComponent.loginStatus.unsubscribe()
     AppComponent.infoCompletionStatus.unsubscribe()
@@ -39,7 +56,8 @@ export class AppComponent implements OnDestroy {
     AppComponent.currentUsername.unsubscribe()
   }
 
-  async logout() {
+  logout() {
+    localStorage.clear()
     this.loginSuccess = false;
     this.accountCompleted = undefined;
     this.accountId = undefined;

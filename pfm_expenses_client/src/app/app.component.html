@@ -1,21 +1,30 @@
 <p>
   <mat-toolbar color="primary">
-    <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="loginSuccess" [routerLink]="['/home']" title="Home">
+    <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="loginSuccess" [routerLink]="loginSuccess ? ['/home'] : ['']" title="Home">
       <mat-icon>home</mat-icon>
     </button>
     <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="!loginSuccess" [routerLink]="['']" title="User Login">
       <mat-icon>menu</mat-icon>
     </button>
 
-    &nbsp;
-
     <span>My Wealth Stack</span>
 
     <span class="example-spacer"></span>
 
+    <button mat-button>
+      Summary
+    </button>
+
+    <button mat-button>
+      Record
+    </button>
+
+    <button mat-button>
+      Transaction
+    </button>
+
     <span class="example-spacer"></span>
 
-    <!--TODO: add user details summary-->
     <button mat-icon-button class="home-icon account-icon" aria-label="Home icon-button with account icon" *ngIf="accountCompleted" title="My Profile" [routerLink]="['/profile']">
       <mat-icon>account_circle</mat-icon>
     </button>

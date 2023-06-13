@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { AuthoriseAccountService } from '../Services/authorise-account.service';
 import { LoginAccountService } from '../Services/login-account.service';
 import { AppComponent } from '../app.component';
+import { PersistDetails } from '../models';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,8 @@ export class LoginComponent implements OnInit {
   accountCompleted : Boolean = false;
   accountId !: string | any;
   userEmail !: string | any;
+  username !: string | any;
+  hide: Boolean = true;
 
   @Output()
   onSuccessfulLogin = new Subject<Boolean>();
@@ -26,7 +29,8 @@ export class LoginComponent implements OnInit {
   constructor(private fb: FormBuilder, private loginSvc: LoginAccountService, private router: Router, private authAccount: AuthoriseAccountService) {}
 
   ngOnInit(): void {
-      this.loginForm = this.createFrom()
+
+    this.loginForm = this.createFrom()
   }
 
   createFrom() : FormGroup {
@@ -47,11 +51,23 @@ export class LoginComponent implements OnInit {
         this.accountCompleted = p["accCompleted"]
         this.accountId = p["accountId"]
         this.userEmail = p["email"]
+        this.username = this.loginForm.get('username')?.value
+
+        // persist user data to local storage
+        const persistDetails : PersistDetails = {
+          username: this.username,
+          accountId: this.accountId,
+          email: this.userEmail,
+          profileCompStatus: this.accountCompleted,
+          loginStatus: this.loginStatus
+        } as PersistDetails
+
+        localStorage.setItem("loginStatus", JSON.stringify(persistDetails))
 
         // authenticate the user
         const canActivateAccount: CanActivateFn =
         (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-          return inject(AuthoriseAccountService).canActivate(inject(this.loginSvc.getUsername), this.accountId);
+          return inject(AuthoriseAccountService).canActivate(inject(this.username), this.accountId);
         };
 
         //update the parent status
@@ -59,7 +75,7 @@ export class LoginComponent implements OnInit {
         AppComponent.infoCompletionStatus.next(this.accountCompleted)
         AppComponent.currentAccountId.next(this.accountId)
         AppComponent.currentUserEmail.next(this.userEmail)
-        AppComponent.currentUsername.next(this.loginSvc.getUsername())
+        AppComponent.currentUsername.next(this.username)
         this.router.navigate(['/home'])
       })
       .catch( (e:any) => {
@@ -67,6 +83,10 @@ export class LoginComponent implements OnInit {
       })
 
     }
+  }
+
+  getPersistedDetails(key: string) {
+    localStorage.getItem(key)
   }
 
 }

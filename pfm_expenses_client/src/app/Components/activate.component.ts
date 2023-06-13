@@ -25,8 +25,13 @@ export class ActivateComponent implements OnInit, AfterViewChecked {
   constructor(private activatedRoute: ActivatedRoute, private router: Router, private fb: FormBuilder, private activateAccSvc: UserProfileService, private registerAccSvc: RegisterAccountService) {}
 
   ngOnInit(): void {
-    this.accountId = this.activatedRoute.snapshot.params['accountId']
-    this.userEmail = this.registerAccSvc.getRegisteredEmail();
+
+    if (!!localStorage.getItem("loginStatus")) {
+      //@ts-ignore
+      let userData = JSON.parse(localStorage.getItem("loginStatus"))
+      this.accountId = userData.accountId
+      this.userEmail = userData.email
+    }
 
     this.activateForm = this.createForm()
     this.activateAccSvc.getCountriesList()      
