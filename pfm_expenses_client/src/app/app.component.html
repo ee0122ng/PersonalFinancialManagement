@@ -3,7 +3,7 @@
     <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="loginSuccess" [routerLink]="loginSuccess ? ['/home'] : ['']" title="Home">
       <mat-icon>home</mat-icon>
     </button>
-    <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="!loginSuccess" [routerLink]="['']" title="User Login">
+    <button mat-fab class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="!loginSuccess" [routerLink]="['']" title="User Login">
       <mat-icon>menu</mat-icon>
     </button>
 
@@ -12,14 +12,17 @@
     <span class="example-spacer"></span>
 
     <button mat-button>
+      <mat-icon>summarize</mat-icon>
       Summary
     </button>
 
     <button mat-button>
+      <mat-icon>view_list</mat-icon>
       Record
     </button>
 
     <button mat-button>
+      <mat-icon>note_add</mat-icon>
       Transaction
     </button>
 
