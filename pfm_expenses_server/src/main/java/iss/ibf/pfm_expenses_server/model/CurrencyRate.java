@@ -30,7 +30,7 @@ public class CurrencyRate implements Serializable {
 
     public Long getHourSinceLastUpdate() {
 
-        return ChronoUnit.HOURS.between(this.lastUpdate.toLocalTime(), LocalDateTime.now().toLocalTime());
+        return ChronoUnit.HOURS.between(getLastUpdate(), LocalDateTime.now());
     }
 
 }

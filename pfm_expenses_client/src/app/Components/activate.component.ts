@@ -85,9 +85,9 @@ export class ActivateComponent implements OnInit, AfterViewChecked {
       })
   }
 
-  routeToHome() {
+  routeToLogin() {
     this.activateForm.reset()
-    this.router.navigate(['/home'])
+    this.router.navigate([''])
   }
 
 }

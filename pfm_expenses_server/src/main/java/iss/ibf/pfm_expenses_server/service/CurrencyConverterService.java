@@ -2,6 +2,7 @@ package iss.ibf.pfm_expenses_server.service;
 
 import java.io.StringReader;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,11 +41,12 @@ public class CurrencyConverterService {
 
             // call api service to insert new record to redis
             callCurrencyApi(key);
+            rate = (CurrencyRate) redisTemplate.opsForHash().get("converterStore", key);
 
         } else {
 
             rate = (CurrencyRate) redisTemplate.opsForHash().get("converterStore", key);
-
+            
             if (rate.getHourSinceLastUpdate() >= 1L) {
 
                 // if last update is more than an hour
@@ -71,7 +73,10 @@ public class CurrencyConverterService {
 
         if (rep.getStatusCode().value() == 200) {
             String converter = rep.getBody();
+            System.out.println(">>> api return: " + converter);
             Double currencyRate = Json.createReader(new StringReader(converter)).readObject().getJsonNumber(key).doubleValue();
+
+            System.out.println(">>> api returned rate " + currencyRate);
 
             CurrencyRate rate = new CurrencyRate();
             rate.setRate(currencyRate);

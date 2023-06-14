@@ -3,7 +3,7 @@
     <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="loginSuccess" [routerLink]="loginSuccess ? ['/home'] : ['']" title="Home">
       <mat-icon>home</mat-icon>
     </button>
-    <button mat-fab class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="!loginSuccess" [routerLink]="['']" title="User Login">
+    <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="!loginSuccess" [routerLink]="['']" title="User Login">
       <mat-icon>menu</mat-icon>
     </button>
 

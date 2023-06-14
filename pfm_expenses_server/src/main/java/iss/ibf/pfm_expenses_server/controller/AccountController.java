@@ -280,15 +280,31 @@ public class AccountController {
     // controller to insert new transaction
     @PostMapping(path={"/transaction/insert"})
     @ResponseBody
-    public ResponseEntity<String> insertTransaction(@RequestBody String form) {
+    public ResponseEntity<String> insertTransaction(@RequestBody String form, HttpSession session) {
 
+        String userId = (String) session.getAttribute("sessionUserId");
         JsonObject req = Json.createReader(new StringReader(form)).readObject();
 
+        try {
+            Boolean result = this.transSvc.insertTransaction(req, userId);
 
-        return null;
+            if (result) {
+                JsonObject message = Json.createObjectBuilder().add("success", "Record insertion succeeded").build();
+                return ResponseEntity.status(HttpStatus.OK).body(message.toString());
+            } else {
+                JsonObject message = Json.createObjectBuilder().add("error", "Record insertion failed").build();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message.toString());
+            }
+        } catch (Exception ex) {
+            System.out.println(">>> exception: " + ex.getMessage());
+            JsonObject error  = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error.toString());
+        }
+
     }
 
-    // controller to convert the currency
+    // ############## Testing Purpose ######################
+    // controller to convert the currency 
     @GetMapping(path={"/transaction/converter"})
     @ResponseBody
     public ResponseEntity<String> convertToSGD(@RequestBody String curr) {

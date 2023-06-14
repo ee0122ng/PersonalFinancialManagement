@@ -20,6 +20,9 @@ import { AppComponent } from './app.component';
 import { LogoutAccountService } from './Services/logout-account.service';
 import { UserExpensesService } from './Services/user-expenses.service';
 import { UploadProfilePictureService } from './Services/upload-profile-picture.service';
+import { ExpenseTransactionComponent } from './Components/expense-transaction.component';
+import { ExpenseRecordComponent } from './Components/expense-record.component';
+import { ExpenseSummaryComponent } from './Components/expense-summary.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +31,10 @@ import { UploadProfilePictureService } from './Services/upload-profile-picture.s
     LoginComponent,
     ActivateComponent,
     HomeComponent,
-    ProfileComponent
+    ProfileComponent,
+    ExpenseTransactionComponent,
+    ExpenseRecordComponent,
+    ExpenseSummaryComponent
   ],
   imports: [
     BrowserModule,
