@@ -1,1 +1,88 @@
-<p>expense-record works!</p>
+<head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+    <style>
+    h3 {
+      font-family: "Sofia", sans-serif;
+    }
+    </style>
+</head>
+
+<div class="container">
+
+    <div>
+        <h1 >Expenses Records</h1>
+
+        <h3 style="color:chocolate" *ngIf="!!displayDate else displayToday">{{ displayDate | date:'MMM yy' }}</h3>
+        <ng-template #displayToday>
+            <h3 style="color:chocolate">{{ today | date: 'MMM yy'}}</h3>
+        </ng-template>
+    </div>
+
+    <div class="container-content" *ngIf="transactionRecord.length > 0 else noRecord">
+        <table mat-table [dataSource]="dataSource" class="records-table">
+            <!-- Position Column -->
+            <ng-container matColumnDef="position">
+              <th mat-header-cell *matHeaderCellDef> No. </th>
+              <td mat-cell *matCellDef="let element"> {{ element.position }} </td>
+            </ng-container>
+
+            <!-- Position ID -->
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef hidden="true"> ID. </th>
+                <td mat-cell *matCellDef="let element" hidden="true"> {{ element.id }} </td>
+            </ng-container>
+          
+            <!-- Category Column -->
+            <ng-container matColumnDef="category">
+              <th mat-header-cell *matHeaderCellDef> Category </th>
+              <td mat-cell *matCellDef="let element"> {{ element.category }} </td>
+            </ng-container>
+          
+            <!-- Item Column -->
+            <ng-container matColumnDef="item">
+              <th mat-header-cell *matHeaderCellDef> Item </th>
+              <td mat-cell *matCellDef="let element"> {{ element.item }} </td>
+            </ng-container>
+          
+            <!-- Transaction Date Column -->
+            <ng-container matColumnDef="itemDate">
+              <th mat-header-cell *matHeaderCellDef> Transaction Date </th>
+              <td mat-cell *matCellDef="let element"> {{ element.itemDate | date:'dd-MM-yyyy'}} </td>
+            </ng-container>
+
+            <!-- Transaction Date Column -->
+            <ng-container matColumnDef="currency">
+                <th mat-header-cell *matHeaderCellDef> Currency </th>
+                <td mat-cell *matCellDef="let element"> {{ element.currency }} </td>
+            </ng-container>
+
+            <!-- Transaction Date Column -->
+            <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef> Amount </th>
+                <td mat-cell *matCellDef="let element"> {{ element.amount }} </td>
+            </ng-container>
+          
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+    </div>
+
+    <ng-template #noRecord>
+        <code>No transaction record found</code>
+    </ng-template>
+
+    <div class="icon-container">
+        <span class="icon-container1">
+            <button mat-mini-fab color="accent" (click)="previous()">
+                <mat-icon style="color: darkslateblue" class="icon-arrow">keyboard_double_arrow_left</mat-icon>
+            </button>
+        </span>
+
+        <span class="icon-container2">
+            <button mat-mini-fab color="accent" (click)="next()">
+                <mat-icon style="color:darkslateblue;" class="icon-arrow">keyboard_double_arrow_right</mat-icon>
+            </button>
+        </span>
+    </div>
+
+</div>

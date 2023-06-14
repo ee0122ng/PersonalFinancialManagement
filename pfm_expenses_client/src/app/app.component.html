@@ -11,20 +11,22 @@
 
     <span class="example-spacer"></span>
 
-    <button mat-button>
-      <mat-icon>summarize</mat-icon>
-      Summary
-    </button>
-
-    <button mat-button>
-      <mat-icon>view_list</mat-icon>
-      Record
-    </button>
-
-    <button mat-button>
-      <mat-icon>note_add</mat-icon>
-      Transaction
-    </button>
+    <span *ngIf="loginSuccess">
+      <button mat-button [routerLink]="['/summary']">
+        <mat-icon>summarize</mat-icon>
+        Summary
+      </button>
+  
+      <button mat-button [routerLink]="['/record']">
+        <mat-icon>view_list</mat-icon>
+        Record
+      </button>
+  
+      <button mat-button [routerLink]="['/transaction']">
+        <mat-icon>note_add</mat-icon>
+        Transaction
+      </button>
+    </span>
 
     <span class="example-spacer"></span>
 

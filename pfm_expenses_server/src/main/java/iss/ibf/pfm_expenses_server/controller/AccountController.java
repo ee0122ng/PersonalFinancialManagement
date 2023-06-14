@@ -303,6 +303,25 @@ public class AccountController {
 
     }
 
+    // controller to retrieve transaction record by month
+    @GetMapping(path={"/transaction/retrieve"})
+    @ResponseBody
+    public ResponseEntity<String> retrieveTransactionRecordByMonth(@RequestParam String startDate, HttpSession session) {
+
+        String userId = (String) session.getAttribute("sessionUserId");
+
+        try {
+            JsonObject payload = this.transSvc.retrieveTransaction(startDate, userId);
+            return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+
+        } catch (Exception ex) {
+            System.out.println(">>> exception: " + ex.getMessage());
+            JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error.toString());
+        }
+
+    }
+
     // ############## Testing Purpose ######################
     // controller to convert the currency 
     @GetMapping(path={"/transaction/converter"})

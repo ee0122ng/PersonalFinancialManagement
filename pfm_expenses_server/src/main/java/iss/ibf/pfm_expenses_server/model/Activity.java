@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 public class Activity {
 
     private Integer id;
+
     private String userId;
 
     @Category(message="Invalid category submitted")
@@ -22,16 +23,18 @@ public class Activity {
     @Min(value=0, message="Amount cannot be less than 0")
     private Float amount = 0f;
 
+    private String currency;
+
     public Activity() {
     }
 
-    public Activity(Integer id, String userId, String category, String item, Date itemDate, Float amount) {
-        this.id = id;
+    public Activity(String userId, String category, String item, Date itemDate, Float amount, String currency) {
         this.userId = userId;
         this.category = category;
         this.item = item;
         this.itemDate = itemDate;
         this.amount = amount;
+        this.currency = currency;
     }
 
     public Integer getId() {
@@ -80,6 +83,27 @@ public class Activity {
 
     public void setAmount(Float amount) {
         this.amount = amount;
+    }
+
+    public String getCurrency() {
+        return this.currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+            " id='" + getId() + "'" +
+            ", userId='" + getUserId() + "'" +
+            ", category='" + getCategory() + "'" +
+            ", item='" + getItem() + "'" +
+            ", itemDate='" + getItemDate() + "'" +
+            ", amount='" + getAmount() + "'" +
+            ", currency='" + getCurrency() + "'" +
+            "}";
     }
 
 }

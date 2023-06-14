@@ -1,6 +1,9 @@
 package iss.ibf.pfm_expenses_server.repository;
 
 import java.io.StringReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,12 +13,15 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import iss.ibf.pfm_expenses_server.exception.ActivityTableException;
 import iss.ibf.pfm_expenses_server.exception.CurrencyConverterException;
+import iss.ibf.pfm_expenses_server.model.Activity;
 import iss.ibf.pfm_expenses_server.service.CurrencyConverterService;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -37,23 +43,51 @@ public class TransactionRepository {
     private String APIKEY;
 
     private final String INSERT_NEW_RECORD_SQL = "insert into activities(user_id, category, item, item_date, amount, currency) values(?, ? ,? , ?, ?, ?)";
+    private final String RETRIEVE_RECORDS_SQL = "select * from activities where (user_id=?) and (item_date between ? and ?)";
 
     private final String GET_CURRENCIES_API_URL = "https://free.currconv.com/api/v7/currencies";
 
     private List<String> CURRENCIES = new ArrayList<String>();
 
-    public Boolean insertTransaction(JsonObject records, String userId) {
+    public Boolean insertTransaction(JsonObject records, String userId) throws ParseException {
 
-        Integer updatedResult = jdbcTemplate.update(INSERT_NEW_RECORD_SQL, userId, records.getString("category", ""), records.getString("item", ""), records.get("transactionDate"), records.getJsonNumber("amount").doubleValue(), records.getString("currency"));
+        Activity transaction = this.convertJsonToActivity(records, userId);
+
+        Integer updatedResult = jdbcTemplate.update(INSERT_NEW_RECORD_SQL, userId, 
+                                                        transaction.getCategory(), transaction.getItem(), transaction.getItemDate(), transaction.getAmount(), transaction.getCurrency());
 
         return updatedResult > 0;
+    }
+
+    public List<Activity> retrieveTransaction(LocalDate startDate, LocalDate endDate, String userId) {
+
+        try {
+            List<Activity> transactions = jdbcTemplate.query(RETRIEVE_RECORDS_SQL, BeanPropertyRowMapper.newInstance(Activity.class), userId, startDate.toString(), endDate.toString());
+            return transactions;
+        } catch(Exception ex) {
+            throw new ActivityTableException("No transaction record found");
+        }
+
+    }
+
+    public Activity convertJsonToActivity(JsonObject records, String userId) throws ParseException {
+        Activity activity = new Activity();
+        activity.setUserId(userId);
+        activity.setCategory(records.getString("category").toLowerCase());
+        activity.setItem(records.getString("item", ""));
+        activity.setAmount( (float) records.getJsonNumber("amount").doubleValue());
+        activity.setCurrency(records.getString("currency"));
+
+        // convert Json string value to java.util.date
+        if (null != records.getString("transactionDate"))
+            activity.setItemDate(new SimpleDateFormat("yyyy-MM-dd").parse(records.getString("transactionDate")));
+        
+        return activity;
     }
 
     public List<String> getCurrencies() {
 
         if (null == redisTemplate.opsForHash().get("currencyStore", "currencyList")) {
-
-             System.out.println(">>> api currency list: " + CURRENCIES);
 
             final String URL = UriComponentsBuilder
                     .fromUriString(GET_CURRENCIES_API_URL)
@@ -81,8 +115,6 @@ public class TransactionRepository {
         }
 
         CURRENCIES = (List<String>) redisTemplate.opsForHash().get("currencyStore", "currencyList");
-
-        System.out.println(">>> currency list: " + CURRENCIES);
 
         return CURRENCIES;
     }

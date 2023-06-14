@@ -52,3 +52,21 @@ export interface Transaction {
     transactionDate: Date;
     currency: string;
 }
+
+export interface TransactionRecord {
+    id: number;
+    category: string;
+    item: string;
+    itemDate: Date;
+    amount: number;
+    currency: string;
+}
+
+export interface RecordTable {
+    position: number;
+    category: string;
+    item: string;
+    itemDate: Date;
+    amount: number;
+    currency: string;
+}
