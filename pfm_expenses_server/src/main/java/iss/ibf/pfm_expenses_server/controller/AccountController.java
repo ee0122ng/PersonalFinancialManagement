@@ -1,6 +1,7 @@
 package iss.ibf.pfm_expenses_server.controller;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ import iss.ibf.pfm_expenses_server.exception.NoUserDetailsFoundException;
 import iss.ibf.pfm_expenses_server.exception.UsernameException;
 import iss.ibf.pfm_expenses_server.model.User;
 import iss.ibf.pfm_expenses_server.service.AccountService;
+import iss.ibf.pfm_expenses_server.service.CurrencyConverterService;
 import iss.ibf.pfm_expenses_server.service.TransactionService;
 import iss.ibf.pfm_expenses_server.service.UploadProfilePictureService;
 import jakarta.json.Json;
@@ -42,6 +44,9 @@ public class AccountController {
 
     @Autowired
     private TransactionService transSvc;
+
+    @Autowired
+    private CurrencyConverterService currCnvSvc;
     
     // controller to register user
     @PostMapping(path={"/account/register"}, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -270,6 +275,39 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error.toString());
         }
         
+    }
+
+    // controller to insert new transaction
+    @PostMapping(path={"/transaction/insert"})
+    @ResponseBody
+    public ResponseEntity<String> insertTransaction(@RequestBody String form) {
+
+        JsonObject req = Json.createReader(new StringReader(form)).readObject();
+
+
+        return null;
+    }
+
+    // controller to convert the currency
+    @GetMapping(path={"/transaction/converter"})
+    @ResponseBody
+    public ResponseEntity<String> convertToSGD(@RequestBody String curr) {
+
+        JsonObject req = Json.createReader(new StringReader(curr)).readObject();
+        String fromCurrency = req.getString("from");
+
+        try {   
+            Double rate = this.currCnvSvc.convertToSGD(fromCurrency);
+            JsonObject payload = Json.createObjectBuilder().add("%s_SGD".formatted(fromCurrency), rate).build();
+
+            return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+
+        } catch (Exception ex) {
+            JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.toString());
+        }
+
     }
 
 }

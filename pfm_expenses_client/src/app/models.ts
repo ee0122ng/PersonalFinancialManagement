@@ -43,7 +43,7 @@ export interface PersistDetails {
     loginStatus : Boolean | null;
 }
 
-export interface Expense {
+export interface Transaction {
     id: number;
     userId: number;
     category: string;

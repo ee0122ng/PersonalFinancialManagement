@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -25,18 +26,21 @@ public class TransactionRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Value("${currency.converter.apikey}")
     private String APIKEY;
 
     private final String GET_CURRENCIES_API_URL = "https://free.currconv.com/api/v7/currencies";
-    private final String GET_CONVERTER_API_URL = "https://free.currconv.com/api/v7/convert";
 
     private List<String> CURRENCIES = new ArrayList<String>();
 
     public List<String> getCurrencies() {
-        
-        // call convert currency api if CURRENCIES list not yet exists
-        if (null == CURRENCIES || CURRENCIES.size() <= 0) {
+
+        if (null == redisTemplate.opsForHash().get("currencyStore", "currencyList")) {
+
+             System.out.println(">>> api currency list: " + CURRENCIES);
 
             final String URL = UriComponentsBuilder
                     .fromUriString(GET_CURRENCIES_API_URL)
@@ -55,11 +59,17 @@ public class TransactionRepository {
                 JsonObject jCurrency = result.getJsonObject("results");
                 this.CURRENCIES =  jCurrency.entrySet().stream().map(s -> s.getValue().asJsonObject().getString("id")).sorted().toList();
 
+                redisTemplate.opsForHash().put("currencyStore", "currencyList", CURRENCIES);
+
             } else {
                 throw new CurrencyConverterException("Failed to retrieve currency list");
             }
 
         }
+
+        CURRENCIES = (List<String>) redisTemplate.opsForHash().get("currencyStore", "currencyList");
+
+        System.out.println(">>> currency list: " + CURRENCIES);
 
         return CURRENCIES;
     }
