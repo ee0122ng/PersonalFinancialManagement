@@ -4,14 +4,17 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,6 +50,8 @@ public class AccountController {
 
     @Autowired
     private CurrencyConverterService currCnvSvc;
+
+    private Logger logger = Logger.getLogger(AccountController.class.getName());
     
     // controller to register user
     @PostMapping(path={"/account/register"}, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -308,6 +313,7 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<String> retrieveTransactionRecordByMonth(@RequestParam String startDate, HttpSession session) {
 
+        System.out.println(">>> retrieving... ");
         String userId = (String) session.getAttribute("sessionUserId");
 
         try {
@@ -320,6 +326,50 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error.toString());
         }
 
+    }
+
+    // controller to update transaction record by id
+    @PutMapping(path={"/transaction/update"})
+    @ResponseBody
+    public ResponseEntity<String> updateTransactionRecordById(@RequestBody String editForm, HttpSession session) {
+
+        String userId = (String) session.getAttribute("sessionUserId");
+        JsonObject record = Json.createReader(new StringReader(editForm)).readObject();
+        System.out.println(">>> request: " + record.toString());
+
+        try {
+            if (this.transSvc.updateTransaction(record, userId)) {
+                JsonObject success = Json.createObjectBuilder().add("success", "Record updated").build();
+                return ResponseEntity.status(HttpStatus.OK).body(success.toString());
+            } else {
+                JsonObject fail = Json.createObjectBuilder().add("fail", "Update failed").build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(fail.toString());
+            }
+        } catch (Exception ex) {
+            System.out.println(">>> exception while updating: " + ex.getMessage());
+            JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error.toString());
+        }
+    }
+
+    // controller to delete transaction record by id
+    @DeleteMapping(path={"/transaction/delete"})
+    @ResponseBody
+    public ResponseEntity<String> deleteTransactionRecordById(@RequestParam Integer transactionId, HttpSession session) {
+
+        try {
+            if (this.transSvc.deleteTransaction(transactionId)) {
+                JsonObject success = Json.createObjectBuilder().add("success", "Record deleted").build();
+                return ResponseEntity.status(HttpStatus.OK).body(success.toString());
+            } else {
+                JsonObject fail = Json.createObjectBuilder().add("fail", "Delete failed").build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(fail.toString());
+            }
+        } catch (Exception ex) {
+            System.out.println(">>> exception during deleting: " + ex.getMessage());
+            JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error.toString());
+        }
     }
 
     // ############## Testing Purpose ######################

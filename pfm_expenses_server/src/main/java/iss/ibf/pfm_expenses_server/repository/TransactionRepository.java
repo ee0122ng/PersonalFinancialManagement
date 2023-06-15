@@ -44,19 +44,19 @@ public class TransactionRepository {
 
     private final String INSERT_NEW_RECORD_SQL = "insert into activities(user_id, category, item, item_date, amount, currency) values(?, ? ,? , ?, ?, ?)";
     private final String RETRIEVE_RECORDS_SQL = "select * from activities where (user_id=?) and (item_date between ? and ?)";
+    private final String UPDATE_RECORDS_SQL = "update activities set category=?, item=?, item_date=?, amount=?, currency=? where id=?";
+    private final String DELETE_RECORDS_SQL = "delete from activities where id=?";
 
     private final String GET_CURRENCIES_API_URL = "https://free.currconv.com/api/v7/currencies";
 
     private List<String> CURRENCIES = new ArrayList<String>();
 
-    public Boolean insertTransaction(JsonObject records, String userId) throws ParseException {
+    public Boolean insertTransaction(Activity activity) throws ParseException {
 
-        Activity transaction = this.convertJsonToActivity(records, userId);
+        Integer insertedResult = jdbcTemplate.update(INSERT_NEW_RECORD_SQL, activity.getUserId(), 
+                                                        activity.getCategory(), activity.getItem(), activity.getItemDate(), activity.getAmount(), activity.getCurrency());
 
-        Integer updatedResult = jdbcTemplate.update(INSERT_NEW_RECORD_SQL, userId, 
-                                                        transaction.getCategory(), transaction.getItem(), transaction.getItemDate(), transaction.getAmount(), transaction.getCurrency());
-
-        return updatedResult > 0;
+        return insertedResult > 0;
     }
 
     public List<Activity> retrieveTransaction(LocalDate startDate, LocalDate endDate, String userId) {
@@ -70,20 +70,20 @@ public class TransactionRepository {
 
     }
 
-    public Activity convertJsonToActivity(JsonObject records, String userId) throws ParseException {
-        Activity activity = new Activity();
-        activity.setUserId(userId);
-        activity.setCategory(records.getString("category").toLowerCase());
-        activity.setItem(records.getString("item", ""));
-        activity.setAmount( (float) records.getJsonNumber("amount").doubleValue());
-        activity.setCurrency(records.getString("currency"));
+    public Boolean updateTransaction(Activity activity) throws ParseException {
 
-        // convert Json string value to java.util.date
-        if (null != records.getString("transactionDate"))
-            activity.setItemDate(new SimpleDateFormat("yyyy-MM-dd").parse(records.getString("transactionDate")));
+        Integer updatedResult = jdbcTemplate.update(UPDATE_RECORDS_SQL, activity.getCategory(), activity.getItem(), activity.getItemDate(), activity.getAmount(), activity.getCurrency(), activity.getId());
         
-        return activity;
+        return updatedResult > 0;
     }
+    
+    public Boolean deleteTransaction(Integer transactionId) {
+
+        Integer deletedResult = jdbcTemplate.update(DELETE_RECORDS_SQL, transactionId);
+
+        return deletedResult > 0;
+    }
+
 
     public List<String> getCurrencies() {
 

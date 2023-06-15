@@ -3,7 +3,6 @@ package iss.ibf.pfm_expenses_server.service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -27,7 +26,8 @@ public class TransactionService {
     private TransactionRepository transRepo;
 
     public Boolean insertTransaction(JsonObject records, String userId) throws ParseException {
-        return this.transRepo.insertTransaction(records, userId);
+    
+        return this.transRepo.insertTransaction(this.convertJsonToActivity(records, userId));
     }
 
     public JsonObject retrieveTransaction(String selectedDate, String userId) throws ParseException {
@@ -43,8 +43,16 @@ public class TransactionService {
 
         List<Activity> activities = this.transRepo.retrieveTransaction(start, end, userId);
 
-        return this.convertActivitiesToJsonObject(activities);
+        return this.convertActivitiesListToJsonObject(activities);
         
+    }
+
+    public Boolean updateTransaction(JsonObject record, String userId) throws ParseException {
+        return this.transRepo.updateTransaction(this.convertJsonToActivity(record, userId));
+    }
+
+    public Boolean deleteTransaction(Integer id) {
+        return this.transRepo.deleteTransaction(id);
     }
 
     public String getEndDayofMonth(String selectedDate) throws ParseException {
@@ -71,7 +79,33 @@ public class TransactionService {
         return new SimpleDateFormat("yyyy-MM-dd").format(endCal.getTime());
     }
 
-    public JsonObject convertActivitiesToJsonObject(List<Activity> activities) {
+    public Activity convertJsonToActivity(JsonObject records, String userId) throws ParseException {
+        Activity activity = new Activity();
+        activity.setUserId(userId);
+        activity.setCategory(records.getString("category").toLowerCase());
+        activity.setItem(records.getString("item", ""));
+        activity.setAmount( (float) records.getJsonNumber("amount").doubleValue());
+        activity.setCurrency(records.getString("currency", ""));
+
+        // convert Json string value to java.util.date
+        // note: angular date is in UTC, need to change the time zone to local
+        if (null != records.getString("transactionDate")) {
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(records.getString("transactionDate"));
+            LocalDate localD = zonedDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            activity.setItemDate(new SimpleDateFormat("yyyy-MM-dd").parse(localD.toString()));
+        }
+        
+        // insert id if it exists
+        try {
+            activity.setId(records.getInt("id"));
+            
+        } catch (Exception ex) {
+            // if null, ignore the null value and return without id
+        }
+        return activity;
+    }
+
+    public JsonObject convertActivitiesListToJsonObject(List<Activity> activities) {
 
         JsonArrayBuilder jArrBld = Json.createArrayBuilder();
 

@@ -57,16 +57,17 @@ export interface TransactionRecord {
     id: number;
     category: string;
     item: string;
-    itemDate: Date;
+    transactionDate: Date;
     amount: number;
     currency: string;
 }
 
 export interface RecordTable {
+    id: number;
     position: number;
     category: string;
     item: string;
-    itemDate: Date;
+    transactionDate: Date;
     amount: number;
     currency: string;
 }

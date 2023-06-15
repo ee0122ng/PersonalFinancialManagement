@@ -47,3 +47,56 @@
 .icon-arrow {
     transform: scale(1.2);
 }
+
+.edit-button {
+    transform: scale(0.7);
+    margin-left: 0px;
+}
+
+.delete-button {
+    transform: scale(0.7);
+    margin-right: 10px
+}
+
+.submit-button {
+    transform: scale(0.7);
+    color: darkslateblue;
+    font-weight: bold;
+}
+
+.cancel-button {
+    transform: scale(0.7);
+    background-color: rgb(166, 160, 160);
+    font-weight: bold;
+}
+
+.error {
+    animation: blinker 1.5s step-start infinite;
+    color: red;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+.waviy {
+    position: relative;
+}
+
+.waviy span {
+    position: relative;
+    display: inline-block;
+    font-size: 16px;
+    color: chocolate;
+    /* text-transform: uppercase; */
+    animation: flip 2s infinite;
+    animation-delay: calc(.2s * var(--i))
+}
+
+@keyframes flip {
+    0%,80% {
+        transform: rotateY(360deg)
+    }
+}

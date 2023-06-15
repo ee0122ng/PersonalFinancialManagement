@@ -12,3 +12,5 @@ export const PROFILEPICUPLOAD_API_URL = '/api/profile/image-upload';
 export const CURRENCY_API_URL = '/api/transaction/currencies';
 export const TRANSACTION_INSERT_API_URL = '/api/transaction/insert';
 export const TRANSACTION_QUERY_API_URL = '/api/transaction/retrieve';
+export const TRANSACTION_UPDATE_API_URL = '/api/transaction/update';
+export const TRANSACTION_DELETE_API_URL = '/api/transaction/delete';

@@ -14,12 +14,110 @@
 
         <h3 style="color:chocolate" *ngIf="!!displayDate else displayToday">{{ displayDate | date:'MMM yy' }}</h3>
         <ng-template #displayToday>
-            <h3 style="color:chocolate">{{ today | date: 'MMM yy'}}</h3>
+            <h3 style="color:orange">{{ today | date: 'MMM yy'}}</h3>
         </ng-template>
     </div>
 
-    <div class="container-content" *ngIf="transactionRecord.length > 0 else noRecord">
-        <table mat-table [dataSource]="dataSource" class="records-table">
+    <div class="container-editting" *ngIf="editting">
+        <div class="waviy">
+            <span style="--i:1; font-style: italic;"><h4>E</h4></span>
+            <span style="--i:1; font-style: italic;"><h4>d</h4></span>
+            <span style="--i:1; font-style: italic;"><h4>i</h4></span>
+            <span style="--i:1; font-style: italic;"><h4>t</h4></span>
+            <span style="--i:1; font-style: italic;"><h4>t</h4></span>
+            <span style="--i:1; font-style: italic;"><h4>i</h4></span>
+            <span style="--i:1; font-style: italic;"><h4>n</h4></span>
+            <span style="--i:1; font-style: italic;"><h4>g</h4></span>
+            <span style="--i:1; font-style: italic"><h4>.</h4></span>
+            <span style="--i:1; font-style: italic"><h4>.</h4></span>
+            <span style="--i:1; font-style: italic"><h4>.</h4></span>
+        </div>
+        <form [formGroup]="editForm" (ngSubmit)="editRecord()">
+            <table mat-table [dataSource]="editSource">
+                <ng-container matColumnDef="position">
+                    <th mat-header-cell *matHeaderCellDef> No. </th>
+                    <td mat-cell *matCellDef="let element">
+                        <input type="text" formControlName="position" readonly="true">
+                    </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="category">
+                    <th mat-header-cell *matHeaderCellDef> Category </th>
+                    <td mat-cell *matCellDef="let element">
+                        <select name="" id="" formControlName="category">
+                            <option [value]="c" *ngFor="let c of CATEGORY" [selected]="c == editForm.get('category')?.value">{{ c }}</option>
+                        </select>
+                    </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="item">
+                    <th mat-header-cell *matHeaderCellDef> Item </th>
+                    <td mat-cell *matCellDef="let element">
+                        <input type="text" formControlName="item">
+                    </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="transactionDate">
+                    <th mat-header-cell *matHeaderCellDef> Transaction Date </th>
+                    <td mat-cell *matCellDef="let element">
+                        <mat-form-field color="accent">
+                            <input matInput [matDatepicker]="picker1" formControlName="transactionDate" class="date-input">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                            <mat-datepicker #picker1></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="amount">
+                    <th mat-header-cell *matHeaderCellDef> Amount </th>
+                    <td mat-cell *matCellDef="let element">
+                        <input type="number" formControlName="amount">
+                    </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="currency">
+                    <th mat-header-cell *matHeaderCellDef> Currency </th>
+                    <td mat-cell *matCellDef="let element">
+                        <select name="" id="" formControlName="currency">
+                            <option value="" *ngFor="let c of CURRENCY" [selected]="c == editForm.get('currency')?.value">{{ c }}</option>
+                        </select>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef> Action </th>
+                    <td mat-cell *matCellDef="let element">
+                        <button mat-raised-button color="accent" class="submit-button" [disabled]="editForm.invalid">Submit</button>
+                        <button mat-raised-button color="disabled" class="cancel-button" (click)="cancelEdit()">Cancel</button>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            </table>
+        </form>
+
+        &nbsp;
+
+        <mat-divider></mat-divider>
+
+        &nbsp;
+
+    </div>
+
+    <div class="container-message" *ngIf="!!editSuccess else editErrorMessage">
+        <code style="color:darkslateblue">{{ editSuccess }}</code>
+    </div>
+    <ng-template #editErrorMessage><code style="color:red" class="error">{{ editError }}</code></ng-template>
+
+    <div class="container-message" *ngIf="!!deleteSuccess else deleteErrorMessage">
+        <code style="color:darkslateblue">{{ deleteSuccess }}</code>
+    </div>
+    <ng-template #deleteErrorMessage><code style="color:red" class="error">{{ deleteError }}</code></ng-template>
+
+    <div class="container-content" *ngIf="dataSource.length > 0">
+        <mat-table [dataSource]="dataSource" class="records-table" #recordTable>
             <!-- Position Column -->
             <ng-container matColumnDef="position">
               <th mat-header-cell *matHeaderCellDef> No. </th>
@@ -28,8 +126,8 @@
 
             <!-- Position ID -->
             <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef hidden="true"> ID. </th>
-                <td mat-cell *matCellDef="let element" hidden="true"> {{ element.id }} </td>
+                <th mat-header-cell *matHeaderCellDef> ID. </th>
+                <td mat-cell *matCellDef="let element"> {{ element.id }} </td>
             </ng-container>
           
             <!-- Category Column -->
@@ -45,9 +143,9 @@
             </ng-container>
           
             <!-- Transaction Date Column -->
-            <ng-container matColumnDef="itemDate">
+            <ng-container matColumnDef="transactionDate">
               <th mat-header-cell *matHeaderCellDef> Transaction Date </th>
-              <td mat-cell *matCellDef="let element"> {{ element.itemDate | date:'dd-MM-yyyy'}} </td>
+              <td mat-cell *matCellDef="let element"> {{ element.transactionDate | date:'dd-MM-yyyy'}} </td>
             </ng-container>
 
             <!-- Transaction Date Column -->
@@ -61,15 +159,28 @@
                 <th mat-header-cell *matHeaderCellDef> Amount </th>
                 <td mat-cell *matCellDef="let element"> {{ element.amount }} </td>
             </ng-container>
+
+            <!-- Transaction Date Column -->
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef> Actions </th>
+                <td mat-cell *matCellDef="let element">
+                    <button mat-mini-fab color="primary" class="edit-button" (click)="openEditWindow(element.id)">
+                        <mat-icon>edit_note</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="warn" class="delete-button" (click)="deleteRecord(element.id)">
+                        <mat-icon>delete_sweep</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
           
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-          </table>
+          </mat-table>
     </div>
 
-    <ng-template #noRecord>
+    <div [hidden]="dataSource.length > 0">
         <code>No transaction record found</code>
-    </ng-template>
+    </div>
 
     <div class="icon-container">
         <span class="icon-container1">
