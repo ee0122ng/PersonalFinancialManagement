@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { filter, lastValueFrom, map } from 'rxjs';
 import { LoginAccountService } from '../Services/login-account.service';
 import { UserProfileService } from '../Services/user-profile.service';
@@ -28,7 +28,7 @@ export class ProfileComponent implements OnInit {
   profilePicUrl !: string;
   errorMessage !: string;
 
-  constructor(private userProfileSvc : UserProfileService, private loginAccSvc: LoginAccountService ,private router : Router, private uploadProfilePicSvc: UploadProfilePictureService) {}
+  constructor(private userProfileSvc : UserProfileService, private activatedRoute: ActivatedRoute, private uploadProfilePicSvc: UploadProfilePictureService) {}
 
   ngOnInit(): void {
 
@@ -36,13 +36,18 @@ export class ProfileComponent implements OnInit {
 
       //@ts-ignore
       let userData = JSON.parse(localStorage.getItem("loginStatus"))
-
-      this.username = userData.username
+      this.username = this.activatedRoute.snapshot.params['username'];
+      
       this.accountId = userData.accountId
 
     }
 
     this.userProfileSvc.retrieveUserProfile(this.username)
+    .catch(
+      (err:any) => {
+        console.info(">>> error: " + JSON.stringify(err))
+      }
+    )
     .then( (p:any) => {
       return {
         firstname: p["firstname"],
@@ -56,6 +61,7 @@ export class ProfileComponent implements OnInit {
       } as Profile
     })
     .then((p:Profile) => {
+
       this.profile = p
 
       // check if there is latest profile pic uploaded

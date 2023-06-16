@@ -1,4 +1,4 @@
-package iss.ibf.pfm_expenses_server.config;
+package iss.ibf.pfm_expenses_server.authentication;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,18 +19,17 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(req -> req
+                                            .requestMatchers("http://localhost/4200/*").permitAll()
                                             .requestMatchers("/api/account/register/**").permitAll()
                                             .requestMatchers("/api/account/login/**").permitAll()
                                             .requestMatchers("/api/account/logout/**").permitAll()
                                             .requestMatchers("/api/profile/**").permitAll()
                                             .requestMatchers("/api/transaction/**").permitAll())
-            // .formLogin(form -> form
-            //                     .loginPage("http://localhost:4200/login")
-            //                     .loginProcessingUrl("/api/login")
-            //                     .defaultSuccessUrl("http://localhost:4200/home")
-            //                     .permitAll())
+            .formLogin(form -> form
+                                .loginPage("http://localhost:4200")
+                                .permitAll())
             .logout(logout -> logout
-                                .logoutRequestMatcher(new AntPathRequestMatcher("http://localhost:4200/login"))
+                                .logoutRequestMatcher(new AntPathRequestMatcher("http://localhost:4200"))
                                 .permitAll());                      
 
         return http.build();

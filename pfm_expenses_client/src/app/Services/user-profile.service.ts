@@ -4,6 +4,7 @@ import { FormGroup } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
 import { COUNTRY_API_URL, PROFILE_API_URL } from '../constants';
 import { Country, UserDetails } from '../models';
+import { AuthInterceptorService } from './auth-interceptor.service';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,6 @@ export class UserProfileService {
       country: form.get('country')?.value,
       occupation: form.get('occupation')?.value
     }
-
     return lastValueFrom(this.http.post<any>(PROFILE_API_URL, userDetails))
 
   }

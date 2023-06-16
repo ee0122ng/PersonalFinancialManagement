@@ -30,7 +30,7 @@
 
     <span class="example-spacer"></span>
 
-    <button mat-icon-button class="home-icon account-icon" aria-label="Home icon-button with account icon" *ngIf="accountCompleted" title="My Profile" [routerLink]="['/profile']">
+    <button mat-icon-button class="home-icon account-icon" aria-label="Home icon-button with account icon" *ngIf="accountCompleted" title="My Profile" [routerLink]="['/profile', username]">
       <mat-icon>account_circle</mat-icon>
     </button>
     <button mat-flat-button color="accent" class="add-profile-icon" aria-label="Home icon-button with myinfo icon" *ngIf="!accountCompleted && accountCompleted != undefined || null" [routerLink]="['/activate', accountId]" title="Add Profile">

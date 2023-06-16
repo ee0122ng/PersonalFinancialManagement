@@ -15,20 +15,22 @@ export class AppComponent implements OnInit ,OnDestroy {
 
   public static loginStatus : Subject<Boolean> = new Subject();
   public static infoCompletionStatus : Subject<Boolean> = new Subject();
-  public static currentAccountId : Subject<String> = new Subject();
-  public static currentUserEmail : Subject<String> = new Subject();
-  public static currentUsername : Subject<String> = new Subject();
+  public static currentAccountId : Subject<string> = new Subject();
+  public static currentUserEmail : Subject<string> = new Subject();
+  public static currentUsername : Subject<string> = new Subject();
 
   loginSuccess : Boolean = false;
   accountCompleted !: Boolean | undefined;
   accountId !: string | undefined;
   userEmail !: string | undefined;
+  username !: string;
 
   constructor(private router: Router, private logoutAccountService: LogoutAccountService) {
     AppComponent.loginStatus.subscribe( (s:any) => { this.loginSuccess = s })
     AppComponent.infoCompletionStatus.subscribe( (a:any) => { this.accountCompleted = a})
     AppComponent.currentAccountId.subscribe( (c:any) => { this.accountId = c })
     AppComponent.currentUserEmail.subscribe( (e:any) => { this.userEmail = e })
+    AppComponent.currentUsername.subscribe( (u:any) => {this.username = u })
   }
 
   ngOnInit(): void {

@@ -37,7 +37,6 @@ export class ExpenseRecordComponent implements OnInit {
   constructor(private userExpSvc: UserExpensesService, private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    console.info(">>> initiate expense record...")
 
     if (!this.displayDate) {
       this.displayDate = this.today
@@ -99,7 +98,6 @@ export class ExpenseRecordComponent implements OnInit {
 
     }
 
-    console.info(">>> data source" + JSON.stringify(this.dataSource))
   }
 
   getDatedRecords() {
@@ -117,7 +115,7 @@ export class ExpenseRecordComponent implements OnInit {
     .catch(
       (err:any) => {
         this.retrieveError = err["error"]["error"]
-        console.info(">>> " + this.retrieveError)
+        console.info(">>> " + JSON.stringify(err))
       }
     )
     .then(
@@ -139,7 +137,6 @@ export class ExpenseRecordComponent implements OnInit {
       (t:TransactionRecord[]) => {
         if (t.length > 0) {
           this.transactionRecord = t
-          console.info(">>> record retrieved: " + JSON.stringify(t))
           this.prepareDataSource()
         }
       }

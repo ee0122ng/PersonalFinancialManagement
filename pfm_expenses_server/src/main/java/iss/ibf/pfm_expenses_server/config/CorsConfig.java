@@ -1,10 +1,22 @@
 package iss.ibf.pfm_expenses_server.config;
 
-import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
-public class CorsConfig {
+public class CorsConfig implements WebMvcConfigurer {
 
-    //TODO: add Cors
+    private String path;
+    private String origin;
+
+    public CorsConfig(String p, String o) {
+        this.path = p;
+        this.origin = o;
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping(path)
+            .allowedOrigins(origin);
+    }
     
 }

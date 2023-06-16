@@ -7,6 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 
 import iss.ibf.pfm_expenses_server.model.Account;
+import iss.ibf.pfm_expenses_server.model.UserSecureEntity;
 
 @Repository
 public class AccountAuthenticationRepository {
@@ -29,11 +30,19 @@ public class AccountAuthenticationRepository {
     public Boolean verifyIfPasswordValid(String username, String pwd) {
 
         Account account = this.getAccount(this.getUserId(username));
+        String hashedPwd = this.generateHashPwdByUsername(username, pwd);
 
+        return account.getHashedString().equals(hashedPwd);
+
+    }
+
+    public String generateHashPwdByUsername(String username, String pwd) {
+
+        Account account = this.getAccount(this.getUserId(username));
         // convert password to hash string
         String hashedPwd = BCrypt.hashpw(pwd, account.getSaltString());
 
-        return account.getHashedString().equals(hashedPwd);
+        return hashedPwd;
 
     }
 

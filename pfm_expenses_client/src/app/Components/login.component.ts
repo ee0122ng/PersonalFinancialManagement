@@ -22,6 +22,7 @@ export class LoginComponent implements OnInit {
   userEmail !: string | any;
   username !: string | any;
   hide: Boolean = true;
+  jwtToken !: string;
 
   @Output()
   onSuccessfulLogin = new Subject<Boolean>();
@@ -52,10 +53,11 @@ export class LoginComponent implements OnInit {
         this.accountId = p["accountId"]
         this.userEmail = p["email"]
         this.username = this.loginForm.get('username')?.value
+        this.jwtToken = p["token"]
 
         // persist user data to local storage
         const persistDetails : PersistDetails = {
-          username: this.username,
+          jwt: this.jwtToken,
           accountId: this.accountId,
           email: this.userEmail,
           profileCompStatus: this.accountCompleted,
@@ -80,6 +82,7 @@ export class LoginComponent implements OnInit {
       })
       .catch( (e:any) => {
         this.errorMessage = e['error']['error']
+        console.info(">>> error: " + JSON.stringify(e))
       })
 
     }

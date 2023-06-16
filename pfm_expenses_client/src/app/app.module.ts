@@ -1,7 +1,7 @@
 import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -23,6 +23,7 @@ import { UploadProfilePictureService } from './Services/upload-profile-picture.s
 import { ExpenseTransactionComponent } from './Components/expense-transaction.component';
 import { ExpenseRecordComponent } from './Components/expense-record.component';
 import { ExpenseSummaryComponent } from './Components/expense-summary.component';
+import { AuthInterceptorService } from './Services/auth-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,11 @@ import { ExpenseSummaryComponent } from './Components/expense-summary.component'
     LogoutAccountService,
     UserExpensesService,
     UploadProfilePictureService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptorService,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

@@ -36,7 +36,7 @@ export interface Profile {
 }
 
 export interface PersistDetails {
-    username : string | null;
+    jwt: string;
     accountId : string | null;
     email : string | null;
     profileCompStatus : Boolean | null;

@@ -18,7 +18,7 @@ const routes: Routes = [
   {path: 'summary', component: ExpenseSummaryComponent},
   {path: 'record', component: ExpenseRecordComponent},
   {path: 'transaction', component: ExpenseTransactionComponent},
-  {path: 'profile', component: ProfileComponent},
+  {path: 'profile/:username', component: ProfileComponent},
   {path: '**', redirectTo: 'login', pathMatch: 'full'}
 ];
 
