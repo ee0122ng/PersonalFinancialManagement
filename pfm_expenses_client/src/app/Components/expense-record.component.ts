@@ -115,7 +115,7 @@ export class ExpenseRecordComponent implements OnInit {
     .catch(
       (err:any) => {
         this.retrieveError = err["error"]["error"]
-        console.info(">>> " + JSON.stringify(err))
+        console.info(">>> error retrieve record: " + JSON.stringify(err['error']))
       }
     )
     .then(

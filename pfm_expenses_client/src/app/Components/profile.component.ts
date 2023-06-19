@@ -43,12 +43,8 @@ export class ProfileComponent implements OnInit {
     }
 
     this.userProfileSvc.retrieveUserProfile(this.username)
-    .catch(
-      (err:any) => {
-        console.info(">>> error: " + JSON.stringify(err))
-      }
-    )
     .then( (p:any) => {
+      console.info(">>>> received: " + JSON.stringify(p))
       return {
         firstname: p["firstname"],
         lastname: p["lastname"],
@@ -96,6 +92,11 @@ export class ProfileComponent implements OnInit {
         )
       }
     })
+    .catch(
+      (err:any) => {
+        console.info(">>> error: " + JSON.stringify(err))
+      }
+    )
   }
 
   async onFileUpload($event: any) {

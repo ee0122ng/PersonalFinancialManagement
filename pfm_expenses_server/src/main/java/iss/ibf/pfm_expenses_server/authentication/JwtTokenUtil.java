@@ -24,7 +24,7 @@ public class JwtTokenUtil {
     private Logger logger = Logger.getLogger(JwtTokenUtil.class.getName());
     private static final Integer EXPIRATION = 86400000;
 
-    private String secretKey = "";
+    private String secretKey = ""; // cached, not able to differentiate the user
 
     public JwtTokenUtil() {}
 

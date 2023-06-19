@@ -19,9 +19,10 @@ export class AuthInterceptorService implements HttpInterceptor {
         if (!!token) {
           const validReq = req.clone({
             setHeaders: {
-              Authorization: `Bearer ${token}`
+              Authorization: `Bearer ${token}`,
             }
           })
+          console.info(">>> valid request: " + JSON.stringify(validReq))
           return next.handle(validReq)
         }
       }

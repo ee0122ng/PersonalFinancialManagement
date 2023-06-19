@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LOGOUT_API_URL } from '../constants';
 import { lastValueFrom } from 'rxjs';
+import { LOGOUT_API_URL } from '../constants';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,8 @@ export class LogoutAccountService {
   constructor(private http: HttpClient) { }
 
   logout() {
-    lastValueFrom(this.http.get<any>(LOGOUT_API_URL))
+    const params : HttpParams = new HttpParams();
+    lastValueFrom(this.http.post<any>(LOGOUT_API_URL, { params }))
       .then(
         (p:any) => {
           this.message = p["payload"]

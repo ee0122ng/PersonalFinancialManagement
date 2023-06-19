@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
@@ -25,7 +25,8 @@ export class LoginAccountService {
       password: form.get("password")?.value
     }
 
-    this.$loginPromise = lastValueFrom(this.http.post<any>(LOGIN_API_URL, credential))
+    let headers : HttpHeaders = new HttpHeaders().set('Access-Control-Allow-Origin', '*')
+    this.$loginPromise = lastValueFrom(this.http.post<any>(LOGIN_API_URL, credential, { headers }))
     this.$loginPromise.then((p:any) => {this.accountId = p["accountId"]})
 
     return this.$loginPromise;

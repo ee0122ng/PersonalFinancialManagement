@@ -2,6 +2,8 @@ package iss.ibf.pfm_expenses_server.controller;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -10,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import iss.ibf.pfm_expenses_server.authentication.JwtTokenUtil;
+import iss.ibf.pfm_expenses_server.authentication.MyAuthenticationManager;
 import iss.ibf.pfm_expenses_server.exception.NoEmailFoundException;
 import iss.ibf.pfm_expenses_server.exception.NoUserDetailsFoundException;
 import iss.ibf.pfm_expenses_server.exception.UnAuthorizedAccessException;
@@ -37,11 +42,12 @@ import iss.ibf.pfm_expenses_server.service.UploadProfilePictureService;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping(path={"/api"})
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class AccountController {
 
     @Autowired
@@ -59,7 +65,12 @@ public class AccountController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    private MyAuthenticationManager authManager;
+
     private Logger logger = Logger.getLogger(AccountController.class.getName());
+
+    private HashMap<String, HashMap<String, String>> sessionMap = new LinkedHashMap<String, HashMap<String, String>>(); 
     
     // controller to register user
     @PostMapping(path={"/account/register"}, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -117,7 +128,7 @@ public class AccountController {
 
         try {
             String username = json.getString("username");
-            session.setAttribute("sessionUsername", username); // save current username to session
+            System.out.println(">>> login user: " + username);
 
             // check if username and account are still valid
             if (this.accSvc.checkUsername(username)) {
@@ -130,8 +141,12 @@ public class AccountController {
 
                     String accountId = this.accSvc.getUserAccount(username).getAccountId();
                     String userId = this.accSvc.getUserAccount(username).getUserId();
-                    session.setAttribute("sessionAccountId", accountId);
-                    session.setAttribute("sessionUserId", userId);
+
+                    // store user info as a map in the session
+                    HashMap<String, String> userInfo = new HashMap<>();
+                    userInfo.put("accountId", accountId);
+                    userInfo.put("userId", userId);
+                    this.sessionMap.put(username, userInfo);
 
                     // check if user info completed
                     // 4 possible outcome: completed + hasEmail, completed + noEmail, incomplete + hasEmail, incomplete + noEmail
@@ -140,6 +155,7 @@ public class AccountController {
                         String email = this.accSvc.getUserEmail(username);
 
                         // authenticate the user login by creating a security context
+                        Authentication authentication = this.authManager.generateAuthEntity(username, pwd);
                         String token = this.jwtTokenUtil.generateJwtToken(username);
 
                         JsonObject payload = Json.createObjectBuilder()
@@ -148,6 +164,10 @@ public class AccountController {
                                                     .add("email", email)
                                                     .add("token", token)
                                                     .build();
+
+                        System.out.println(">>> authentication object: " + authentication.getPrincipal());
+                        System.out.println(">>> username during login: " + (String) session.getAttribute(username));
+                        System.out.println(">>> from security context: " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
                                                     
                         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
@@ -202,11 +222,14 @@ public class AccountController {
     }
 
     // controller to logout all session
-    @GetMapping(path={"/account/logout"})
+    @PostMapping(path={"/account/logout"})
     @ResponseBody
-    public ResponseEntity<String> logoutSession(HttpSession session) {
+    public ResponseEntity<String> logoutSession(@RequestHeader("Authorization") String authorizationHeader, HttpSession session) {
 
-        session.invalidate();
+        String username = this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader);
+        this.sessionMap.remove(username);
+        System.out.println(">>> session map" + this.sessionMap.keySet());
+        System.out.println(">>> logging out...");
         JsonObject payload = Json.createObjectBuilder().add("payload", "Logout successfully").build();
 
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
@@ -217,7 +240,8 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<String> completeUserInfo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody String userInfoForm, HttpSession session) {
 
-        if (!(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader.substring(7)).equals((String) session.getAttribute("sessionUsername")))) {
+        // check username has been cached in session map
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
 
             throw new UnAuthorizedAccessException("Access denied");
         }
@@ -248,12 +272,19 @@ public class AccountController {
     }
 
     // controller to retrieve user profile
-    @GetMapping(path={"/profile"})
+    @GetMapping(path={"/profile"}, produces=MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<Object> retrieveProfile(@RequestHeader("Authorization") String authorizationHeader, @RequestParam String username, HttpSession session) {
+    public ResponseEntity<Object> retrieveProfile(HttpServletRequest request, @RequestHeader("Authorization") String authorizationHeader, @RequestParam String username, HttpSession session) {
         
-        // check if user session is valid
-        if (!(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader.substring(7)).equals((String) session.getAttribute("sessionUsername")))) {
+        // System.out.println(">>> username from security context: " + SecurityContextHolder.getContext().getAuthentication().getName());
+        // System.out.println(">>> authentication object: " + SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        System.out.println(">>> token from header: "+ authorizationHeader);
+        System.out.println(">>> username from header: "+ this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader.substring(7)));
+        System.out.println(">>> username from session: "+ (String) session.getAttribute("sessionUsername"));
+        // System.out.println(">>> username from session: " + (String) session.getAttribute("sessionUsername"));
+
+        // check username has been cached in session map
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
             throw new UnAuthorizedAccessException("Access denied");
         }
 
@@ -278,8 +309,8 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<String> uploadProfilePicture(@RequestHeader("Authorization") String authorizationHeader, @RequestPart MultipartFile profilePic, @RequestPart String username, @RequestPart String accountId, HttpSession session) throws IOException {
 
-        // check if user session is valid
-        if (!(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader.substring(7)).equals((String) session.getAttribute("sessionUsername")))) {
+        // check username has been cached in session map
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
             throw new UnAuthorizedAccessException("Access denied");
         }
 
@@ -328,8 +359,8 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<String> insertTransaction(@RequestHeader("Authorization") String authorizationHeader, @RequestBody String form, HttpSession session) {
 
-        // check if user session is valid
-        if (!(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader.substring(7)).equals((String) session.getAttribute("sessionUsername")))) {
+        // check username has been cached in session map
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
             throw new UnAuthorizedAccessException("Access denied");
         }
 
@@ -362,8 +393,10 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<String> retrieveTransactionRecordByMonth(@RequestHeader("Authorization") String authorizationHeader, @RequestParam String startDate, HttpSession session) {
 
-        // check if user session is valid
-        if (!(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader.substring(7)).equals((String) session.getAttribute("sessionUsername")))) {
+        System.out.println(">>> header: " + authorizationHeader);
+
+        // check username has been cached in session map
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
             throw new UnAuthorizedAccessException("Access denied");
         }
 
@@ -389,8 +422,8 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<String> updateTransactionRecordById(@RequestHeader("Authorization") String authorizationHeader, @RequestBody String editForm, HttpSession session) {
 
-        // check if user session is valid
-        if (!(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader.substring(7)).equals((String) session.getAttribute("sessionUsername")))) {
+        // check username has been cached in session map
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
             throw new UnAuthorizedAccessException("Access denied");
         }
 
@@ -420,8 +453,8 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<String> deleteTransactionRecordById(@RequestHeader("Authorization") String authorizationHeader, @RequestParam Integer transactionId, HttpSession session) {
 
-        // check if user session is valid
-        if (!(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader.substring(7)).equals((String) session.getAttribute("sessionUsername")))) {
+        // check username has been cached in session map
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
             throw new UnAuthorizedAccessException("Access denied");
         }
 

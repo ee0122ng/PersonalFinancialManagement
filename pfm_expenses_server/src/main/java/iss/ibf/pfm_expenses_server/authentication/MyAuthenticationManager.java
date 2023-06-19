@@ -1,52 +1,56 @@
-// package iss.ibf.pfm_expenses_server.authentication;
+package iss.ibf.pfm_expenses_server.authentication;
 
-// import java.util.List;
+import java.util.List;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.security.authentication.AuthenticationManager;
-// import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-// import org.springframework.security.core.Authentication;
-// import org.springframework.security.core.AuthenticationException;
-// import org.springframework.security.core.authority.SimpleGrantedAuthority;
-// import org.springframework.security.core.context.SecurityContext;
-// import org.springframework.security.core.context.SecurityContextHolder;
-// import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
-// import iss.ibf.pfm_expenses_server.repository.AccountAuthenticationRepository;
+import iss.ibf.pfm_expenses_server.repository.AccountAuthenticationRepository;
+import jakarta.servlet.http.HttpSession;
 
-// @Service
-// public class MyAuthenticationManager implements AuthenticationManager {
+@Service
+public class MyAuthenticationManager implements AuthenticationManager {
 
-//     @Autowired
-//     private AccountAuthenticationRepository accAuthRepo;
+    @Autowired
+    private AccountAuthenticationRepository accAuthRepo;
 
-//     @Override
-//     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    
+    public Authentication generateAuthEntity(String username, String pwd) {
         
-//         String username = authentication.getName();
-//         String hashpwd = String.valueOf(authentication.getCredentials());
+        // convert pwd to hashpassword then generate a auth entity
+        String hashedPwd = this.accAuthRepo.generateHashPwdByUsername(username, pwd);
 
-//         if (this.accAuthRepo.verifyIfAccountValid(username) && this.accAuthRepo.getAccount(this.accAuthRepo.getUserId(username)).getHashedString().equals(hashpwd)) {
+        List<SimpleGrantedAuthority> roles = List.of("USER").stream().map(r -> new SimpleGrantedAuthority(r)).toList();
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, hashedPwd, roles);
 
-//             // set th authentication to current framework
-//             SecurityContext sc = SecurityContextHolder.createEmptyContext();
-//             sc.setAuthentication(authentication);
+        return this.authenticate(authToken);
+    }
 
-//             return authentication;
-
-//         } else {
-//             return null;
-//         }
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         
-//     }
+        String username = authentication.getName();
+        String hashpwd = String.valueOf(authentication.getCredentials());
 
-//     public Authentication generateAuthEntity(String username, String pwd) {
+        if (this.accAuthRepo.verifyIfAccountValid(username) && this.accAuthRepo.getAccount(this.accAuthRepo.getUserId(username)).getHashedString().equals(hashpwd)) {
+
+            // set th authentication to current framework
+            SecurityContext sc = SecurityContextHolder.createEmptyContext();
+            sc.setAuthentication(authentication);
+            SecurityContextHolder.setContext(sc);
+
+            return authentication;
+
+        } else {
+            return null;
+        }
         
-//         // convert pwd to hashpassword then generate a auth entity
-//         String hashedPwd = this.accAuthRepo.generateHashPwdByUsername(username, pwd);
-
-//         List<SimpleGrantedAuthority> roles = List.of("USER").stream().map(r -> new SimpleGrantedAuthority(r)).toList();
-//         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, hashedPwd, roles);
-//         return authToken;
-//     }
-// }
+    }
+}
