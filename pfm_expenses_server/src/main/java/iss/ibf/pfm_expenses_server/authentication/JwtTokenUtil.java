@@ -33,8 +33,11 @@ public class JwtTokenUtil {
     }
 
     public String generateJwtToken(String username) {
-        this.setSecretKey();
 
+        if (this.secretKey.isEmpty()) {
+            this.setSecretKey();
+        }
+        
         return Jwts.builder()
                     .setSubject(username)
                     .setIssuedAt(new Date())

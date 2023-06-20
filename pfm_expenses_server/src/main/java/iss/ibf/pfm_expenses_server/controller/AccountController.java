@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -70,7 +69,8 @@ public class AccountController {
 
     private Logger logger = Logger.getLogger(AccountController.class.getName());
 
-    private HashMap<String, HashMap<String, String>> sessionMap = new LinkedHashMap<String, HashMap<String, String>>(); 
+    private HashMap<String, HashMap<String, String>> sessionMap = new LinkedHashMap<String, HashMap<String, String>>();
+    // private HashMap<String, String> sessionJwt = new LinkedHashMap<String, String>(); 
     
     // controller to register user
     @PostMapping(path={"/account/register"}, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -128,7 +128,6 @@ public class AccountController {
 
         try {
             String username = json.getString("username");
-            System.out.println(">>> login user: " + username);
 
             // check if username and account are still valid
             if (this.accSvc.checkUsername(username)) {
@@ -142,12 +141,6 @@ public class AccountController {
                     String accountId = this.accSvc.getUserAccount(username).getAccountId();
                     String userId = this.accSvc.getUserAccount(username).getUserId();
 
-                    // store user info as a map in the session
-                    HashMap<String, String> userInfo = new HashMap<>();
-                    userInfo.put("accountId", accountId);
-                    userInfo.put("userId", userId);
-                    this.sessionMap.put(username, userInfo);
-
                     // check if user info completed
                     // 4 possible outcome: completed + hasEmail, completed + noEmail, incomplete + hasEmail, incomplete + noEmail
                     try {
@@ -156,18 +149,21 @@ public class AccountController {
 
                         // authenticate the user login by creating a security context
                         Authentication authentication = this.authManager.generateAuthEntity(username, pwd);
-                        String token = this.jwtTokenUtil.generateJwtToken(username);
+                        String jwt = this.jwtTokenUtil.generateJwtToken(username);
 
                         JsonObject payload = Json.createObjectBuilder()
                                                     .add("accCompleted", accCompleted)
                                                     .add("accountId", accountId)
                                                     .add("email", email)
-                                                    .add("token", token)
+                                                    .add("token", jwt)
                                                     .build();
-
-                        System.out.println(">>> authentication object: " + authentication.getPrincipal());
-                        System.out.println(">>> username during login: " + (String) session.getAttribute(username));
-                        System.out.println(">>> from security context: " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+                        
+                        // store user info as a map in the session
+                        HashMap<String, String> userInfo = new HashMap<>();
+                        userInfo.put("accountId", accountId);
+                        userInfo.put("userId", userId);
+                        userInfo.put("jwt", jwt);
+                        this.sessionMap.put(username, userInfo);
                                                     
                         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 
@@ -224,9 +220,17 @@ public class AccountController {
     // controller to logout all session
     @PostMapping(path={"/account/logout"})
     @ResponseBody
-    public ResponseEntity<String> logoutSession(@RequestHeader("Authorization") String authorizationHeader, HttpSession session) {
+    public ResponseEntity<String> logoutSession(@RequestHeader("JwtAuth") String authorizationHeader, HttpSession session) {
 
-        String username = this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader);
+        // if (this.sessionJwt.get(authorizationHeader.substring(7)).isEmpty()) {
+        //     JsonObject error = Json.createObjectBuilder().add("error", "Invalid token").build();
+        //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.toString());
+        // } 
+        String jwtToken = authorizationHeader.substring(7);
+
+        String username = this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken);
+        System.out.println(">>> get username from token: " + username);
+
         this.sessionMap.remove(username);
         System.out.println(">>> session map" + this.sessionMap.keySet());
         System.out.println(">>> logging out...");
@@ -238,13 +242,20 @@ public class AccountController {
     // controller to complete user account
     @PostMapping(path={"/profile"}, consumes=MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<String> completeUserInfo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody String userInfoForm, HttpSession session) {
+    public ResponseEntity<String> completeUserInfo(@RequestHeader("JwtAuth") String authorizationHeader, @RequestBody String userInfoForm, HttpSession session) {
 
+        String jwtToken = authorizationHeader.substring(7);
+        // validate if token is valid
+        if (!this.jwtTokenUtil.validateJwtToken(jwtToken)) {
+            JsonObject error = Json.createObjectBuilder().add("error", "Invalid token").build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error.toString());
+        }
         // check username has been cached in session map
-        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken))) {
 
             throw new UnAuthorizedAccessException("Access denied");
         }
+        String username = this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken);
 
         JsonObject jsonUserInfo = this.accSvc.convertStringToJsonObject(userInfoForm);
 
@@ -274,22 +285,22 @@ public class AccountController {
     // controller to retrieve user profile
     @GetMapping(path={"/profile"}, produces=MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<Object> retrieveProfile(HttpServletRequest request, @RequestHeader("Authorization") String authorizationHeader, @RequestParam String username, HttpSession session) {
-        
-        // System.out.println(">>> username from security context: " + SecurityContextHolder.getContext().getAuthentication().getName());
-        // System.out.println(">>> authentication object: " + SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        System.out.println(">>> token from header: "+ authorizationHeader);
-        System.out.println(">>> username from header: "+ this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader.substring(7)));
-        System.out.println(">>> username from session: "+ (String) session.getAttribute("sessionUsername"));
-        // System.out.println(">>> username from session: " + (String) session.getAttribute("sessionUsername"));
+    public ResponseEntity<Object> retrieveProfile(HttpServletRequest request, @RequestHeader("JwtAuth") String authorizationHeader, HttpSession session) {
 
+        String jwtToken = authorizationHeader.substring(7);
+        // validate if token is valid
+        if (!this.jwtTokenUtil.validateJwtToken(jwtToken)) {
+            JsonObject error = Json.createObjectBuilder().add("error", "Invalid token").build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error.toString());
+        }
         // check username has been cached in session map
-        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken))) {
+
             throw new UnAuthorizedAccessException("Access denied");
         }
-
-        String accountId = (String) session.getAttribute("sessionAccountId");
-        String userId = (String) session.getAttribute("sessionUserId");
+        String username = this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken);
+        String accountId = this.sessionMap.get(username).get("accountId");
+        String userId = this.sessionMap.get(username).get("userId");
 
         try {
             JsonObject payload = this.accSvc.getUserProfile(username, accountId, userId);
@@ -307,14 +318,22 @@ public class AccountController {
     // controller to upload user profile picture
     @PostMapping(path={"/profile/image-upload"}, consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public ResponseEntity<String> uploadProfilePicture(@RequestHeader("Authorization") String authorizationHeader, @RequestPart MultipartFile profilePic, @RequestPart String username, @RequestPart String accountId, HttpSession session) throws IOException {
+    public ResponseEntity<String> uploadProfilePicture(@RequestHeader("JwtAuth") String authorizationHeader, @RequestPart MultipartFile profilePic, HttpSession session) throws IOException {
 
+        String jwtToken = authorizationHeader.substring(7);
+        // validate if token is valid
+        if (!this.jwtTokenUtil.validateJwtToken(jwtToken)) {
+            JsonObject error = Json.createObjectBuilder().add("error", "Invalid token").build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error.toString());
+        }
         // check username has been cached in session map
-        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken))) {
+
             throw new UnAuthorizedAccessException("Access denied");
         }
-
-        String userId = (String) session.getAttribute("sessionUserId");
+        String username = this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken);
+        String accountId = this.sessionMap.get(username).get("accountId");
+        String userId = this.sessionMap.get(username).get("userId");
 
         try {
             String endpoint = this.uploadPicSvc.uploadProfilePicture(profilePic, username, accountId, userId);
@@ -357,14 +376,22 @@ public class AccountController {
     // controller to insert new transaction
     @PostMapping(path={"/transaction/insert"})
     @ResponseBody
-    public ResponseEntity<String> insertTransaction(@RequestHeader("Authorization") String authorizationHeader, @RequestBody String form, HttpSession session) {
+    public ResponseEntity<String> insertTransaction(@RequestHeader("JwtAuth") String authorizationHeader, @RequestBody String form, HttpSession session) {
 
+        String jwtToken = authorizationHeader.substring(7);
+        // validate if token is valid
+        if (!this.jwtTokenUtil.validateJwtToken(jwtToken)) {
+            JsonObject error = Json.createObjectBuilder().add("error", "Invalid token").build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error.toString());
+        }
         // check username has been cached in session map
-        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken))) {
+
             throw new UnAuthorizedAccessException("Access denied");
         }
-
-        String userId = (String) session.getAttribute("sessionUserId");
+        String username = this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken);
+        String accountId = this.sessionMap.get(username).get("accountId");
+        String userId = this.sessionMap.get(username).get("userId");
         JsonObject req = Json.createReader(new StringReader(form)).readObject();
 
         try {
@@ -391,16 +418,22 @@ public class AccountController {
     // controller to retrieve transaction record by month
     @GetMapping(path={"/transaction/retrieve"})
     @ResponseBody
-    public ResponseEntity<String> retrieveTransactionRecordByMonth(@RequestHeader("Authorization") String authorizationHeader, @RequestParam String startDate, HttpSession session) {
+    public ResponseEntity<String> retrieveTransactionRecordByMonth(@RequestHeader("JwtAuth") String authorizationHeader, @RequestParam String startDate, HttpSession session) {
 
-        System.out.println(">>> header: " + authorizationHeader);
-
+        String jwtToken = authorizationHeader.substring(7);
+        // validate if token is valid
+        if (!this.jwtTokenUtil.validateJwtToken(jwtToken)) {
+            JsonObject error = Json.createObjectBuilder().add("error", "Invalid token").build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error.toString());
+        }
         // check username has been cached in session map
-        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken))) {
+
             throw new UnAuthorizedAccessException("Access denied");
         }
-
-        String userId = (String) session.getAttribute("sessionUserId");
+        String username = this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken);
+        String accountId = this.sessionMap.get(username).get("accountId");
+        String userId = this.sessionMap.get(username).get("userId");
 
         try {
             JsonObject payload = this.transSvc.retrieveTransaction(startDate, userId);
@@ -420,14 +453,22 @@ public class AccountController {
     // controller to update transaction record by id
     @PutMapping(path={"/transaction/update"})
     @ResponseBody
-    public ResponseEntity<String> updateTransactionRecordById(@RequestHeader("Authorization") String authorizationHeader, @RequestBody String editForm, HttpSession session) {
+    public ResponseEntity<String> updateTransactionRecordById(@RequestHeader("JwtAuth") String authorizationHeader, @RequestBody String editForm, HttpSession session) {
 
+        String jwtToken = authorizationHeader.substring(7);
+        // validate if token is valid
+        if (!this.jwtTokenUtil.validateJwtToken(jwtToken)) {
+            JsonObject error = Json.createObjectBuilder().add("error", "Invalid token").build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error.toString());
+        }
         // check username has been cached in session map
-        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken))) {
+
             throw new UnAuthorizedAccessException("Access denied");
         }
-
-        String userId = (String) session.getAttribute("sessionUserId");
+        String username = this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken);
+        String accountId = this.sessionMap.get(username).get("accountId");
+        String userId = this.sessionMap.get(username).get("userId");
         JsonObject record = Json.createReader(new StringReader(editForm)).readObject();
 
         try {
@@ -451,10 +492,17 @@ public class AccountController {
     // controller to delete transaction record by id
     @DeleteMapping(path={"/transaction/delete"})
     @ResponseBody
-    public ResponseEntity<String> deleteTransactionRecordById(@RequestHeader("Authorization") String authorizationHeader, @RequestParam Integer transactionId, HttpSession session) {
+    public ResponseEntity<String> deleteTransactionRecordById(@RequestHeader("JwtAuth") String authorizationHeader, @RequestParam Integer transactionId, HttpSession session) {
 
+        String jwtToken = authorizationHeader.substring(7);
+        // validate if token is valid
+        if (!this.jwtTokenUtil.validateJwtToken(jwtToken)) {
+            JsonObject error = Json.createObjectBuilder().add("error", "Invalid token").build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error.toString());
+        }
         // check username has been cached in session map
-        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader))) {
+        if (!this.sessionMap.containsKey(this.jwtTokenUtil.getUserNameFromJwtToken(jwtToken))) {
+
             throw new UnAuthorizedAccessException("Access denied");
         }
 

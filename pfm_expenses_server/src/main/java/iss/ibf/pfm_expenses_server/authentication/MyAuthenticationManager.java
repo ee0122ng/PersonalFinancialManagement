@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import iss.ibf.pfm_expenses_server.repository.AccountAuthenticationRepository;
-import jakarta.servlet.http.HttpSession;
 
 @Service
 public class MyAuthenticationManager implements AuthenticationManager {
