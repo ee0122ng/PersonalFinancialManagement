@@ -1,5 +1,6 @@
 package iss.ibf.pfm_expenses_server.model;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Period;
@@ -9,7 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 
-public class UserDetails {
+public class UserDetails implements Serializable {
 
     private String userId;
 

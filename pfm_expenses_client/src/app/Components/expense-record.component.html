@@ -12,9 +12,25 @@
     <div>
         <h1 >Expenses Records</h1>
 
-        <h3 style="color:chocolate" *ngIf="!!displayDate else displayToday">{{ displayDate | date:'MMM yy' }}</h3>
+        <h3 *ngIf="!displayDate else displayToday" style="color:chocolate">{{ today | date: 'MMM yy'}}</h3>
         <ng-template #displayToday>
-            <h3 style="color:orange">{{ today | date: 'MMM yy'}}</h3>
+            <div class="icon-container">
+                <span class="icon-container1">
+                    <button mat-mini-fab color="accent" (click)="previous()">
+                        <mat-icon style="color: darkslateblue" class="icon-arrow">keyboard_double_arrow_left</mat-icon>
+                    </button>
+                </span>
+        
+                <span>
+                    <h3 style="color:chocolate"> {{ displayDate | date:'MMM yy' }}</h3>
+                </span>
+        
+                <span class="icon-container2">
+                    <button mat-mini-fab color="accent" (click)="next()">
+                        <mat-icon style="color:darkslateblue;" class="icon-arrow">keyboard_double_arrow_right</mat-icon>
+                    </button>
+                </span>
+            </div>
         </ng-template>
     </div>
 
@@ -180,20 +196,6 @@
 
     <div [hidden]="dataSource.length > 0">
         <code>No transaction record found</code>
-    </div>
-
-    <div class="icon-container">
-        <span class="icon-container1">
-            <button mat-mini-fab color="accent" (click)="previous()">
-                <mat-icon style="color: darkslateblue" class="icon-arrow">keyboard_double_arrow_left</mat-icon>
-            </button>
-        </span>
-
-        <span class="icon-container2">
-            <button mat-mini-fab color="accent" (click)="next()">
-                <mat-icon style="color:darkslateblue;" class="icon-arrow">keyboard_double_arrow_right</mat-icon>
-            </button>
-        </span>
     </div>
 
 </div>

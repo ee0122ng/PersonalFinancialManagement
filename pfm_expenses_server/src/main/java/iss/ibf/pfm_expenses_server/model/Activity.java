@@ -1,12 +1,13 @@
 package iss.ibf.pfm_expenses_server.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import iss.ibf.pfm_expenses_server.validator.Category;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
-public class Activity {
+public class Activity implements Serializable {
 
     private Integer id;
 

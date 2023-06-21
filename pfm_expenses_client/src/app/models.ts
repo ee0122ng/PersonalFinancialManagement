@@ -71,3 +71,48 @@ export interface RecordTable {
     amount: number;
     currency: string;
 }
+
+export interface GoogleAuthToken {
+    token : string;
+    expires_in: number;
+    expires_date: Date;
+}
+
+export interface GoogleEvent {
+    summary: string;
+    description: string;
+    start: StartEvent;
+    end: EndEvent;
+    recurrence: RecurrenceEvent;
+}
+
+export interface StartEvent {
+    dateTime: Date;
+    timeZone: string;
+}
+
+export interface EndEvent {
+    dateTime: Date;
+    timeZone: string;
+}
+
+export interface RecurrenceEvent {
+    recurrence: string[];
+}
+
+export interface EventTable {
+    frequency: string;
+    count: number;
+    summary: string;
+    description: string;
+    email: string;
+}
+
+export interface GoogleEvent {
+    frequency: string;
+    count: number;
+    summary: string;
+    description: string;
+    email: string;
+    startDate: string;
+}

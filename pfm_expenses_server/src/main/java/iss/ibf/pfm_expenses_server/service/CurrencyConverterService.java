@@ -31,7 +31,7 @@ public class CurrencyConverterService {
     private final String GET_CONVERTER_API_URL = "https://free.currconv.com/api/v7/convert";
     private Map<String, Double> CONVERTER = new HashMap<String, Double>();
 
-    public Double convertToSGD(String fromCurrency) {
+    public Float convertToSGD(String fromCurrency) {
 
         String key = new String("%s_SGD").formatted(fromCurrency.toUpperCase());
         CurrencyRate rate = new CurrencyRate();
@@ -73,7 +73,7 @@ public class CurrencyConverterService {
         if (rep.getStatusCode().value() == 200) {
             String converter = rep.getBody();
             System.out.println(">>> api return: " + converter);
-            Double currencyRate = Json.createReader(new StringReader(converter)).readObject().getJsonNumber(key).doubleValue();
+            Float currencyRate = (float) Json.createReader(new StringReader(converter)).readObject().getJsonNumber(key).doubleValue();
 
             System.out.println(">>> api returned rate " + currencyRate);
 

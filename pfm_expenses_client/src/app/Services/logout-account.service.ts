@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { LOGOUT_API_URL } from '../constants';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class LogoutAccountService {
 
   message: string = '';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   logout() {
     const params : HttpParams = new HttpParams();
@@ -20,6 +21,7 @@ export class LogoutAccountService {
           this.message = p["payload"]
           localStorage.clear();
           console.info(">>> front: " + this.message)
+          this.router.navigate(['']);
         }
       )
       .catch(

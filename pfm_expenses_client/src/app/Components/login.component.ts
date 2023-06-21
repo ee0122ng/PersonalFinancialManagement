@@ -78,7 +78,7 @@ export class LoginComponent implements OnInit {
         AppComponent.currentAccountId.next(this.accountId)
         AppComponent.currentUserEmail.next(this.userEmail)
         AppComponent.currentUsername.next(this.username)
-        this.router.navigate(['/home'])
+        this.router.navigate(['/summary'])
       })
       .catch( (e:any) => {
         this.errorMessage = e['error']['error']

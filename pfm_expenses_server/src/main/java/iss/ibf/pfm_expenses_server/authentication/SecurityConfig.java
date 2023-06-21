@@ -40,7 +40,9 @@ public class SecurityConfig {
                                             .requestMatchers("/api/account/login/**").permitAll()
                                             .requestMatchers("/api/account/logout/**").permitAll()
                                             .requestMatchers("/api/profile/**").permitAll()
-                                            .requestMatchers("/api/transaction/**").permitAll())
+                                            .requestMatchers("/api/transaction/**").permitAll()
+                                            .requestMatchers("/api/googleapi/**").permitAll()
+                                            .requestMatchers("/api/notification/**").permitAll())
             .formLogin(form -> form
                                 .loginPage("http://localhost:4200")
                                 .permitAll())

@@ -6,17 +6,17 @@ import java.time.temporal.ChronoUnit;
 
 public class CurrencyRate implements Serializable {
     
-    private Double rate;
+    private Float rate;
     private LocalDateTime lastUpdate;
 
     public CurrencyRate() {
     }
 
-    public Double getRate() {
+    public Float getRate() {
         return this.rate;
     }
 
-    public void setRate(Double rate) {
+    public void setRate(Float rate) {
         this.rate = rate;
     }
 

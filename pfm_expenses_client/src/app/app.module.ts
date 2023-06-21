@@ -24,6 +24,7 @@ import { ExpenseTransactionComponent } from './Components/expense-transaction.co
 import { ExpenseRecordComponent } from './Components/expense-record.component';
 import { ExpenseSummaryComponent } from './Components/expense-summary.component';
 import { AuthInterceptorService } from './Services/auth-interceptor.service';
+import { GoogleapiCallbackComponent } from './Components/googleapi-callback.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { AuthInterceptorService } from './Services/auth-interceptor.service';
     ProfileComponent,
     ExpenseTransactionComponent,
     ExpenseRecordComponent,
-    ExpenseSummaryComponent
+    ExpenseSummaryComponent,
+    GoogleapiCallbackComponent
   ],
   imports: [
     BrowserModule,

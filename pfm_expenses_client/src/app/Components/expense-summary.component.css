@@ -1,0 +1,60 @@
+code.positive {
+    color:green;
+}
+
+code.negative {
+    color:red;
+}
+
+.dropdown-button {
+    transform: scale(0.7);
+    margin-right: 10px
+}
+
+.container-title {
+    justify-content: center;
+    width: fit-content;
+    height: fit-content;
+    margin: auto;
+}
+
+.container-title h1 {
+    padding: 0.4em;
+    width: fit-content;
+    margin: auto;
+    font-family: fantasy;
+    font-weight: bold;
+    font-size: 2.5em;
+}
+
+.container-navigation {
+    display: flex;
+    flex-direction: row;
+    /* justify-content: center; */
+    align-items: flex-end;
+    gap: 1em;
+    width: fit-content;
+    margin: auto;
+}
+
+.navigation-previous {
+    width: fit-content;
+    padding: 1rem;
+    max-width: 800px;
+    min-height: 40px;
+    /* border: 5px solid orange; */
+}
+  
+.navigation-next {
+    width: fit-content;
+    padding: 1rem;
+    max-width: 900px;
+    min-height: 40px;
+    /* border: 5px solid orange; */
+    /* margin: auto; */
+}
+
+.navigation-title h3 {
+    font-size: 2em;
+    height: 40px;
+}

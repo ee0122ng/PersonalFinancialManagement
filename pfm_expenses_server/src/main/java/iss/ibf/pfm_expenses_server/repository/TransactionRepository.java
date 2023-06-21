@@ -2,7 +2,6 @@ package iss.ibf.pfm_expenses_server.repository;
 
 import java.io.StringReader;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +83,43 @@ public class TransactionRepository {
         return deletedResult > 0;
     }
 
+    // TODO: to complete
+    public Float[] getSummaries(LocalDate startDate, LocalDate endDate, String userId) {
+        try {
+            // get list of transaction based on month requested
+            List<Activity> transactions = this.retrieveTransaction(startDate, endDate, userId);
+
+            Float incomes = 0f;
+            Float spendings = 0f;
+
+            // convert all currency to SGD base
+            if (transactions.size() > 0) {
+                List<Activity> incomeList = transactions.stream().filter(t -> t.getCategory().equals("income")).toList();
+                List<Activity> spendingList = transactions.stream().filter(t -> t.getCategory().equals("spending")).toList();
+
+                // convert both list to SGD
+                if (incomeList.size() > 0) {
+                    incomes = incomeList.stream().map(t -> (float) t.getAmount() * (float) this.getConversionRate(t.getCurrency())).reduce(0f, (a,b) -> (a+b));
+                    System.out.println(">>> incomes: " + incomes);
+                }
+                if (spendingList.size() > 0) {
+                    List<String> currencyList = spendingList.stream().map(t -> t.getCurrency()).toList();
+                    System.out.println(">>> sample expense: " + currencyList.toString());
+                    System.out.println(">>> sample expense: " + (float) this.getConversionRate(spendingList.get(7).getCurrency()));
+                    spendings = spendingList.stream().map(t -> (float) t.getAmount() * (float) this.getConversionRate(t.getCurrency())).reduce(0f, (a,b) -> (a+b));
+                    System.out.println(">>> expense: " + spendings);
+                }
+                System.out.println(">>> incomes: " + incomeList.toString());
+                System.out.println(">>> expenses: " + spendingList.toString());
+            }
+
+            return new Float[] {incomes, spendings};
+
+        } catch (Exception ex) {
+            throw ex;
+        }
+        
+    }
 
     public List<String> getCurrencies() {
 
@@ -119,9 +155,9 @@ public class TransactionRepository {
         return CURRENCIES;
     }
 
-    public Double getConversionRate(String fromCurrency) {
+    public Float getConversionRate(String fromCurrency) {
 
-        return fromCurrency.toUpperCase().equals("SGD") ? 1d : this.currCnvSvc.convertToSGD(fromCurrency);
+        return fromCurrency.toUpperCase().equals("SGD") ? 1f : this.currCnvSvc.convertToSGD(fromCurrency);
     }
     
 }

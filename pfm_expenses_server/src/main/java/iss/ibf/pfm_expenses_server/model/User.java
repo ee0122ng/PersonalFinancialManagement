@@ -1,11 +1,12 @@
 package iss.ibf.pfm_expenses_server.model;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 
-public class User {
+public class User implements Serializable {
 
     private String userId;
 

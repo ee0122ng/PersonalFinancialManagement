@@ -1,6 +1,8 @@
 package iss.ibf.pfm_expenses_server.model;
 
-public class UserSecureEntity {
+import java.io.Serializable;
+
+public class UserSecureEntity implements Serializable {
     
     private String username;
     private String hashPwd;

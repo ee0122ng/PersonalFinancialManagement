@@ -1,8 +1,9 @@
 package iss.ibf.pfm_expenses_server.model;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Account {
+public class Account implements Serializable {
 
     private String accountId;
     private String userId;

@@ -9,6 +9,7 @@ import { AuthoriseAccountService } from './Services/authorise-account.service';
 import { ExpenseSummaryComponent } from './Components/expense-summary.component';
 import { ExpenseRecordComponent } from './Components/expense-record.component';
 import { ExpenseTransactionComponent } from './Components/expense-transaction.component';
+import { GoogleapiCallbackComponent } from './Components/googleapi-callback.component';
 
 const routes: Routes = [
   {path: 'register', component: RegisterComponent},
@@ -19,6 +20,7 @@ const routes: Routes = [
   {path: 'record', component: ExpenseRecordComponent},
   {path: 'transaction', component: ExpenseTransactionComponent},
   {path: 'profile/:username', component: ProfileComponent},
+  {path: 'callback', component: GoogleapiCallbackComponent},
   {path: '**', redirectTo: 'login', pathMatch: 'full'}
 ];
 

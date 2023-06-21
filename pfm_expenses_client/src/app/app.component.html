@@ -1,6 +1,6 @@
 <p>
   <mat-toolbar color="primary">
-    <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="loginSuccess" [routerLink]="loginSuccess ? ['/home'] : ['']" title="Home">
+    <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="loginSuccess" [routerLink]="loginSuccess ? ['/summary'] : ['']" title="Home">
       <mat-icon>home</mat-icon>
     </button>
     <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="!loginSuccess" [routerLink]="['']" title="User Login">

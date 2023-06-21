@@ -59,13 +59,11 @@ export class AppComponent implements OnInit ,OnDestroy {
   }
 
   logout() {
-    localStorage.clear()
     this.loginSuccess = false;
     this.accountCompleted = undefined;
     this.accountId = undefined;
     this.userEmail = undefined;
     this.logoutAccountService.logout();
-    this.router.navigate(['/login'])
   }
 
 }

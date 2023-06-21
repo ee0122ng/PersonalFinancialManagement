@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -30,10 +31,14 @@ public class TransactionService {
         return this.transRepo.insertTransaction(this.convertJsonToActivity(records, userId));
     }
 
-    public JsonObject retrieveTransaction(String selectedDate, String userId) throws ParseException {
+    public JsonObject retrieveTransaction(Integer month, String userId) throws ParseException {
 
         // note: java.util.Date.toString() will return format that is not acceptable by MySQL
         // note: use LocalDate.toString() instead
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(LocalDate.now().getYear(), month, 1);
+        String selectedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ").format(calendar.getTime());
 
         Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(this.getStartDayofMonth(selectedDate));
         LocalDate start = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -55,8 +60,26 @@ public class TransactionService {
         return this.transRepo.deleteTransaction(id);
     }
 
+    //TODO: to complete
+    public Float[] getSummaries(Integer month, String userId) throws ParseException {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(LocalDate.now().getYear(), month, 1);
+        String selectedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ").format(calendar.getTime());
+
+        Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(this.getStartDayofMonth(selectedDate));
+        LocalDate start = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse(this.getEndDayofMonth(selectedDate));
+        LocalDate end = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        Float[] summary = this.transRepo.getSummaries(start, end, userId);
+
+        return summary;
+    }
+
     public String getEndDayofMonth(String selectedDate) throws ParseException {
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(selectedDate);
+        DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssZ");
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(selectedDate, parser);
         LocalDate localD = zonedDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
         Calendar endCal = Calendar.getInstance();
@@ -68,7 +91,8 @@ public class TransactionService {
     }
 
     public String getStartDayofMonth(String selectedDate) throws ParseException {
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(selectedDate);
+        DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssZ");
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(selectedDate, parser);
         LocalDate localD = zonedDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
         Calendar endCal = Calendar.getInstance();
