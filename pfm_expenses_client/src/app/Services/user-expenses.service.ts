@@ -24,6 +24,7 @@ export class UserExpensesService {
   createNotification() : Promise<any> {
     const event = this.toSendEvent;
     this.toSendEvent = new GoogleEvent
+    this.toSendTransaction = new Transaction
     return lastValueFrom(this.http.post<any>(NOTIFICATION_CREATE_API_URL, event))
   }
 
@@ -66,6 +67,7 @@ export class UserExpensesService {
   }
 
   handleCreateTransaction(form: FormGroup) {
+    console.info(">>> here...")
     let transaction : Transaction = {
       category: form.get('category')?.value,
       item: form.get('item')?.value,
@@ -75,9 +77,11 @@ export class UserExpensesService {
     } as Transaction
 
     this.toSendTransaction = transaction;
+    console.info('>>> transaction: ' + JSON.stringify(this.toSendTransaction))
   }
 
   handleCreateEvent(form: FormGroup) {
+    console.info(">>> date: " + JSON.stringify(this.toSendTransaction))
     let event : GoogleEvent = {
       frequency: form.get('frequency')?.value,
       count: form.get('count')?.value,

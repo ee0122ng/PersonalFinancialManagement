@@ -33,9 +33,11 @@ export class GoogleapiCallbackComponent {
             expires_date: ex_date
           }
           sessionStorage.setItem("googleToken", JSON.stringify(gAuthToken));
+          this.router.navigate(['/transaction'])
         }
       )
       .unsubscribe()
+
   }
 
 }

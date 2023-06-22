@@ -4,8 +4,8 @@
         <h1>PFM Account Login</h1>
     </div>
 
-    <div class="container-credentialerror" *ngIf="!!errorMessage">
-        <p style="color: red;"><code>{{ errorMessage }}</code></p>
+    <div class="container-error" *ngIf="!!errorMessage">
+        <p style="color: red;" class="error"><code>{{ errorMessage | titlecase }}</code></p>
     </div>
 
     <div class="container-login">
@@ -41,7 +41,7 @@
                         <td></td>
                         <td></td>
                         <td>
-                            <button mat-flat-button color="primary">Login</button>
+                            <button mat-raised-button color="primary">Login</button>
                         </td>
                     </tr>
 

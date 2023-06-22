@@ -4,6 +4,10 @@
         <h1>Recurrence Transaction Details</h1>
     </div>
 
+    <div class="container-error" *ngIf="!!errorMessage">
+        <code style="color:red">{{ errorMessage }}</code>
+    </div>
+
     <div class="container-recurrence">
         <mat-card appearance="outlined">
             <form [formGroup]="eventForm">
@@ -114,6 +118,14 @@
                             <code style="color:red">Invalid email address</code>
                         </tr>
                     </div>
+
+                    <tr>
+                        <td></td>
+                        <td>
+                            <button mat-raised-button color="primary" (click)="addNew()">Notify</button>
+                        </td>
+                        <td></td>
+                    </tr>
         
                 </table>
             </form>

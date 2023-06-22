@@ -4,7 +4,7 @@
         <h1>Financial Transaction</h1>
     </div>
 
-    <div *ngIf="!!message">
+    <div class="container-error" *ngIf="!!message">
         <code style="color:red">{{ message }}</code>
     </div>
 
@@ -111,6 +111,8 @@
                             <td></td>
                             <td>
                                 <button mat-raised-button [color]="!checkFormValid() ? 'disabled' : 'primary'" [disabled]="!checkFormValid()" (click)="addNew()"> Add </button>
+                                &nbsp;
+                                <button mat-raised-button [color]="!hasAuthenticated() ? 'disabled' : 'accent'" (click)="authenticateGoogleApi()" *ngIf="isChecked">Authenticate</button>
                             </td>
                         </tr>
         

@@ -35,7 +35,7 @@ public class SecurityConfig {
             // .cors(cors -> cors.disable())
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(req -> req
-                                            .requestMatchers("http://localhost/4200/*").permitAll()
+                                            .requestMatchers("http://localhost:4200").permitAll()
                                             .requestMatchers("/api/account/register/**").permitAll()
                                             .requestMatchers("/api/account/login/**").permitAll()
                                             .requestMatchers("/api/account/logout/**").permitAll()
@@ -47,7 +47,7 @@ public class SecurityConfig {
                                 .loginPage("http://localhost:4200")
                                 .permitAll())
             .logout(logout -> logout
-                                .logoutRequestMatcher(new AntPathRequestMatcher("http://localhost:4200"))
+                                // .logoutRequestMatcher(new AntPathRequestMatcher("http://localhost:4200"))
                                 .permitAll());                      
 
         return http.build();

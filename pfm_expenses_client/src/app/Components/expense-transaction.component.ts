@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserExpensesService } from '../Services/user-expenses.service';
 import { EventTable, GoogleEvent, Transaction } from '../models';
+import { GoogleApiService } from '../Services/google-api.service';
 
 @Component({
   selector: 'app-expense-transaction',
@@ -21,9 +22,10 @@ export class ExpenseTransactionComponent implements OnInit {
   isFormValid : boolean = false;
   isTFormValid : boolean = false;
 
-  constructor(private fb: FormBuilder, private router: Router, private userExpSvc: UserExpensesService) { }
+  constructor(private fb: FormBuilder, private router: Router, private userExpSvc: UserExpensesService, private googleApiSvc: GoogleApiService) { }
 
   ngOnInit(): void {
+
     this.transactionForm = this.createForm()
 
     this.userExpSvc.getCurrencies()
@@ -65,7 +67,7 @@ export class ExpenseTransactionComponent implements OnInit {
       .then(
         (p:any) => {
           console.info(">>> " + p["success"])
-          this.transactionForm.reset()
+          this.transactionForm = this.createForm()
           this.router.navigate(['/summary'])
         }
       )
@@ -80,6 +82,11 @@ export class ExpenseTransactionComponent implements OnInit {
       // route to child
       this.router.navigate(['/recurrence'])
     }
+  }
+
+  authenticateGoogleApi() {
+    this.userExpSvc.handleCreateTransaction(this.transactionForm)
+    this.googleApiSvc.invokeGoogleApi()
   }
 
   toggleRecur($event:any) {
@@ -97,6 +104,10 @@ export class ExpenseTransactionComponent implements OnInit {
 
   handleClearAmount() {
     this.transactionForm.get('amount')?.reset()
+  }
+
+  hasAuthenticated() : Boolean {
+    return !!sessionStorage.getItem('googleToken')
   }
 
 }

@@ -1,82 +1,116 @@
-<div class="register-class">
+<div class="container">
 
-    <h1>Registration System</h1>
+    <div class="container-title">
+        <h1>Account Registration</h1>
+    </div>
+    
 
-    <div *ngIf="!!failedMessage">
-        <p style="color: red;"><code>{{ failedMessage }}</code></p>
+    <div class="container-error" *ngIf="!!failedMessage">
+        <p style="color: red;" class="error"><code>{{ failedMessage }}</code></p>
     </div>
 
-    <form [formGroup]="registerForm" (ngSubmit)="registerAccount()">
+    <div class="container-register">
 
-        <p>
-            <mat-form-field appearance="fill">
+        <mat-card appearance="outlined">
+            <form [formGroup]="registerForm" (ngSubmit)="registerAccount()">
+                <table>
 
-                <mat-label>Your email</mat-label>
-                <input matInput formControlName="email">
+                    <tr>
+                        <td><h4>Username</h4></td>
+                        <td></td>
+                        <td>
+                            <mat-form-field appearance="fill">
+                                <mat-label>Input unique username</mat-label>
+                                <input matInput type="text" formControlName="username">
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr *ngIf="registerForm.get('username')?.dirty && registerForm.get('username')?.invalid">
+                        <td></td>
+                        <td colspan="2">
+                            <code style="color: red;" *ngIf="!registerForm.get('username')?.value" class="error">Username cannot be blank</code>
+                            <code style="color: red;" *ngIf="!!registerForm.get('username')?.value" class="error">Username must be at least 3 characters length</code>
+                        </td>
+                    </tr>
 
-            </mat-form-field>
+                    &nbsp;
 
-            &nbsp;
+                    <tr>
+                        <td><h4>Email</h4></td>
+                        <td></td>
+                        <td>
+                            <mat-form-field appearance="fill">
+                                <mat-label>Your email</mat-label>
+                                <input matInput type="email" formControlName="email">
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr *ngIf="registerForm.get('email')?.dirty && registerForm.get('email')?.invalid">
+                        <td></td>
+                        <td colspan="2">
+                            <code style="color:red" *ngIf="!registerForm.get('email')?.value else invalidEmail" class="error">Email cannot be blank</code>
+                        </td>
+                    </tr>
+                    <ng-template #invalidEmail><code style="color:red">Invalid email format</code></ng-template>
 
-            <span *ngIf="registerForm.get('email')?.dirty && registerForm.get('email')?.invalid">
-                <code style="color:red" *ngIf="!registerForm.get('email')?.value else invalidEmail">Email cannot be blank</code>
-            </span>
+                    &nbsp;
 
-        </p>
+                    <tr>
+                        <td><h4>Password</h4></td>
+                        <td></td>
+                        <td>
+                            <mat-form-field appearance="fill">
+                                <mat-label>Input new password</mat-label>
+                                <input matInput formControlName="password" [type]="hide ? 'password' : 'text' ">
+                                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                </button>
+                            </mat-form-field>
+                        </td>
+                    </tr>
 
-        <ng-template #invalidEmail><code style="color:red">Invalid email format</code></ng-template>
+                    &nbsp;
 
-        <p>
-            <mat-form-field appearance="fill">
+                    <tr>
+                        <td style="vertical-align: middle;"><h4>Confirmed Password</h4></td>
+                        <td></td>
+                        <td>
+                            <mat-form-field appearance="fill">
+                                <mat-label>Confirm your password</mat-label>
+                                <input matInput formControlName="confirmedPwd" type="password" [type]="hideConfirm ? 'password' : 'text' ">
+                                <button mat-icon-button matSuffix (click)="hideConfirm = !hideConfirm" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                                    <mat-icon>{{hideConfirm ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                </button>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr *ngIf="registerForm.get('confirmedPwd')?.dirty && registerForm.get('password')?.value!==registerForm.get('confirmedPwd')?.value">
+                        <td></td>
+                        <td colspan="2">
+                            <code style="color: red;" class="error">Confirmed password does not match</code>
+                        </td>
+                    </tr>
 
-                <mat-label>Your username</mat-label>
-                <input matInput formControlName="username">
+                    &nbsp;
 
-            </mat-form-field>
+                    <tr>
+                        <td></td>
+                        <td>
+                        </td>
+                        <td>
+                            <div>
+                                <button mat-raised-button color="primary" [disabled]="!isFormValid()">Register</button>
+                                &nbsp;
+                                <button mat-raised-button color="" [routerLink]="['']" class="button-cancel">Cancel</button>
+                            </div>
+                        </td>
+                    </tr>
 
-            &nbsp;
+                </table>
+        
+            </form>
+        </mat-card>
 
-            <span *ngIf="registerForm.get('username')?.dirty && registerForm.get('username')?.invalid">
-                <code style="color: red;" *ngIf="!registerForm.get('username')?.value else invalidUsername">Username cannot be blank</code>
-            </span>
-
-        </p>
-
-        <ng-template #invalidUsername><code style="color:red">Username must be at least 3 characters length</code></ng-template>
-
-        <p>
-            <mat-form-field appearance="fill">
-
-                <mat-label>Your password</mat-label>
-                <input matInput formControlName="password" [type]="hide ? 'password' : 'text' ">
-                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-                </button>
-
-            </mat-form-field>
-
-        </p>
-
-        <p>
-            <mat-form-field appearance="fill">
-
-                <mat-label>Confirmed password</mat-label>
-                <input matInput formControlName="confirmedPwd" type="password">
-
-            </mat-form-field>
-
-            &nbsp;
-
-            <span *ngIf="registerForm.get('confirmedPwd')?.dirty && registerForm.get('password')?.value!==registerForm.get('confirmedPwd')?.value">
-                <code style="color: red;">Confirmed password does not match</code>
-            </span>
-
-        </p>
-
-        <div>
-            <button mat-raised-button color="primary" [disabled]="!isFormValid()">Register</button>
-        </div>
-
-    </form>
+    </div>
 
 </div>

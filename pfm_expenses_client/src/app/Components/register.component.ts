@@ -15,6 +15,7 @@ export class RegisterComponent implements OnInit {
   accId !: string;
   failedMessage !: string;
   hide : Boolean = true;
+  hideConfirm : Boolean = true;
 
   constructor(private fb: FormBuilder, private router: Router, private regAccSvc: RegisterAccountService) {}
 

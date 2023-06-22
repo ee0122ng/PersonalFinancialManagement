@@ -32,8 +32,24 @@ export class AuthInterceptorService implements HttpInterceptor {
     //   }
     // }
 
-    let storageData = localStorage.getItem("loginStatus");
+    let storageData = localStorage.getItem("loginStatus")
+    let sessionData = sessionStorage.getItem("googleToken")
     // inject Jwt token to header
+    if (!!storageData && !!sessionData) {
+      //@ts-ignore
+      let token = JSON.parse(storageData).jwt
+      let gToken = JSON.parse(sessionData).token
+      if (!!token) {
+        const validReq = req.clone({
+          setHeaders: {
+            JwtAuth: `Bearer ${token}`,
+            Authorization: `Bearer ${gToken}`
+          }
+        })
+        return next.handle(validReq)
+      }
+    }
+
     if (!!storageData) {
       //@ts-ignore
       let token = JSON.parse(storageData).jwt

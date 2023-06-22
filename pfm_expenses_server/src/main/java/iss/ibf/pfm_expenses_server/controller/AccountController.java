@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.api.services.gmail.model.Message;
+
 import iss.ibf.pfm_expenses_server.authentication.JwtTokenUtil;
 import iss.ibf.pfm_expenses_server.authentication.MyAuthenticationManager;
 import iss.ibf.pfm_expenses_server.exception.NoEmailFoundException;
@@ -577,8 +579,9 @@ public class AccountController {
     // and send email notification
     @PostMapping(path={"/notification/create"})
     @ResponseBody
-    public ResponseEntity<String> createNotification(@RequestHeader("Jwtauth") String authorizationHeader, @RequestBody String notification) {
+    public ResponseEntity<String> createNotification(@RequestHeader("Jwtauth") String authorizationHeader, @RequestHeader("Authorization") String gToken ,@RequestBody String notification) {
 
+        System.out.println(">>> gToken: " + gToken);
         // check if token valid
         if (!this.jwtTokenUtil.validateJwtToken(authorizationHeader.substring(7))) {
             JsonObject error = Json.createObjectBuilder().add("error", "Invalid token").build();
@@ -593,13 +596,17 @@ public class AccountController {
 
         JsonObject jEvent = Json.createReader(new StringReader(notification)).readObject();
         try {
-            String messageContent = this.gapiSvc.postCalendarEvent(jEvent);
-            com.google.api.services.gmail.model.Message message = this.gapiSvc.sendEmail(messageContent, jEvent.getString("email"));
+            // String messageContent = this.gapiSvc.postCalendarEvent(jEvent);
+            // Message message = this.gapiSvc.sendEmail(messageContent, jEvent.getString("email"));
+            // JsonObject success = Json.createObjectBuilder().add("success", "Notification set, id=%s".formatted(message.getId())).build();
 
-            JsonObject success = Json.createObjectBuilder().add("success", "Notification set, id=%s".formatted(message.getId())).build();
+            String message = this.gapiSvc.createCalendarEvent(jEvent, gToken.substring(7));
+            String notificaiton = this.gapiSvc.postEmailNotification(message, jEvent.getString("email"), gToken.substring(7));
+
+            JsonObject success = Json.createObjectBuilder().add("success", notification).build();
             return ResponseEntity.status(HttpStatus.OK).body(success.toString());
         } catch (Exception ex) {
-            System.out.println(">>> exception: " + ex.getStackTrace());
+            System.out.println(">>> exception: " + ex.toString());
             JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.toString());
         }
@@ -607,38 +614,38 @@ public class AccountController {
     }
 
     // ############## Getting Google OAuth2 Authentication ##################
-    @GetMapping(path={"/googleapi/calendar"})
-    @ResponseBody
-    public ResponseEntity<String> authenticateGoogleCalendar() throws GeneralSecurityException, IOException {
+    // @GetMapping(path={"/googleapi/calendar"})
+    // @ResponseBody
+    // public ResponseEntity<String> authenticateGoogleCalendar() throws GeneralSecurityException, IOException {
 
-        try {
-            this.gapiSvc.getGoogleApiService("calendar");
+    //     try {
+    //         this.gapiSvc.getGoogleApiService("calendar");
 
-            JsonObject success = Json.createObjectBuilder().add("success", "Authentication success").build();
-            return ResponseEntity.status(HttpStatus.OK).body(success.toString());
-        } catch (Exception ex) {
-            JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.toString());
-        }
+    //         JsonObject success = Json.createObjectBuilder().add("success", "Authentication success").build();
+    //         return ResponseEntity.status(HttpStatus.OK).body(success.toString());
+    //     } catch (Exception ex) {
+    //         JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.toString());
+    //     }
         
         
-    }
+    // }
 
-    @GetMapping(path={"/googleapi/gmail"})
-    @ResponseBody
-    public ResponseEntity<String> authenticateGoogleGmail() {
+    // @GetMapping(path={"/googleapi/gmail"})
+    // @ResponseBody
+    // public ResponseEntity<String> authenticateGoogleGmail() {
 
-        try {
-            this.gapiSvc.getGoogleApiService("email");
+    //     try {
+    //         this.gapiSvc.getGoogleApiService("email");
 
-            JsonObject success = Json.createObjectBuilder().add("success", "Authentication success").build();
-            return ResponseEntity.status(HttpStatus.OK).body(success.toString());
-        } catch (Exception ex) {
-            JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.toString());
-        }
+    //         JsonObject success = Json.createObjectBuilder().add("success", "Authentication success").build();
+    //         return ResponseEntity.status(HttpStatus.OK).body(success.toString());
+    //     } catch (Exception ex) {
+    //         JsonObject error = Json.createObjectBuilder().add("error", ex.getMessage()).build();
+    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.toString());
+    //     }
         
-    }
+    // }
 
     // ############## Testing Purpose ######################
     // controller to convert the currency 

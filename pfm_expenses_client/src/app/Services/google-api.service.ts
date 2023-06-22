@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CLIENT_ID, GOOGLE_CALENDARLIST_SCOPE, GOOGLE_GET_CALENDAR_ENDPOINT, GOOGLE_POST_EVENT_ENDPOINT, REDIRECT_URL } from '../constants';
+import { CLIENT_ID, GOOGLE_API_SCOPES, GOOGLE_CALENDARLIST_SCOPE, GOOGLE_GET_CALENDAR_ENDPOINT, GOOGLE_POST_EVENT_ENDPOINT, REDIRECT_URL } from '../constants';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
 import { GoogleEvent } from '../models';
@@ -48,7 +48,7 @@ export class GoogleApiService {
     var params = {'client_id': CLIENT_ID,
                   'redirect_uri': REDIRECT_URL,
                   'response_type': 'token',
-                  'scope': GOOGLE_CALENDARLIST_SCOPE,
+                  'scope': GOOGLE_API_SCOPES,
                   'include_granted_scopes': 'true'};
     
 

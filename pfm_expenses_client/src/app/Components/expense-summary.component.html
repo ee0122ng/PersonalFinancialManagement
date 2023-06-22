@@ -23,165 +23,109 @@
     </div>
     
     <div class="container-summary">
-        <h2>Your savings: <code [ngClass]="{'position' : savings > 0, 'negative' : savings < 0}">{{ savings | currency:'SGD' }}</code></h2>
+        <table>
+            <th>
+                <h4>Your savings</h4>
+            </th>
+            <th>
+                <h4>Your incomes</h4>
+            </th>
+            <th>
+                <h4>Your expenses</h4>
+            </th>
 
-        <div class="container-income">
-    
-            <table style="width:fit-content">
-                <tr>
-                    <td style="vertical-align: middle;">
-                        <h2>Your incomes:</h2>
-                    </td>
-                    <td style="vertical-align: middle;">
-                        <h2><code>{{ incomes | currency:'SGD' }}</code></h2>
-                    </td>
-                    <td style="vertical-align: middle;">
-                        <button *ngIf="displayIncome else hideincometable" mat-mini-fab color="primary" class="dropdown-button" (click)="onIncome()">
-                            <mat-icon>keyboard_double_arrow_down</mat-icon>
+            <tr style="text-align: center;">
+                <td>
+                    <code [ngClass]="{'positive' : savings > 0, 'negative' : savings < 0}">{{ savings | currency:'SGD' }}</code>
+                </td>
+                <td>
+                    <code>{{ incomes | currency:'SGD' }}</code>
+                </td>
+                <td>
+                    <code>{{ spendings | currency:'SGD' }}</code>
+                </td>
+                <td>
+                    <button *ngIf="displayExpense else hideexpensetable" mat-mini-fab color="primary" class="dropdown-button" (click)="onExpense()">
+                        <mat-icon>keyboard_double_arrow_down</mat-icon>
+                    </button>
+                    <ng-template #hideexpensetable>
+                        <button mat-mini-fab color="primary" class="dropdown-button" (click)="onExpense()">
+                            <mat-icon>keyboard_double_arrow_up</mat-icon>
                         </button>
-                        <ng-template #hideincometable>
-                            <button mat-mini-fab color="primary" class="dropdown-button" (click)="onIncome()">
-                                <mat-icon>keyboard_double_arrow_up</mat-icon>
-                            </button>
-                        </ng-template>
-                    </td>
-                </tr>
-            </table>
-    
-            <div class="table-income" *ngIf="displayIncome">
-                <mat-table [dataSource]="incomeSource" class="records-table" #incomeTable>
-                    <!-- Position Column -->
-                    <ng-container matColumnDef="position">
-                      <th mat-header-cell *matHeaderCellDef> No. </th>
-                      <td mat-cell *matCellDef="let element"> {{ element.position }} </td>
-                    </ng-container>
-        
-                    <!-- Position ID -->
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef> ID. </th>
-                        <td mat-cell *matCellDef="let element"> {{ element.id }} </td>
-                    </ng-container>
-                  
-                    <!-- Category Column -->
-                    <ng-container matColumnDef="category">
-                      <th mat-header-cell *matHeaderCellDef> Category </th>
-                      <td mat-cell *matCellDef="let element"> {{ element.category }} </td>
-                    </ng-container>
-                  
-                    <!-- Item Column -->
-                    <ng-container matColumnDef="item">
-                      <th mat-header-cell *matHeaderCellDef> Item </th>
-                      <td mat-cell *matCellDef="let element"> {{ element.item }} </td>
-                    </ng-container>
-                  
-                    <!-- Transaction Date Column -->
-                    <ng-container matColumnDef="transactionDate">
-                      <th mat-header-cell *matHeaderCellDef> Transaction Date </th>
-                      <td mat-cell *matCellDef="let element" style="text-align:center"> {{ element.transactionDate | date:'dd-MM-yyyy'}} </td>
-                    </ng-container>
-        
-                    <!-- Transaction Date Column -->
-                    <ng-container matColumnDef="currency">
-                        <th mat-header-cell *matHeaderCellDef> Currency </th>
-                        <td mat-cell *matCellDef="let element"> {{ element.currency }} </td>
-                    </ng-container>
-        
-                    <!-- Transaction Date Column -->
-                    <ng-container matColumnDef="amount">
-                        <th mat-header-cell *matHeaderCellDef> Amount (SGD) </th>
-                        <td mat-cell *matCellDef="let element" style="text-align: right;"> {{ element.amount | number: '1.0-2'}} </td>
-                    </ng-container>
-                  
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                  </mat-table>
-            </div>
+                    </ng-template>
+                </td>
+            </tr>
+        </table>
+
+        <div class="container-spacer">
+
         </div>
     
         <div class="container-expense">
     
-            <table style="width:fit-content">
-                <tr>
-                    <td style="vertical-align: middle;">
-                        <h2>Your expenses:</h2>
-                    </td>
-                    <td style="vertical-align: middle;">
-                        <h2><code>{{ spendings | currency:'SGD' }}</code></h2>
-                    </td>
-                    <td style="vertical-align: middle;">
-                        <button *ngIf="displayExpense else hideexpensetable" mat-mini-fab color="primary" class="dropdown-button" (click)="onExpense()">
-                            <mat-icon>keyboard_double_arrow_down</mat-icon>
-                        </button>
-                        <ng-template #hideexpensetable>
-                            <button mat-mini-fab color="primary" class="dropdown-button" (click)="onExpense()">
-                                <mat-icon>keyboard_double_arrow_up</mat-icon>
-                            </button>
-                        </ng-template>
-                    </td>
-                </tr>
-            </table>
-    
             <div class="table-expense" *ngIf="displayExpense">
-                <mat-table [dataSource]="expSourceDisplay" class="records-table" #expenseTable>
-                    <!-- Position Column -->
-                    <ng-container matColumnDef="position">
-                      <th mat-header-cell *matHeaderCellDef> No. </th>
-                      <td mat-cell *matCellDef="let element"> {{ element.position }} </td>
-                    </ng-container>
-        
-                    <!-- Position ID -->
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef> ID. </th>
-                        <td mat-cell *matCellDef="let element"> {{ element.id }} </td>
-                    </ng-container>
-                  
-                    <!-- Category Column -->
-                    <ng-container matColumnDef="category">
-                      <th mat-header-cell *matHeaderCellDef> Category </th>
-                      <td mat-cell *matCellDef="let element"> {{ element.category }} </td>
-                    </ng-container>
-                  
-                    <!-- Item Column -->
-                    <ng-container matColumnDef="item">
-                      <th mat-header-cell *matHeaderCellDef> Item </th>
-                      <td mat-cell *matCellDef="let element"> {{ element.item }} </td>
-                    </ng-container>
-                  
-                    <!-- Transaction Date Column -->
-                    <ng-container matColumnDef="transactionDate">
-                      <th mat-header-cell *matHeaderCellDef> Transaction Date </th>
-                      <td mat-cell *matCellDef="let element"> {{ element.transactionDate | date:'dd-MM-yyyy'}} </td>
-                    </ng-container>
-        
-                    <!-- Transaction Date Column -->
-                    <ng-container matColumnDef="currency">
-                        <th mat-header-cell *matHeaderCellDef> Currency </th>
-                        <td mat-cell *matCellDef="let element"> {{ element.currency }} </td>
-                    </ng-container>
-        
-                    <!-- Transaction Date Column -->
-                    <ng-container matColumnDef="amount">
-                        <th mat-header-cell *matHeaderCellDef> Amount (SGD) </th>
-                        <td mat-cell *matCellDef="let element" style="text-align: right;"> {{ element.amount | number:'1.2-2'}} </td>
-                    </ng-container>
-                  
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                  </mat-table>
+                <mat-card>
+                    <mat-table [dataSource]="expSourceDisplay" class="records-table" #expenseTable>
+                        <!-- Position Column -->
+                        <ng-container matColumnDef="position">
+                          <th mat-header-cell *matHeaderCellDef> No. </th>
+                          <td mat-cell *matCellDef="let element"> {{ element.position }} </td>
+                        </ng-container>
+            
+                        <!-- Position ID -->
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef> ID. </th>
+                            <td mat-cell *matCellDef="let element"> {{ element.id }} </td>
+                        </ng-container>
+                      
+                        <!-- Category Column -->
+                        <ng-container matColumnDef="category">
+                          <th mat-header-cell *matHeaderCellDef> Category </th>
+                          <td mat-cell *matCellDef="let element"> {{ element.category }} </td>
+                        </ng-container>
+                      
+                        <!-- Item Column -->
+                        <ng-container matColumnDef="item">
+                          <th mat-header-cell *matHeaderCellDef> Item </th>
+                          <td mat-cell *matCellDef="let element"> {{ element.item }} </td>
+                        </ng-container>
+                      
+                        <!-- Transaction Date Column -->
+                        <ng-container matColumnDef="transactionDate">
+                          <th mat-header-cell *matHeaderCellDef> Transaction Date </th>
+                          <td mat-cell *matCellDef="let element"> {{ element.transactionDate | date:'dd-MM-yyyy'}} </td>
+                        </ng-container>
+            
+                        <!-- Transaction Date Column -->
+                        <ng-container matColumnDef="currency">
+                            <th mat-header-cell *matHeaderCellDef> Currency </th>
+                            <td mat-cell *matCellDef="let element"> {{ element.currency }} </td>
+                        </ng-container>
+            
+                        <!-- Transaction Date Column -->
+                        <ng-container matColumnDef="amount">
+                            <th mat-header-cell *matHeaderCellDef> Amount (SGD) </th>
+                            <td mat-cell *matCellDef="let element" style="text-align: right;"> {{ element.amount | number:'1.2-2'}} </td>
+                        </ng-container>
+                      
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                      </mat-table>
+    
+                    <mat-paginator #paginator
+                        class="summary-paginator"
+                        (page)="handlePageEvent($event)"
+                        [length]="length"
+                        [pageSize]="pageSize"
+                        [disabled]="disabled"
+                        [showFirstLastButtons]="showFirstLastButtons"
+                        [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
+                        [hidePageSize]="hidePageSize"
+                        [pageIndex]="pageIndex"
+                        aria-label="Select page">
+                    </mat-paginator>
+                </mat-card>
             </div>
-
-            <mat-paginator #paginator
-               class="summary-paginator"
-               (page)="handlePageEvent($event)"
-               [length]="length"
-               [pageSize]="pageSize"
-               [disabled]="disabled"
-               [showFirstLastButtons]="showFirstLastButtons"
-               [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
-               [hidePageSize]="hidePageSize"
-               [pageIndex]="pageIndex"
-               aria-label="Select page">
-            </mat-paginator>
 
         </div>
 

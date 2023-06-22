@@ -34,6 +34,29 @@
     box-shadow: 0 5px 5px 5px #6c93001a;
 }
 
+.icon {
+    color: white;
+    font-size: 12px;
+    height: 12px;
+    width: 12px;
+}
+
+.icon-wrapper label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-wrapper input[type='file'] {
+    display: none;
+}
+
+.icon-wrapper :hover {
+    transition: all .25s;
+    background-color: darken(#2962FF, 15%);
+}
+
 .icon-wrapper {
 
     position: absolute;
@@ -49,29 +72,6 @@
     top: 120%;
     z-index: 2;
     cursor: pointer;
-
-    .icon {
-        color: white;
-        font-size: 12px;
-        height: 12px;
-        width: 12px;
-    }
-
-    &:hover {
-        transition: all .25s;
-        background-color: darken(#2962FF, 15%);
-    }
-
-    & label {
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    & input[type='file'] {
-        display: none;
-    }
 
 }
 

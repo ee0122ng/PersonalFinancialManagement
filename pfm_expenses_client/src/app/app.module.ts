@@ -25,6 +25,7 @@ import { ExpenseSummaryComponent } from './Components/expense-summary.component'
 import { AuthInterceptorService } from './Services/auth-interceptor.service';
 import { GoogleapiCallbackComponent } from './Components/googleapi-callback.component';
 import { ExpenseRecurrenceComponent } from './Components/expense-recurrence.component';
+import { GoogleApiService } from './Services/google-api.service';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { ExpenseRecurrenceComponent } from './Components/expense-recurrence.comp
     LogoutAccountService,
     UserExpensesService,
     UploadProfilePictureService,
+    GoogleApiService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptorService,

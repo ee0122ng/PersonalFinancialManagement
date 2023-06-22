@@ -74,7 +74,7 @@ export class ExpenseRecordComponent implements OnInit {
   prepareDataSource() {
     // sort the transaction records by date
     this.transactionRecord.sort((a, b) => {
-      return <any> new Date(a.transactionDate) - <any>new Date(b.transactionDate)
+      return <any> new Date(b.transactionDate) - <any>new Date(a.transactionDate)
     })
 
     for (let i=0; i<this.transactionRecord.length; i++) {

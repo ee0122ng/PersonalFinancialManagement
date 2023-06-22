@@ -20,6 +20,7 @@ export class LogoutAccountService {
         (p:any) => {
           this.message = p["payload"]
           localStorage.clear();
+          sessionStorage.clear();
           console.info(">>> front: " + this.message)
           this.router.navigate(['']);
         }

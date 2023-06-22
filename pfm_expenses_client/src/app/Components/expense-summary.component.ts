@@ -104,7 +104,7 @@ export class ExpenseSummaryComponent implements OnInit {
   prepareDataSource() {
     // sort the transaction records by date
     this.transactionRecord.sort((a, b) => {
-      return <any> new Date(a.transactionDate) - <any>new Date(b.transactionDate)
+      return <any> new Date(b.transactionDate) - <any>new Date(a.transactionDate)
     })
 
     let incomeRecords = this.transactionRecord.map(r => r.category).filter(c => c == 'income')
