@@ -1,75 +1,86 @@
-<mat-card *ngIf="!!profile">
+<div class="container">
 
-    <div *ngIf="imageUploaded else uploadFail">
-        <code style="color:darkslateblue">Profile picture uploaded successfully</code>
+    <div class="container-title">
+        <h1>My Profile</h1>
     </div>
 
-    <ng-template #uploadFail>
-        <div *ngIf="!!errorMessage">
-            <code style="color:red">{{ errorMessage }}</code>
-        </div>
-    </ng-template>
+    <div class="container-profile">
+        <mat-card *ngIf="!!profile">
 
-    <mat-card-header>
-
-        <div mat-card-image class="profile-pic-container">
-            <div class="image-container" [style.background-image]="'url(' + profilePicUrl + ')'"></div>
-            <label for="profile-pic-input-file">
-                <div class="icon-wrapper">
-                    <form method="POST" enctype="multipart/form-data">
-                        <input type="file" id="profile-pic-input-file" accept="image/*" (change)="onFileUpload($event)" #profilePic>
-                    </form>
-                    <mat-icon class="icon" fontIcon="edit"></mat-icon>
+            <div *ngIf="imageUploaded else uploadFail">
+                <code style="color:darkslateblue">Profile picture uploaded successfully</code>
+            </div>
+        
+            <ng-template #uploadFail>
+                <div *ngIf="!!errorMessage">
+                    <code style="color:red">{{ errorMessage }}</code>
                 </div>
-            </label>
-        </div>
-        <mat-card-title>{{ profile.firstname | uppercase }}</mat-card-title>
-        <mat-card-subtitle>Username: {{ username | lowercase }}</mat-card-subtitle>
-    </mat-card-header>
+            </ng-template>
+        
+            <mat-card-header>
+        
+                <div mat-card-avatar class="container-profile-pic">
+                    <div class="image-container" [style.background-image]="'url(' + profilePicUrl + ')'"></div>
+                    <label for="profile-pic-input-file">
+                        <div class="icon-wrapper">
+                            <form method="POST" enctype="multipart/form-data">
+                                <input type="file" id="profile-pic-input-file" accept="image/*" (change)="onFileUpload($event)" #profilePic>
+                            </form>
+                            <mat-icon class="icon" fontIcon="edit"></mat-icon>
+                        </div>
+                    </label>
+                </div>
+                <mat-card-title>{{ profile.firstname | uppercase }}</mat-card-title>
+                <mat-card-subtitle>Username: {{ username | lowercase }}</mat-card-subtitle>
+            </mat-card-header>
 
-    &nbsp;
+            <div class="container-spacer">
 
-    <mat-card-content>
-        <table>
-
-            <tr>
-                <td>Account Id</td>
-                <td>:</td>
-                <td>{{ accountId }}</td>
-            </tr>
-
-            <tr>
-                <td>Family Name</td>
-                <td>:</td>
-                <td>{{ profile.lastname | titlecase }}</td>
-            </tr>
-
-            <tr>
-                <td>Age</td>
-                <td>:</td>
-                <td>{{ profile.age }}</td>
-            </tr>
-
-            <tr>
-                <td>Date of Birth</td>
-                <td>:</td>
-                <td>{{ profile.dob | date: 'd MMM, y' }}</td>
-            </tr>
-
-            <tr>
-                <td>Occupation</td>
-                <td>:</td>
-                <td>{{ profile.occupation }}</td>
-            </tr>
-
-            <tr>
-                <td style="vertical-align: top;">Country of Residence</td>
-                <td style="vertical-align: top;">:</td>
-                <td>
-                    <img *ngIf="!!profile.country" mat-card-sm-image [src]="flag" alt="" title="{{ profile.country }}" style="width:100px; height:50px">
-                </td>
-            </tr>
-
-        </table>
-    </mat-card-content>
-</mat-card>
+            </div>
+        
+            <mat-card-content>
+                <table>
+        
+                    <tr>
+                        <td>Account Id</td>
+                        <td>:</td>
+                        <td>{{ accountId }}</td>
+                    </tr>
+        
+                    <tr>
+                        <td>Family Name</td>
+                        <td>:</td>
+                        <td>{{ profile.lastname | titlecase }}</td>
+                    </tr>
+        
+                    <tr>
+                        <td>Age</td>
+                        <td>:</td>
+                        <td>{{ profile.age }}</td>
+                    </tr>
+        
+                    <tr>
+                        <td>Date of Birth</td>
+                        <td>:</td>
+                        <td>{{ profile.dob | date: 'd MMM, y' }}</td>
+                    </tr>
+        
+                    <tr>
+                        <td>Occupation</td>
+                        <td>:</td>
+                        <td>{{ profile.occupation }}</td>
+                    </tr>
+        
+                    <tr>
+                        <td style="vertical-align: top;">Country of Residence</td>
+                        <td style="vertical-align: top;">:</td>
+                        <td>
+                            <img *ngIf="!!profile.country" mat-card-sm-image [src]="flag" alt="" title="{{ profile.country }}" style="width:100px; height:50px">
+                        </td>
+                    </tr>
+        
+                </table>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

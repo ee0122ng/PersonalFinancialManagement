@@ -72,10 +72,7 @@ public class CurrencyConverterService {
 
         if (rep.getStatusCode().value() == 200) {
             String converter = rep.getBody();
-            System.out.println(">>> api return: " + converter);
             Float currencyRate = (float) Json.createReader(new StringReader(converter)).readObject().getJsonNumber(key).doubleValue();
-
-            System.out.println(">>> api returned rate " + currencyRate);
 
             CurrencyRate rate = new CurrencyRate();
             rate.setRate(currencyRate);

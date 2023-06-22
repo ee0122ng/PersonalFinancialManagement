@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { UserExpensesService } from '../Services/user-expenses.service';
 import { RecordTable, TransactionRecord } from '../models';
 import { MatTable } from '@angular/material/table';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-expense-summary',
@@ -27,10 +28,22 @@ export class ExpenseSummaryComponent implements OnInit {
   displayedColumns : string[] = ['position', 'category', 'item', 'transactionDate', 'amount'];
   incomeSource : RecordTable[] = [];
   expenseSource : RecordTable[] = [];
+  expSourceDisplay !: RecordTable[];
 
   summaryError : string = "";
   displayExpense : boolean = false;
   displayIncome : boolean = false;
+
+  length : number = 0;
+  pageSize : number = 5;
+  pageIndex : number = 0;
+  previousPageIndex !: number | undefined;
+  pageSizeOptions : number[] = [5, 10]
+  hidePageSize : boolean = false;
+  showPageSizeOptions : boolean = true;
+  showFirstLastButtons : boolean = true;
+  disabled : boolean = false;
+  pageEvent !: PageEvent;
 
   constructor(private userExpSvc : UserExpensesService) {}
 
@@ -132,13 +145,26 @@ export class ExpenseSummaryComponent implements OnInit {
           currency: this.transactionRecord[i].currency
         }
       )
+      this.expSourceDisplay = this.expenseSource.slice(this.pageIndex, this.pageSize)
 
       if (!!this.expenseTable) {
-        this.expenseTable.dataSource = this.expenseSource
+        this.expenseTable.dataSource = this.expenseSource.slice(this.pageIndex, this.pageSize)
         this.expenseTable.renderRows()
       }
     }
+    this.length = this.expenseSource.length
 
+  }
+
+  handlePageEvent(e: PageEvent) {
+    this.pageEvent = e
+    this.pageSize = e.pageSize
+    this.pageIndex = e.pageIndex
+    this.previousPageIndex = e.previousPageIndex
+
+    const startIndex = this.pageIndex * this.pageSize
+    const endIndex = this.pageIndex * this.pageSize + this.pageSize
+    this.expSourceDisplay = this.expenseSource.slice(startIndex, endIndex)
   }
 
   previous() {

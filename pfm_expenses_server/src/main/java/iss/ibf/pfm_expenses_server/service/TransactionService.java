@@ -60,6 +60,23 @@ public class TransactionService {
         return this.transRepo.deleteTransaction(id);
     }
 
+    public JsonObject retrieveConvertedTransaction(Integer month, String userId) throws ParseException {
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(LocalDate.now().getYear(), month, 1);
+        String selectedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ").format(calendar.getTime());
+
+        Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(this.getStartDayofMonth(selectedDate));
+        LocalDate start = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse(this.getEndDayofMonth(selectedDate));
+        LocalDate end = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        List<Activity> activities = this.transRepo.retrieveConvertedTransaction(start, end, userId);
+
+        return this.convertActivitiesListToJsonObject(activities);
+    }
+
     //TODO: to complete
     public Float[] getSummaries(Integer month, String userId) throws ParseException {
         Calendar calendar = Calendar.getInstance();

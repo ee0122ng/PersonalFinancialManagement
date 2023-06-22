@@ -43,16 +43,6 @@ export interface PersistDetails {
     loginStatus : Boolean | null;
 }
 
-export interface Transaction {
-    id: number;
-    userId: number;
-    category: string;
-    item: string;
-    amount: number;
-    transactionDate: Date;
-    currency: string;
-}
-
 export interface TransactionRecord {
     id: number;
     category: string;
@@ -76,14 +66,6 @@ export interface GoogleAuthToken {
     token : string;
     expires_in: number;
     expires_date: Date;
-}
-
-export interface GoogleEvent {
-    summary: string;
-    description: string;
-    start: StartEvent;
-    end: EndEvent;
-    recurrence: RecurrenceEvent;
 }
 
 export interface StartEvent {
@@ -115,4 +97,25 @@ export interface GoogleEvent {
     description: string;
     email: string;
     startDate: string;
+}
+
+
+export class Transaction {
+    id !: number;
+    userId !: string;
+    category !: string;
+    item !: string;
+    amount !: number;
+    transactionDate !: Date;
+    currency !: string;
+    
+    constructor() {}
+}
+
+export class GoogleEvent {
+    summary !: string;
+    description !: string;
+    start !: StartEvent;
+    end !: EndEvent;
+    recurrence !: RecurrenceEvent;
 }

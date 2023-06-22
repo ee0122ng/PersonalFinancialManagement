@@ -1,144 +1,123 @@
-<div>
-    <h1>Financial Transaction</h1>
+<div class="container">
+
+    <div class="container-title">
+        <h1>Financial Transaction</h1>
+    </div>
 
     <div *ngIf="!!message">
         <code style="color:red">{{ message }}</code>
     </div>
 
-    <div>
-        <form [formGroup]="transactionForm">
-            <table>
-                <tr>
-                    <td>Category</td>
-                    <td>:</td>
-                    <td>
-                        <select name="" id="category" formControlName="category">
-                            <option hidden="true">Select category</option>
-                            <option *ngFor="let c of CATEGORY">{{ c }}</option>
-                        </select>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Description</td>
-                    <td>:</td>
-                    <td>
-                        <input type="text" formControlName="item">
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Date</td>
-                    <td>:</td>
-                    <td>
-                        <mat-form-field color="accent">
-                            <mat-label>Transaction Date</mat-label>
-                            <input matInput [matDatepicker]="picker1" formControlName="transactionDate">
-                            <mat-hint>MM/DD/YYYY</mat-hint>
-                            <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
-                            <mat-datepicker #picker1></mat-datepicker>
-                        </mat-form-field>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Currency</td>
-                    <td>:</td>
-                    <td>
-                        <select name="" formControlName="currency">
-                            <option *ngFor="let cr of CURRENCY" [selected]="cr == 'SGD'">{{ cr }}</option>
-                        </select>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Amount</td>
-                    <td>:</td>
-                    <td>
-                        <input type="number"  formControlName="amount">
-                    </td>
-
-                    <span *ngIf="transactionForm.get('amount')?.dirty && transactionForm.get('amount')?.invalid">
-                        <code style="color:red">Invalid currency amount</code>
-                    </span>
-                </tr>
-
-                <tr>
-                    <td>Recurring</td>
-                    <td>:</td>
-                    <td>
-                        <section class="example-section">
-                            <mat-slide-toggle (change)="toggleRecur($event)">Enabled Notification: {{isChecked}}</mat-slide-toggle>
-                        </section>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div *ngIf="isChecked">
-                            <form [formGroup]="eventForm">
-                                <table mat-table [dataSource]="eventSource">
-
-                                    <ng-container matColumnDef="frequency">
-                                        <th mat-header-cell *matHeaderCellDef> Type </th>
-                                        <td mat-cell *matCellDef="let element">
-                                            <select name="" id="" formControlName="frequency">
-                                                <option [value]="t" *ngFor="let t of TYPE" [selected]="t == this.eventForm.get('frequency')?.value">{{ t }}</option>
-                                            </select>
-                                        </td>
-                                    </ng-container>
+    <div class="container-record">
+        <div class="container-record-inner">
+            <mat-card class="record-box" appearance="outlined">
+                <form [formGroup]="transactionForm">
+                    <table>
+                        <tr>
+                            <td><h4>Category</h4></td>
+                            <td></td>
+                            <td>
+                                <mat-form-field color="primary">
+                                    <mat-label>Select Category</mat-label>
+                                    <mat-select name="" id="category" formControlName="category">
+                                        <mat-option *ngFor="let c of CATEGORY" [value]="c">{{ c }}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </td>
+                        </tr>
         
-                                    <ng-container matColumnDef="count">
-                                        <th mat-header-cell *matHeaderCellDef> Count </th>
-                                        <td mat-cell *matCellDef="let element">
-                                            <input type="number" formControlName="count">
-                                        </td>
-                                    </ng-container>
-                                    <span *ngIf="eventForm.get('count')?.invalid">
-                                        <code style="color:red">Minimum number is 2</code>
-                                    </span>
+                        <tr>
+                            <td><h4>Description</h4></td>
+                            <td></td>
+                            <td>
+                                <mat-form-field color="primary">
+                                    <mat-label>Description</mat-label>
+                                    <input matInput type="text" formControlName="item">
+                                    <button type="button" *ngIf="transactionForm.get('item')?.value" matSuffix mat-icon-button aria-label="Clear" (click)="handleClearItem()">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+                                </mat-form-field>
+                            </td>
+                        </tr>
         
-                                    <ng-container matColumnDef="summary">
-                                        <th mat-header-cell *matHeaderCellDef> Summary </th>
-                                        <td mat-cell *matCellDef="let element">
-                                            <input type="text" formControlName="summary">
-                                        </td>
-                                    </ng-container>
+                        <tr>
+                            <td><h4>Date</h4></td>
+                            <td></td>
+                            <td>
+                                <mat-form-field color="primary">
+                                    <mat-label>Transaction Date</mat-label>
+                                    <input matInput [matDatepicker]="picker1" formControlName="transactionDate">
+                                    <mat-hint>MM/DD/YYYY</mat-hint>
+                                    <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker1></mat-datepicker>
+                                </mat-form-field>
+                            </td>
+                        </tr>
         
-                                    <ng-container matColumnDef="description">
-                                        <th mat-header-cell *matHeaderCellDef> Description </th>
-                                        <td mat-cell *matCellDef="let element">
-                                            <input type="text" formControlName="description">
-                                        </td>
-                                    </ng-container>
+                        <tr>
+                            <td><h4>Currency</h4></td>
+                            <td></td>
+                            <td>
+                                <mat-form-field color="primary">
+                                    <mat-label>Select Currency</mat-label>
+                                    <mat-select name="" id="category" formControlName="currency">
+                                        <mat-option *ngFor="let cr of CURRENCY" [value]="cr">{{ cr }}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </td>
+                        </tr>
         
-                                    <ng-container matColumnDef="email">
-                                        <th mat-header-cell *matHeaderCellDef> Notification to </th>
-                                        <td mat-cell *matCellDef="let element">
-                                            <input type="email" formControlName="email">
-                                        </td>
-                                    </ng-container>
+                        <tr>
+                            <td><h4>Amount</h4></td>
+                            <td></td>
+                            <td>
+                                <mat-form-field color="primary">
+                                    <mat-label>Transaction Amount</mat-label>
+                                    <input matInput type="number" formControlName="amount">
+                                    <button *ngIf="transactionForm.get('amount')?.value" matSuffix mat-icon-button aria-label="Clear" (click)="handleClearAmount()">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+                                </mat-form-field>
+                            </td>
         
-                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                                </table>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
+                        </tr>
+    
+                        <tr *ngIf="transactionForm.get('amount')?.dirty && transactionForm.get('amount')?.invalid">
+                            <td colspan="3">
+                                <code style="color:red">Invalid currency amount</code>
+                            </td>
+                        </tr>
+        
+                        <tr>
+                            <td><h4>Recurring</h4></td>
+                            <td></td>
+                            <td style="vertical-align: middle;">
+                                <section class="example-section">
+                                    <mat-slide-toggle (change)="toggleRecur($event)">Enabled Notification: {{isChecked}}</mat-slide-toggle>
+                                </section>
+                            </td>
+                        </tr>
+        
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td>
 
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button mat-raised-button [color]="!checkFormValid() ? 'disabled' : 'primary'" [disabled]="!checkFormValid()" (click)="addNew()"> Add </button>
-                    </td>
-                </tr>
-
-            </table>
-
-        </form>
+                            </td>
+                        </tr>
+        
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <button mat-raised-button [color]="!checkFormValid() ? 'disabled' : 'primary'" [disabled]="!checkFormValid()" (click)="addNew()"> Add </button>
+                            </td>
+                        </tr>
+        
+                    </table>
+        
+                </form>
+            </mat-card>
+        </div>
     </div>
 </div>

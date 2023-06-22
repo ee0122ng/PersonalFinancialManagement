@@ -69,6 +69,23 @@ public class TransactionRepository {
 
     }
 
+    public List<Activity> retrieveConvertedTransaction(LocalDate startDate, LocalDate endDate, String userId) {
+
+        try {
+            List<Activity> transactions = jdbcTemplate.query(RETRIEVE_RECORDS_SQL, BeanPropertyRowMapper.newInstance(Activity.class), userId, startDate.toString(), endDate.toString());
+            List<Float> convertedAmount = transactions.stream().map(t -> t.getAmount() * this.getConversionRate(t.getCurrency())).toList();
+
+            for (int i = 0; i < convertedAmount.size(); i++) {
+                transactions.get(i).setAmount(convertedAmount.get(i));
+            }
+
+            return transactions;
+        } catch(Exception ex) {
+            throw new ActivityTableException("No transaction record found");
+        }
+
+    }
+
     public Boolean updateTransaction(Activity activity) throws ParseException {
 
         Integer updatedResult = jdbcTemplate.update(UPDATE_RECORDS_SQL, activity.getCategory(), activity.getItem(), activity.getItemDate(), activity.getAmount(), activity.getCurrency(), activity.getId());
@@ -100,17 +117,10 @@ public class TransactionRepository {
                 // convert both list to SGD
                 if (incomeList.size() > 0) {
                     incomes = incomeList.stream().map(t -> (float) t.getAmount() * (float) this.getConversionRate(t.getCurrency())).reduce(0f, (a,b) -> (a+b));
-                    System.out.println(">>> incomes: " + incomes);
                 }
                 if (spendingList.size() > 0) {
-                    List<String> currencyList = spendingList.stream().map(t -> t.getCurrency()).toList();
-                    System.out.println(">>> sample expense: " + currencyList.toString());
-                    System.out.println(">>> sample expense: " + (float) this.getConversionRate(spendingList.get(7).getCurrency()));
                     spendings = spendingList.stream().map(t -> (float) t.getAmount() * (float) this.getConversionRate(t.getCurrency())).reduce(0f, (a,b) -> (a+b));
-                    System.out.println(">>> expense: " + spendings);
                 }
-                System.out.println(">>> incomes: " + incomeList.toString());
-                System.out.println(">>> expenses: " + spendingList.toString());
             }
 
             return new Float[] {incomes, spendings};

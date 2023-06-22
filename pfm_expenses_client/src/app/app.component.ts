@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { LogoutAccountService } from './Services/logout-account.service';
 import { HttpClient } from '@angular/common/http';
+import { AuthoriseAccountService } from './Services/authorise-account.service';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +26,7 @@ export class AppComponent implements OnInit ,OnDestroy {
   userEmail !: string | undefined;
   username !: string;
 
-  constructor(private router: Router, private logoutAccountService: LogoutAccountService) {
+  constructor(private router: Router, private logoutAccountService: LogoutAccountService, private sessionCheckSvc: AuthoriseAccountService) {
     AppComponent.loginStatus.subscribe( (s:any) => { this.loginSuccess = s })
     AppComponent.infoCompletionStatus.subscribe( (a:any) => { this.accountCompleted = a})
     AppComponent.currentAccountId.subscribe( (c:any) => { this.accountId = c })
@@ -45,7 +46,20 @@ export class AppComponent implements OnInit ,OnDestroy {
       AppComponent.infoCompletionStatus.next(persistDetails.profileCompStatus)
       AppComponent.currentAccountId.next(persistDetails.accountId)
       AppComponent.currentUserEmail.next(persistDetails.email)
-      AppComponent.currentUsername.next(persistDetails.username)
+
+      this.sessionCheckSvc.checkSession()
+        .then(
+          (p:any) => {
+            AppComponent.currentUsername.next(p["username"])
+            this.router.navigate(['/summary'])
+          }
+        )
+        .catch(
+          (err:any) => {
+          
+          }
+        )
+      
     }
 
   }

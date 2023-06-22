@@ -1,52 +1,63 @@
-<div class="main-container">
-    <h1>User Login</h1>
+<div class="container">
 
-    <div *ngIf="!!errorMessage">
+    <div class="container-title">
+        <h1>PFM Account Login</h1>
+    </div>
+
+    <div class="container-credentialerror" *ngIf="!!errorMessage">
         <p style="color: red;"><code>{{ errorMessage }}</code></p>
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="login()">
-        <table>
-            <tr>
-                <td>
-                    <mat-form-field appearance="fill">
+    <div class="container-login">
+        <mat-card>
+            <form [formGroup]="loginForm" (ngSubmit)="login()">
+                <table>
+                    <tr>
+                        <td><h4>Username</h4></td>
+                        <td></td>
+                        <td>
+                            <mat-form-field color="primary">
+                                <mat-label>Input username</mat-label>
+                                <input matInput type="text" formControlName="username">
+                            </mat-form-field>
+                        </td>
+                    </tr>
 
-                        <mat-label>Your username</mat-label>
-                        <input matInput type="text" formControlName="username">
+                    <tr>
+                        <td><h4>Password</h4></td>
+                        <td></td>
+                        <td>
+                            <mat-form-field color="primary">
+                                <mat-label>Input password</mat-label>
+                                <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
+                                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                </button>
+                            </mat-form-field>
+                        </td>
+                    </tr>
         
-                    </mat-form-field>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <mat-form-field appearance="fill">
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <button mat-flat-button color="primary">Login</button>
+                        </td>
+                    </tr>
 
-                        <mat-label>Your password</mat-label>
-                        <input matInput [type]="hide ? 'password' : 'text' " formControlName="password">
-                        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-                            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-                        </button>
-        
-                    </mat-form-field>
-                </td>
-            </tr>
+                    <div class="container-spacer">
 
-            <tr>
-                <td>
-                    <button mat-flat-button color="primary">Login</button>
-                </td>
-            </tr>
-        </table>
-    </form>
+                    </div>
 
-    &nbsp;
-
-    <div>
-        <code>Don't have an account yet?</code>
-        &nbsp;
-        <span>
-            <a [routerLink]="['/register']">Register here!</a>
-        </span>
+                    <tr>
+                        <td colspan="3">
+                            <code>Don't have an account yet? </code>
+                            <a [routerLink]="['/register']" style="font-style: italic; font-weight: 200;" class="register">Register here</a>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </mat-card>
     </div>
 
 </div>

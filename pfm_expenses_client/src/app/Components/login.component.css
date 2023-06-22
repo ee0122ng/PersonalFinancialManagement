@@ -1,3 +1,52 @@
-.main-container {
+.container {
     justify-content: center;
+    width: fit-content;
+    height: fit-content;
+    margin: auto;
+}
+
+.container-title h1 {
+    padding: 0.4em;
+    width: fit-content;
+    margin: auto;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: bold;
+    font-size: 2em;
+}
+
+.container-login {
+    align-content: center;
+    margin: auto;
+    justify-content: center;
+    width: fit-content;
+    font-family: fantasy;
+}
+
+.container-login table {
+    align-content: center;
+    margin: auto;
+    justify-content: center;
+}
+
+.container-login mat-card {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    width: 400px;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+.register {
+    position: relative;
+    color: chocolate;
+    animation: blink 1s infinite;
+    animation-delay: calc(.2s * var(--i))
+}
+
+.container-spacer {
+    padding: 1em;
 }

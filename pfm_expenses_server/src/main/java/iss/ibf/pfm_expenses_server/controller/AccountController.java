@@ -238,15 +238,28 @@ public class AccountController {
             JsonObject error = Json.createObjectBuilder().add("error", "Access denied").build();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error.toString());
         }
-        System.out.println(">>> auth header: " + authorizationHeader);
-        System.out.println(">>> get username from token: " + username);
 
         this.sessionMap.remove(username);
-        System.out.println(">>> session map" + this.sessionMap.keySet());
-        System.out.println(">>> logging out...");
         JsonObject payload = Json.createObjectBuilder().add("payload", "Logout successfully").build();
 
         return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+    }
+
+    // controller to retrieve username if token still valid
+    @GetMapping(path={"/account/validsession"})
+    @ResponseBody
+    public ResponseEntity<String> getUserLastSession(@RequestHeader("Jwtauth") String authorizationHeader) {
+        // check if token valid
+        if (!this.jwtTokenUtil.validateJwtToken(authorizationHeader.substring(7))) {
+            JsonObject error = Json.createObjectBuilder().add("error", "Invalid token").build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error.toString());
+        }
+        String username = this.jwtTokenUtil.getUserNameFromJwtToken(authorizationHeader.substring(7));
+
+        JsonObject payload = Json.createObjectBuilder().add("username", username).build();
+        System.out.println(">>> payload: " + payload.toString());
+        return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
+
     }
 
     // controller to complete user account
@@ -549,7 +562,7 @@ public class AccountController {
         String userId = this.sessionMap.get(username).get("userId");
         try {
             Float[] result = this.transSvc.getSummaries(Integer.valueOf(month), userId);
-            JsonObject records = this.transSvc.retrieveTransaction(Integer.valueOf(month), userId);
+            JsonObject records = this.transSvc.retrieveConvertedTransaction(Integer.valueOf(month), userId);
             JsonObject payload = Json.createObjectBuilder().add("income", result[0]).add("spending", result[1]).add("summary", Json.createObjectBuilder(records)).build();
             return ResponseEntity.status(HttpStatus.OK).body(payload.toString());
 

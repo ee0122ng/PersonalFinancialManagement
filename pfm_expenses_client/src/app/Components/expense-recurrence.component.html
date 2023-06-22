@@ -1,0 +1,122 @@
+<div class="container">
+
+    <div class="container-title">
+        <h1>Recurrence Transaction Details</h1>
+    </div>
+
+    <div class="container-recurrence">
+        <mat-card appearance="outlined">
+            <form [formGroup]="eventForm">
+                <table style="text-align: center;">
+                    <tr>
+                        <td colspan="3">
+                            <h4> Type </h4>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td></td>
+                        <td>
+                            <mat-form-field color="primary">
+                                <mat-label>Select Type</mat-label>
+                                <mat-select name="" id="frequency" formControlName="frequency">
+                                    <mat-option *ngFor="let t of TYPE" [value]="t">{{ t }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <div *ngIf="eventForm.get('frequency')?.invalid">
+                        <tr colspan="3">
+                            <code style="color:red">Frequency is required</code>
+                        </tr>
+                    </div>
+
+                    <tr>
+                        <td colspan="3">
+                            <h4> Count </h4>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td></td>
+                        <td>
+                            <mat-form-field color="primary">
+                                <mat-label>Select Type</mat-label>
+                                <input matInput type="number" formControlName="count">
+                            </mat-form-field>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <div *ngIf="eventForm.get('count')?.invalid">
+                        <tr colspan="3">
+                            <code style="color:red">Minimum number is 2</code>
+                        </tr>
+                    </div>
+
+                    <tr>
+                        <td colspan="3">
+                            <h4> Summary </h4>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td></td>
+                        <td>
+                            <mat-form-field color="primary">
+                                <mat-label>Event Summary</mat-label>
+                                <input matInput type="text" formControlName="summary">
+                            </mat-form-field>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <div *ngIf="eventForm.get('summary')?.invalid && eventForm.get('summary')?.dirty">
+                        <tr colspan="3">
+                            <code style="color:red">Summary is required</code>
+                        </tr>
+                    </div>
+
+                    <tr>
+                        <td colspan="3">
+                            <h4> Description </h4>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td></td>
+                        <td>
+                            <mat-form-field color="primary">
+                                <mat-label>Event Description</mat-label>
+                                <input matInput type="text" formControlName="description">
+                            </mat-form-field>
+                        </td>
+                        <td></td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="3">
+                            <h4> Notification to </h4>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td></td>
+                        <td>
+                            <mat-form-field color="primary">
+                                <mat-label>Email Address</mat-label>
+                                <input matInput type="email" formControlName="email">
+                            </mat-form-field>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <div *ngIf="eventForm.get('email')?.invalid">
+                        <tr colspan="3">
+                            <code style="color:red">Invalid email address</code>
+                        </tr>
+                    </div>
+        
+                </table>
+            </form>
+        </mat-card>
+    </div>
+</div>

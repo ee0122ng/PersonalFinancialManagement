@@ -7,7 +7,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MaterialModule } from 'src/material.module';
 import { ActivateComponent } from './Components/activate.component';
-import { HomeComponent } from './Components/home.component';
 import { LoginComponent } from './Components/login.component';
 import { ProfileComponent } from './Components/profile.component';
 import { RegisterComponent } from './Components/register.component';
@@ -25,6 +24,7 @@ import { ExpenseRecordComponent } from './Components/expense-record.component';
 import { ExpenseSummaryComponent } from './Components/expense-summary.component';
 import { AuthInterceptorService } from './Services/auth-interceptor.service';
 import { GoogleapiCallbackComponent } from './Components/googleapi-callback.component';
+import { ExpenseRecurrenceComponent } from './Components/expense-recurrence.component';
 
 @NgModule({
   declarations: [
@@ -32,12 +32,12 @@ import { GoogleapiCallbackComponent } from './Components/googleapi-callback.comp
     RegisterComponent,
     LoginComponent,
     ActivateComponent,
-    HomeComponent,
     ProfileComponent,
     ExpenseTransactionComponent,
     ExpenseRecordComponent,
     ExpenseSummaryComponent,
-    GoogleapiCallbackComponent
+    GoogleapiCallbackComponent,
+    ExpenseRecurrenceComponent
   ],
   imports: [
     BrowserModule,

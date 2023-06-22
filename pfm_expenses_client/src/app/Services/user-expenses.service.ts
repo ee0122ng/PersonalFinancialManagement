@@ -12,23 +12,24 @@ export class UserExpensesService {
 
   constructor(private http: HttpClient) { }
 
+  toSendTransaction !: Transaction;
+  toSendEvent !: GoogleEvent;
+
+  $transactionCreate !: Promise<any>;
+
   getCurrencies() : Promise<any> {
     return lastValueFrom(this.http.get<any>(CURRENCY_API_URL))
   }
 
-  createNotification(event : GoogleEvent) : Promise<any> {
+  createNotification() : Promise<any> {
+    const event = this.toSendEvent;
+    this.toSendEvent = new GoogleEvent
     return lastValueFrom(this.http.post<any>(NOTIFICATION_CREATE_API_URL, event))
   }
 
-  addTransaction(form: FormGroup) : Promise<any> {
-    const transaction : Transaction = {
-      category: form.get('category')?.value,
-      item: form.get('item')?.value,
-      transactionDate: form.get('transactionDate')?.value,
-      currency: form.get('currency')?.value,
-      amount: form.get('amount')?.value
-    } as Transaction
-
+  async addTransaction() : Promise<any> {
+    const transaction = this.toSendTransaction
+    this.toSendTransaction = new Transaction
     return lastValueFrom(this.http.post<any>(TRANSACTION_INSERT_API_URL, transaction))
   }
 
@@ -62,5 +63,30 @@ export class UserExpensesService {
     const params : HttpParams = new HttpParams().set("transactionId", id);
 
     return lastValueFrom(this.http.delete(TRANSACTION_DELETE_API_URL, { params } ))
+  }
+
+  handleCreateTransaction(form: FormGroup) {
+    let transaction : Transaction = {
+      category: form.get('category')?.value,
+      item: form.get('item')?.value,
+      transactionDate: form.get('transactionDate')?.value,
+      currency: form.get('currency')?.value,
+      amount: form.get('amount')?.value
+    } as Transaction
+
+    this.toSendTransaction = transaction;
+  }
+
+  handleCreateEvent(form: FormGroup) {
+    let event : GoogleEvent = {
+      frequency: form.get('frequency')?.value,
+      count: form.get('count')?.value,
+      summary: form.get('summary')?.value,
+      description: form.get('description')?.value,
+      email: form.get('email')?.value,
+      startDate: this.toSendTransaction.transactionDate.toISOString()
+    } as GoogleEvent
+
+    this.toSendEvent = event
   }
 }

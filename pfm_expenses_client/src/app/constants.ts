@@ -7,6 +7,7 @@ export const LOGIN_API_URL = '/api/account/login';
 export const LOGOUT_API_URL = '/api/account/logout';
 export const PROFILE_API_URL = '/api/profile';
 export const PROFILEPICUPLOAD_API_URL = '/api/profile/image-upload';
+export const VALID_SESSION_API_URL = '/api/account/validsession';
 
 // transaction related api
 export const CURRENCY_API_URL = '/api/transaction/currencies';
