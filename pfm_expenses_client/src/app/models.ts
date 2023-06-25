@@ -97,6 +97,11 @@ export interface GoogleEvent {
     description: string;
     email: string;
     startDate: string;
+    category : string;
+    item : string;
+    amount : number;
+    transactionDate : Date;
+    currency : string;
 }
 
 
@@ -118,4 +123,9 @@ export class GoogleEvent {
     start !: StartEvent;
     end !: EndEvent;
     recurrence !: RecurrenceEvent;
+}
+
+export interface UserData {
+    accountId: string;
+    email: string;
 }

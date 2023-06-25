@@ -23,16 +23,16 @@ export class ExpenseRecordComponent implements OnInit {
 
   dataSource : RecordTable[] = []
   displayedColumns : string[] = ['position', 'category', 'item', 'transactionDate', 'amount', 'currency', 'actions']
-  retrieveError !: string;
+  retrieveError : string = "";
 
   editting : Boolean = false;
-  editError !: string;
-  editSuccess !: string;
+  editError : string = ""
+  editSuccess : string = ""
   editForm !: FormGroup;
   editSource : RecordTable[] = []
 
-  deleteSuccess !: string;
-  deleteError !: string;
+  deleteSuccess : string = ""
+  deleteError : string = ""
 
   constructor(private userExpSvc: UserExpensesService, private fb: FormBuilder) {}
 
@@ -114,8 +114,8 @@ export class ExpenseRecordComponent implements OnInit {
     )
     .catch(
       (err:any) => {
+        console.info(">>> error :" + JSON.stringify(err))
         this.retrieveError = err["error"]["error"]
-        console.info(">>> error retrieve record: " + JSON.stringify(err['error']))
       }
     )
     .then(
@@ -184,19 +184,18 @@ export class ExpenseRecordComponent implements OnInit {
           this.editting = false
           this.editForm.reset()
           await this.getDatedRecords()
-          console.info('>>> data source updated?: ' + JSON.stringify(this.dataSource))
         }
       )
       .catch(
         (err:any) => {
+          console.info(">>> error: " + JSON.stringify(err))
           this.editError = err["error"]["fail"]
-          console.info(">>> update error: " + this.editError)
         }
       )
       .catch (
         (err:any) => {
+          console.info(">>> error: " + JSON.stringify(err))
           this.editError = err["error"]["error"]
-          console.info(">>> update error: " + this.editError)
         }
       )
   }
@@ -211,14 +210,14 @@ export class ExpenseRecordComponent implements OnInit {
       )
       .catch (
         (err:any) => {
+          console.info(">>> error: " + JSON.stringify(err))
           this.deleteError = err["error"]["fail"]
-          console.info(">>> delete error: " + this.deleteError)
         }
       )
       .catch (
         (err:any) => {
+          console.info(">>> error: " + JSON.stringify(err))
           this.deleteError = err["error"]["error"]
-          console.info(">>> delete error: " + this.deleteError)
         }
       )
   }

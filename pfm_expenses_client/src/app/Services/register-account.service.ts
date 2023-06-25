@@ -1,9 +1,9 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { RegisterForm } from '../models';
-import { Observable, lastValueFrom } from 'rxjs';
-import { REGISTER_API_URL } from '../constants';
+import { lastValueFrom } from 'rxjs';
+import { RAILWAY_DOMAIN, REGISTER_API_URL } from '../constants';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,8 @@ export class RegisterAccountService {
       email: form.get("email")?.value,
     }
 
-    return lastValueFrom(this.http.post<any>(REGISTER_API_URL, registerForm));
+    return lastValueFrom(this.http.post<any>(RAILWAY_DOMAIN+REGISTER_API_URL, registerForm));
+    // return lastValueFrom(this.http.post<any>(REGISTER_API_URL, registerForm));
 
   }
 

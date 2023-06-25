@@ -1,14 +1,9 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { filter, lastValueFrom, map } from 'rxjs';
-import { LoginAccountService } from '../Services/login-account.service';
+import { ActivatedRoute } from '@angular/router';
 import { UserProfileService } from '../Services/user-profile.service';
-import { COUNTRY_API_URL } from '../constants';
 import { Profile } from '../models';
 import { Country } from '../models';
 import { UploadProfilePictureService } from '../Services/upload-profile-picture.service';
-import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-retrieve-profile',
@@ -21,12 +16,12 @@ export class ProfileComponent implements OnInit {
   profileImage !: ElementRef;
 
   profile !: Profile
-  username !: string;
-  flag !: string;
-  accountId !: string;
+  username : string = ""
+  flag : string = ""
+  accountId : string = ""
   imageUploaded : Boolean = false;
-  profilePicUrl !: string;
-  errorMessage !: string;
+  profilePicUrl : string = ""
+  errorMessage : string = ""
 
   constructor(private userProfileSvc : UserProfileService, private activatedRoute: ActivatedRoute, private uploadProfilePicSvc: UploadProfilePictureService) {}
 
@@ -44,7 +39,6 @@ export class ProfileComponent implements OnInit {
 
     this.userProfileSvc.retrieveUserProfile(this.username)
     .then( (p:any) => {
-      console.info(">>>> received: " + JSON.stringify(p))
       return {
         firstname: p["firstname"],
         lastname: p["lastname"],
@@ -121,6 +115,7 @@ export class ProfileComponent implements OnInit {
         )
         .catch(
           (err:any) => {
+            console.info(">>> error: " + JSON.stringify(err))
             this.imageUploaded = false
             this.errorMessage = err["error"]["error"]
           }

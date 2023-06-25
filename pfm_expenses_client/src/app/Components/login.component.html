@@ -13,9 +13,11 @@
             <form [formGroup]="loginForm" (ngSubmit)="login()">
                 <table>
                     <tr>
-                        <td><h4>Username</h4></td>
-                        <td></td>
                         <td>
+                            <mat-icon color="primary">perm_identity</mat-icon>
+                        </td>
+                        <td></td>
+                        <td style="padding-left: 2em;">
                             <mat-form-field color="primary">
                                 <mat-label>Input username</mat-label>
                                 <input matInput type="text" formControlName="username">
@@ -24,14 +26,16 @@
                     </tr>
 
                     <tr>
-                        <td><h4>Password</h4></td>
-                        <td></td>
                         <td>
+                            <mat-icon color="primary">lock_person</mat-icon>
+                        </td>
+                        <td></td>
+                        <td style="padding-left: 2em;">
                             <mat-form-field color="primary">
                                 <mat-label>Input password</mat-label>
                                 <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
                                 <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-                                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                    <mat-icon color="primary">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                                 </button>
                             </mat-form-field>
                         </td>
@@ -40,7 +44,7 @@
                     <tr>
                         <td></td>
                         <td></td>
-                        <td>
+                        <td style="padding-left: 2em;">
                             <button mat-raised-button color="primary">Login</button>
                         </td>
                     </tr>

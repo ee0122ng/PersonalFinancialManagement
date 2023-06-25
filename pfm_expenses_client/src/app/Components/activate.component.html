@@ -1,94 +1,143 @@
-<div>
-    <h2>We want to know you</h2>
+<div class="container">
 
-    <div *ngIf="!!updateError">
-        <code style="color: red">{{ updateError }}</code>
+    <div class="container-title">
+        <h1>We want to know you</h1>
+    </div>
+    
+    <div class="container-error" *ngIf="!!updateError">
+        <code style="color: red" class="error">{{ updateError }}</code>
+    </div>
+    
+    <div class="container-activate">
+
+        <mat-card appearance="outlined">
+            <form [formGroup]="activateForm" (ngSubmit)="completeAccount()">
+                <div>
+                    <table>
+                        <tr>
+                            <td>
+                                <mat-icon color="primary" class="icon">account_box</mat-icon>
+                            </td>
+                            <td></td>
+                            <td style="padding-left: 2em;">
+                                <mat-form-field>
+                                    <mat-label>Account id</mat-label>
+                                    <input matInput type="text" readonly="true" [value]="accountId">
+                                </mat-form-field>
+                                &nbsp;
+                                <span *ngIf="!!selectedCountry">
+                                    <img [src]="countryImageUrl" alt="" width="40px" height="20px">
+                                </span>
+                            </td>
+                        </tr>
+
+                        &nbsp;
+        
+                        <tr>
+                            <td><h4>Email</h4></td>
+                            <td></td>
+                            <td style="padding-left: 2em;">
+                                <mat-form-field>
+                                    <mat-label>Email address</mat-label>
+                                    <input matInput type="email" formControlName="email">
+                                </mat-form-field>
+                            </td>
+                        </tr>
+                        <tr *ngIf="activateForm.get('email')?.dirty && activateForm.get('email')?.invalid">
+                            <td></td>
+                            <td colspan="2">
+                                <code style="color: red" class="error">Something is missing here?</code>
+                            </td>
+                        </tr>
+
+                        &nbsp;
+        
+                        <tr>
+                            <td><h4>First Name</h4></td>
+                            <td></td>
+                            <td style="padding-left: 2em;">
+                                <mat-form-field>
+                                    <mat-label>First name</mat-label>
+                                    <input matInput type="text" formControlName="firstname">
+                                </mat-form-field>
+                            </td>
+        
+                        </tr>
+                        <tr *ngIf="activateForm.get('firstname')?.dirty && activateForm.get('firstname')?.invalid">
+                            <td></td>
+                            <td colspan="2" style="padding-left: 2em;">
+                                <code style="color: red" class="error">How to address you?</code>
+                            </td>
+                        </tr>
+
+                        &nbsp;
+        
+                        <tr>
+                            <td><h4>Last Name</h4></td>
+                            <td></td>
+                            <td style="padding-left: 2em;">
+                                <mat-form-field>
+                                    <mat-label>Family name</mat-label>
+                                    <input matInput type="text" formControlName="lastname">
+                                </mat-form-field>
+                            </td>
+                        </tr>
+
+                        &nbsp;
+        
+                        <tr>
+                            <td><h4>DOB</h4></td>
+                            <td></td>
+                            <td style="padding-left: 2em;">
+                                <mat-form-field color="primary">
+                                    <mat-label>Date of birth</mat-label>
+                                    <input matInput [matDatepicker]="picker1" formControlName="dob">
+                                    <mat-hint>MM/DD/YYYY</mat-hint>
+                                    <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker1></mat-datepicker>
+                                </mat-form-field>
+                            </td>
+                        </tr>
+        
+                        <tr>
+                            <td><h4>Country</h4></td>
+                            <td></td>
+                            <td style="padding-left: 2em;">
+                                <mat-form-field>
+                                    <mat-label>Country of residence</mat-label>
+                                    <mat-select name="" id="" formControlName="country" (selectionChange)="selectCountry()">
+                                        <mat-option *ngFor="let c of countries" [value]="c.name">{{ c.name }}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </td>
+                        </tr>
+        
+                        <tr>
+                            <td><h4>Occupation</h4></td>
+                            <td></td>
+                            <td style="padding-left: 2em;">
+                                <mat-form-field>
+                                    <mat-label>Professional career</mat-label>
+                                    <input matInput type="text" formControlName="occupation">
+                                </mat-form-field>
+                            </td>
+                        </tr>
+        
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td style="padding-left: 2em;">
+                                <button mat-raised-button [color]="activateForm.invalid? 'disbale' : 'primary'" type="submit" [disabled]="activateForm.invalid">That's me!</button>
+                                &nbsp;
+                                <button mat-raised-button (click)="routeToLogin()" class="button-nexttime">Next time</button>
+                            </td>
+                        </tr>
+        
+                    </table>
+                </div>
+            </form>
+        </mat-card>
+
     </div>
 
-    <form [formGroup]="activateForm" (ngSubmit)="completeAccount()">
-        <div>
-            <table>
-                <tr>
-                    <td>Your Account Id:</td>
-                    <td>
-                        {{ accountId }}
-                        <span *ngIf="!!selectedCountry">
-                            <img [src]="countryImageUrl" alt="" width="20px" height="10px">
-                        </span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Your Email:</td>
-                    <td>
-                        <input type="email" formControlName="email">
-                        &nbsp;
-
-                        <span *ngIf="activateForm.get('email')?.dirty && activateForm.get('email')?.invalid">
-                            <code style="color: darkslateblue">Something is missing here?</code>
-                        </span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>First Name:</td>
-                    <td>
-                        <input type="text" formControlName="firstname" placeholder="your firstname">
-                        &nbsp;
-
-                        <span *ngIf="activateForm.get('firstname')?.dirty && activateForm.get('firstname')?.invalid">
-                            <code style="color: darkslateblue">How to address you?</code>
-                        </span>
-                    </td>
-
-                </tr>
-
-                <tr>
-                    <td>Last Name:</td>
-                    <td>
-                        <input type="text" formControlName="lastname" placeholder="your lastname">
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Date of Birth:</td>
-                    <td>
-                        <mat-form-field color="accent">
-                            <mat-label>Date of Birth</mat-label>
-                            <input matInput [matDatepicker]="picker1" formControlName="dob">
-                            <mat-hint>MM/DD/YYYY</mat-hint>
-                            <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
-                            <mat-datepicker #picker1></mat-datepicker>
-                        </mat-form-field>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Country of Residence:</td>
-                    <td>
-                        <select name="" id="" formControlName="country" (change)="selectCountry()">
-                            <option value="" hidden="true">Select Here</option>
-                            <option *ngFor="let c of countries" [value]="c.name">{{ c.name }}</option>
-                        </select>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Occupation:</td>
-                    <td>
-                        <input type="text" formControlName="occupation" placeholder="your occupation">
-                    </td>
-                </tr>
-
-                <tr>
-                    <td></td>
-                    <td>
-                        <button type="submit" [disabled]="activateForm.invalid">That's me!</button>
-                        <button (click)="routeToLogin()">Next time</button>
-                    </td>
-                </tr>
-
-            </table>
-        </div>
-    </form>
 </div>

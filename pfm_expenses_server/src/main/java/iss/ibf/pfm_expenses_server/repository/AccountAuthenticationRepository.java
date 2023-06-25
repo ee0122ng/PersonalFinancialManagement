@@ -7,7 +7,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 
 import iss.ibf.pfm_expenses_server.model.Account;
-import iss.ibf.pfm_expenses_server.model.UserSecureEntity;
 
 @Repository
 public class AccountAuthenticationRepository {

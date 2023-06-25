@@ -16,18 +16,20 @@
                 <table>
 
                     <tr>
-                        <td><h4>Username</h4></td>
-                        <td></td>
                         <td>
+                            <mat-icon color="primary">perm_identity</mat-icon>
+                        </td>
+                        <td></td>
+                        <td style="padding-left: 2em;">
                             <mat-form-field appearance="fill">
-                                <mat-label>Input unique username</mat-label>
+                                <mat-label>Input username</mat-label>
                                 <input matInput type="text" formControlName="username">
                             </mat-form-field>
                         </td>
                     </tr>
                     <tr *ngIf="registerForm.get('username')?.dirty && registerForm.get('username')?.invalid">
                         <td></td>
-                        <td colspan="2">
+                        <td colspan="2"  style="padding-left: 2em;">
                             <code style="color: red;" *ngIf="!registerForm.get('username')?.value" class="error">Username cannot be blank</code>
                             <code style="color: red;" *ngIf="!!registerForm.get('username')?.value" class="error">Username must be at least 3 characters length</code>
                         </td>
@@ -36,9 +38,11 @@
                     &nbsp;
 
                     <tr>
-                        <td><h4>Email</h4></td>
-                        <td></td>
                         <td>
+                            <mat-icon color="primary">email</mat-icon>
+                        </td>
+                        <td></td>
+                        <td style="padding-left: 2em;">
                             <mat-form-field appearance="fill">
                                 <mat-label>Your email</mat-label>
                                 <input matInput type="email" formControlName="email">
@@ -47,23 +51,25 @@
                     </tr>
                     <tr *ngIf="registerForm.get('email')?.dirty && registerForm.get('email')?.invalid">
                         <td></td>
-                        <td colspan="2">
+                        <td colspan="2"  style="padding-left: 2em;">
                             <code style="color:red" *ngIf="!registerForm.get('email')?.value else invalidEmail" class="error">Email cannot be blank</code>
                         </td>
                     </tr>
-                    <ng-template #invalidEmail><code style="color:red">Invalid email format</code></ng-template>
+                    <ng-template #invalidEmail><code style="color:red" class="error">Invalid email format</code></ng-template>
 
                     &nbsp;
 
                     <tr>
-                        <td><h4>Password</h4></td>
-                        <td></td>
                         <td>
+                            <mat-icon color="primary">lock_person</mat-icon>
+                        </td>
+                        <td></td>
+                        <td style="padding-left: 2em;">
                             <mat-form-field appearance="fill">
-                                <mat-label>Input new password</mat-label>
+                                <mat-label>Input password</mat-label>
                                 <input matInput formControlName="password" [type]="hide ? 'password' : 'text' ">
                                 <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-                                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                    <mat-icon color="primary">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                                 </button>
                             </mat-form-field>
                         </td>
@@ -72,21 +78,23 @@
                     &nbsp;
 
                     <tr>
-                        <td style="vertical-align: middle;"><h4>Confirmed Password</h4></td>
-                        <td></td>
                         <td>
+                            <mat-icon color="primary">confirmation_number</mat-icon>
+                        </td>
+                        <td></td>
+                        <td style="padding-left: 2em;">
                             <mat-form-field appearance="fill">
-                                <mat-label>Confirm your password</mat-label>
+                                <mat-label>Confirm password</mat-label>
                                 <input matInput formControlName="confirmedPwd" type="password" [type]="hideConfirm ? 'password' : 'text' ">
                                 <button mat-icon-button matSuffix (click)="hideConfirm = !hideConfirm" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-                                    <mat-icon>{{hideConfirm ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                    <mat-icon color="primary">{{hideConfirm ? 'visibility_off' : 'visibility'}}</mat-icon>
                                 </button>
                             </mat-form-field>
                         </td>
                     </tr>
                     <tr *ngIf="registerForm.get('confirmedPwd')?.dirty && registerForm.get('password')?.value!==registerForm.get('confirmedPwd')?.value">
                         <td></td>
-                        <td colspan="2">
+                        <td colspan="2"  style="padding-left: 2em;">
                             <code style="color: red;" class="error">Confirmed password does not match</code>
                         </td>
                     </tr>
@@ -97,7 +105,7 @@
                         <td></td>
                         <td>
                         </td>
-                        <td>
+                        <td style="padding-left: 2em;">
                             <div>
                                 <button mat-raised-button color="primary" [disabled]="!isFormValid()">Register</button>
                                 &nbsp;

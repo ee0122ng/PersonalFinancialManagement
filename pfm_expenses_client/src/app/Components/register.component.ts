@@ -1,8 +1,9 @@
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { RegisterAccountService } from '../Services/register-account.service';
 import { AppComponent } from '../app.component';
+import { UserData } from '../models';
 
 @Component({
   selector: 'app-register',
@@ -12,8 +13,8 @@ import { AppComponent } from '../app.component';
 export class RegisterComponent implements OnInit {
 
   registerForm !: FormGroup;
-  accId !: string;
-  failedMessage !: string;
+  accId : string = ""
+  failedMessage : string = ""
   hide : Boolean = true;
   hideConfirm : Boolean = true;
 
@@ -46,10 +47,18 @@ export class RegisterComponent implements OnInit {
         this.accId = p["accountId"]
         AppComponent.currentAccountId.next(this.accId)
         AppComponent.currentUserEmail.next(this.registerForm.get('email')?.value)
+        
+        // cache user data to local storage
+        const userData : UserData = {
+          accountId: this.accId,
+          email: this.registerForm.get('email')?.value
+        } as UserData
+        localStorage.setItem("userData", JSON.stringify(userData));
+
         this.router.navigate(['/activate', this.accId])
       })
-      .catch( e => {
-        console.info(">>> front end error: " + JSON.stringify(e));
+      .catch( (e:any) => {
+        console.info(">>> error: " + JSON.stringify(e));
         this.failedMessage = e["error"]["error"]
       })
   }

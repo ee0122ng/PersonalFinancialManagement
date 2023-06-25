@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { UserExpensesService } from '../Services/user-expenses.service';
 import { RecordTable, TransactionRecord } from '../models';
 import { MatTable } from '@angular/material/table';
@@ -37,7 +37,7 @@ export class ExpenseSummaryComponent implements OnInit {
   length : number = 0;
   pageSize : number = 5;
   pageIndex : number = 0;
-  previousPageIndex !: number | undefined;
+  previousPageIndex : number | undefined = 0;
   pageSizeOptions : number[] = [5, 10]
   hidePageSize : boolean = false;
   showPageSizeOptions : boolean = true;
@@ -53,6 +53,7 @@ export class ExpenseSummaryComponent implements OnInit {
       this.displayDate = this.today
     }
     this.getDatedRecords()
+
   }
 
   getDatedRecords() {
@@ -61,6 +62,11 @@ export class ExpenseSummaryComponent implements OnInit {
     this.incomeSource = []
     this.expenseSource = []
     this.transactionRecord = []
+    this.expSourceDisplay = []
+    this.length = 0;
+    this.displayExpense = false;
+    this.displayIncome = false;
+    this.summaryError = ""
 
     this.userExpSvc.getSummary(this.displayDate)
       .then(
@@ -73,6 +79,7 @@ export class ExpenseSummaryComponent implements OnInit {
       )
       .catch (
         (err:any) => {
+          console.info(">>> error: " + JSON.stringify(err))
           this.summaryError = err["error"]["error"]
         }
       )
@@ -152,6 +159,7 @@ export class ExpenseSummaryComponent implements OnInit {
         this.expenseTable.renderRows()
       }
     }
+
     this.length = this.expenseSource.length
 
   }
@@ -168,26 +176,28 @@ export class ExpenseSummaryComponent implements OnInit {
   }
 
   previous() {
-    this.displayExpense = false;
-    this.displayIncome = false;
-
     if (!!this.displayDate) {
-      this.displayDate = new Date(this.displayDate.getFullYear(), this.displayDate.getMonth() - 1, 1)
+      if (this.displayDate.getMonth() - 1 == 0) {
+        this.displayDate = new Date(this.displayDate.getFullYear()-1, 12, 2)
+      } else {
+        this.displayDate = new Date(this.displayDate.getFullYear(), this.displayDate.getMonth() - 1, 2)
+      }
     } else {
-      this.displayDate = new Date(this.today.getFullYear(), this.today.getMonth() - 1, 1)
+      this.displayDate = new Date(this.today.getFullYear(), this.today.getMonth() - 1, 2)
     }
     this.getDatedRecords()
 
   }
 
   next() {
-    this.displayExpense = false;
-    this.displayIncome = false;
-    
     if (!!this.displayDate) {
-      this.displayDate = new Date(this.displayDate.getFullYear(), this.displayDate.getMonth() + 1, 1)
+      if (this.displayDate.getMonth() + 1 > 12) {
+        this.displayDate = new Date(this.displayDate.getFullYear() + 1, 1, 2)
+      } else {
+        this.displayDate = new Date(this.displayDate.getFullYear(), this.displayDate.getMonth() + 1, 2)
+      }
     } else {
-      this.displayDate = new Date(this.today.getFullYear(), this.today.getMonth() + 1, 1)
+      this.displayDate = new Date(this.today.getFullYear(), this.today.getMonth() + 1, 2)
     }
     this.getDatedRecords()
   }

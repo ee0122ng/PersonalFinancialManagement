@@ -1,10 +1,8 @@
-import { AfterContentInit, AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { LoginComponent } from './Components/login.component';
-import { Subject } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { LogoutAccountService } from './Services/logout-account.service';
-import { HttpClient } from '@angular/common/http';
+import { Subject } from 'rxjs';
 import { AuthoriseAccountService } from './Services/authorise-account.service';
+import { LogoutAccountService } from './Services/logout-account.service';
 
 @Component({
   selector: 'app-root',
@@ -21,10 +19,10 @@ export class AppComponent implements OnInit ,OnDestroy {
   public static currentUsername : Subject<string> = new Subject();
 
   loginSuccess : Boolean = false;
-  accountCompleted !: Boolean | undefined;
-  accountId !: string | undefined;
-  userEmail !: string | undefined;
-  username !: string;
+  accountCompleted : Boolean = false;
+  accountId : string = "";
+  userEmail : string = "";
+  username : string = "";
 
   constructor(private router: Router, private logoutAccountService: LogoutAccountService, private sessionCheckSvc: AuthoriseAccountService) {
     AppComponent.loginStatus.subscribe( (s:any) => { this.loginSuccess = s })
@@ -47,18 +45,18 @@ export class AppComponent implements OnInit ,OnDestroy {
       AppComponent.currentAccountId.next(persistDetails.accountId)
       AppComponent.currentUserEmail.next(persistDetails.email)
 
-      this.sessionCheckSvc.checkSession()
-        .then(
-          (p:any) => {
-            AppComponent.currentUsername.next(p["username"])
-            this.router.navigate(['/summary'])
-          }
-        )
-        .catch(
-          (err:any) => {
-          
-          }
-        )
+      // this.sessionCheckSvc.checkSession()
+      //   .then(
+      //     (p:any) => {
+      //       AppComponent.currentUsername.next(p["username"])
+      //       this.router.navigate(['/summary'])
+      //     }
+      //   )
+      //   .catch(
+      //     (err:any) => {
+      //       console.info(JSON.stringify(err))
+      //     }
+      //   )
       
     }
 
@@ -74,9 +72,9 @@ export class AppComponent implements OnInit ,OnDestroy {
 
   logout() {
     this.loginSuccess = false;
-    this.accountCompleted = undefined;
-    this.accountId = undefined;
-    this.userEmail = undefined;
+    this.accountCompleted = false;
+    this.accountId = "";
+    this.userEmail = "";
     this.logoutAccountService.logout();
   }
 

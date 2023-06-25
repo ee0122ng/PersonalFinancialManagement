@@ -1,31 +1,24 @@
-<head>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
-    <style>
-    h3 {
-      font-family: "Sofia", sans-serif;
-    }
-    </style>
-</head>
-
 <div class="container">
 
-    <div>
+    <div class="container-title">
         <h1 >Expenses Records</h1>
+    </div>
 
+    <div class="container-navigation">
         <h3 *ngIf="!displayDate else displayToday" style="color:chocolate">{{ today | date: 'MMM yy'}}</h3>
         <ng-template #displayToday>
             <div class="icon-container">
-                <span class="icon-container1">
+                <span class="navigation-previous">
                     <button mat-mini-fab color="accent" (click)="previous()">
                         <mat-icon style="color: darkslateblue" class="icon-arrow">keyboard_double_arrow_left</mat-icon>
                     </button>
                 </span>
         
-                <span>
+                <span class="navigation-title">
                     <h3 style="color:chocolate"> {{ displayDate | date:'MMM yy' }}</h3>
                 </span>
         
-                <span class="icon-container2">
+                <span class="navigation-next">
                     <button mat-mini-fab color="accent" (click)="next()">
                         <mat-icon style="color:darkslateblue;" class="icon-arrow">keyboard_double_arrow_right</mat-icon>
                     </button>
@@ -123,12 +116,12 @@
     </div>
 
     <div class="container-message" *ngIf="!!editSuccess else editErrorMessage">
-        <code style="color:darkslateblue">{{ editSuccess }}</code>
+        <code style="color:green">{{ editSuccess }}</code>
     </div>
     <ng-template #editErrorMessage><code style="color:red" class="error">{{ editError }}</code></ng-template>
 
     <div class="container-message" *ngIf="!!deleteSuccess else deleteErrorMessage">
-        <code style="color:darkslateblue">{{ deleteSuccess }}</code>
+        <code style="color:green">{{ deleteSuccess }}</code>
     </div>
     <ng-template #deleteErrorMessage><code style="color:red" class="error">{{ deleteError }}</code></ng-template>
 
@@ -194,8 +187,14 @@
           </mat-table>
     </div>
 
-    <div [hidden]="dataSource.length > 0">
-        <code>No transaction record found</code>
+    <div class="container-nocontent" [hidden]="dataSource.length > 0">
+        <h2 class="content">
+            <span class="nocontent nocontent-word1">No</span>
+            <span class="nocontent nocontent-word2">Transaction</span>
+            <span class="nocontent nocontent-word3">Record</span>
+            <span class="nocontent nocontent-word4">Found</span>
+            <span class="nocontent nocontent-word5">...</span>
+        </h2>
     </div>
 
 </div>

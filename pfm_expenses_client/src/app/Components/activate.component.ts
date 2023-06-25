@@ -13,23 +13,35 @@ import { Country } from '../models';
 })
 export class ActivateComponent implements OnInit, AfterViewChecked {
 
-  accountId !: string;
+  accountId : string = "";
   userEmail : string = "";
   activateForm !: FormGroup;
   countries : Country[] = [];
-  selectedCountry !: string;
-  countryImageUrl !: string;
+  selectedCountry : string = "";
+  countryImageUrl : string = "";
   userInfoCompleted: Boolean = false;
-  updateError !: string;
+  updateError : string = "";
+  newProfile : boolean = false;
 
-  constructor(private activatedRoute: ActivatedRoute, private router: Router, private fb: FormBuilder, private activateAccSvc: UserProfileService, private registerAccSvc: RegisterAccountService) {}
+  constructor(private router: Router, private activatedRoute: ActivatedRoute ,private fb: FormBuilder, private activateAccSvc: UserProfileService) {}
 
   ngOnInit(): void {
 
+    this.accountId = this.activatedRoute.snapshot.params['accountId']
+    // new account
+    if (!!localStorage.getItem("userData")) {
+      //@ts-ignore
+      let userData = JSON.parse(localStorage.getItem("userData"))
+      this.accountId = userData.accountId
+      this.userEmail = userData.email
+      this.newProfile = true
+    }
+
+    // registered account
     if (!!localStorage.getItem("loginStatus")) {
       //@ts-ignore
       let userData = JSON.parse(localStorage.getItem("loginStatus"))
-      this.accountId = userData.accountId
+      this.accountId = this.activatedRoute.snapshot.params['accountId']
       this.userEmail = userData.email
     }
 
@@ -47,6 +59,11 @@ export class ActivateComponent implements OnInit, AfterViewChecked {
       .then( (l: Country[]) => {
         this.countries = l.sort( (a : Country, b: Country) => a.name.localeCompare(b.name) )
       })
+      .catch(
+        (err:any) => {
+          console.info(">>> :" + JSON.stringify(err))
+        }
+      )
   }
 
   ngAfterViewChecked(): void {
@@ -66,28 +83,62 @@ export class ActivateComponent implements OnInit, AfterViewChecked {
 
   selectCountry() {
     this.selectedCountry = this.activateForm.get("country")?.value
-    if (this.selectedCountry) {
+    if (!!this.selectedCountry) {
       this.countries.filter( c => c.name == this.selectedCountry).map( c => this.countryImageUrl = c.flag)
     }
   }
 
   completeAccount() {
-    this.activateAccSvc.updateUserInfo(this.activateForm, this.accountId)
-      .then( (p:any) => {
-        console.info(">>> account completion: " + p["payload"])
-        this.userInfoCompleted = true
-        AppComponent.infoCompletionStatus.next(this.userInfoCompleted)
-        this.router.navigate(['/home']);
-      })
-      .catch( (err:any) => {
-        console.info(">>> account completion error: " + err["error"]["error"])
-        this.updateError = err["error"]["error"]
-      })
+
+    if(!this.newProfile) {
+      // put call: update existing
+      this.activateAccSvc.updateUserInfo(this.activateForm, this.accountId)
+        .then( (p:any) => {
+          this.userInfoCompleted = true
+          AppComponent.infoCompletionStatus.next(this.userInfoCompleted)
+          // navigate back to summary page for login user
+          // else clear cache and navigate to login for first timer
+          if (!!localStorage.getItem('loginStatus')) {
+            this.router.navigate(['/summary'])
+          } else {
+            localStorage.clear()
+            this.router.navigate(['/login']);
+          }
+        })
+        .catch( (err:any) => {
+          console.info(">>> account completion error: " + err["error"]["error"])
+          this.updateError = err["error"]["error"]
+        })
+    } else {
+      // post call: create new
+      this.activateAccSvc.createUserInfo(this.activateForm, this.accountId)
+        .then( (p:any) => {
+          this.userInfoCompleted = true
+          AppComponent.infoCompletionStatus.next(this.userInfoCompleted)
+          // clear cache after successfully registered
+          localStorage.clear()
+          this.router.navigate(['/login']);
+        })
+        .catch( (err:any) => {
+          console.info(">>> account completion error: " + err["error"]["error"])
+          this.updateError = err["error"]["error"]
+        })
+    }
+
   }
 
   routeToLogin() {
-    this.activateForm.reset()
-    this.router.navigate([''])
+    this.activateForm = this.createForm()
+
+    // if in login status route to summary
+    // else user is a new user, route them back to login page for first timer
+    if (!!localStorage.getItem("loginStatus")) {
+      this.router.navigate(['/summary'])
+    } else {
+      localStorage.clear()
+      this.router.navigate(['/login'])
+    }
+
   }
 
 }

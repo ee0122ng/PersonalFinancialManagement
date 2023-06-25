@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserExpensesService } from '../Services/user-expenses.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { EventTable, GoogleEvent } from '../models';
 import { GoogleApiService } from '../Services/google-api.service';
 
 @Component({
@@ -14,14 +13,14 @@ export class ExpenseRecurrenceComponent implements OnInit {
 
 
   isEFormValid : boolean = false;
-  TYPE : string[] = ['Weekly', 'Monthly', 'Yearly']
+  TYPE : string[] = ['Daily', 'Weekly', 'Monthly', 'Yearly']
 
   eventForm !: FormGroup;
   email : string = "";
 
-  errorMessage !: string;
+  errorMessage : string = "";
 
-  constructor(private router: Router, private userExpSvc: UserExpensesService, private fb: FormBuilder, private googleApiSvc: GoogleApiService) {}
+  constructor(private router: Router, private userExpSvc: UserExpensesService, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     //@ts-ignore
@@ -37,7 +36,6 @@ export class ExpenseRecurrenceComponent implements OnInit {
           this.userExpSvc.createNotification()
           .then(
             (p:any) => {
-              console.info(">>> success: " + p["success"])
               this.router.navigate(['/summary'])
             }
           )
@@ -46,6 +44,7 @@ export class ExpenseRecurrenceComponent implements OnInit {
       .catch(
         (err:any) => {
           (err:any) => {
+            console.info(">>> error: " + JSON.stringify(err))
             this.errorMessage = err["error"]["error"]
           }
         }
@@ -54,7 +53,7 @@ export class ExpenseRecurrenceComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/record'])
+    this.router.navigate(['/transaction'])
   }
 
   createEvent() : FormGroup {
@@ -62,7 +61,7 @@ export class ExpenseRecurrenceComponent implements OnInit {
       frequency: this.fb.control<string>('Weekly', [Validators.required]),
       count: this.fb.control<number>(2, [Validators.required, Validators.min(2)]),
       summary: this.fb.control<string>('', [Validators.required]),
-      description: this.fb.control<string>(''), //this.userExpSvc.toSendTransaction.item
+      description: this.fb.control<string>(''),
       //@ts-ignore
       email: this.fb.control<string>(this.email, [Validators.email])
     })

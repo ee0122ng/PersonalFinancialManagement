@@ -60,10 +60,11 @@ public class TransactionService {
         return this.transRepo.deleteTransaction(id);
     }
 
-    public JsonObject retrieveConvertedTransaction(Integer month, String userId) throws ParseException {
+    // get transaction with converted rate
+    public JsonObject retrieveConvertedTransaction(Integer month, Integer year, String userId) throws ParseException {
         
         Calendar calendar = Calendar.getInstance();
-        calendar.set(LocalDate.now().getYear(), month, 1);
+        calendar.set(year, month, 1);
         String selectedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ").format(calendar.getTime());
 
         Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(this.getStartDayofMonth(selectedDate));
@@ -78,9 +79,9 @@ public class TransactionService {
     }
 
     //TODO: to complete
-    public Float[] getSummaries(Integer month, String userId) throws ParseException {
+    public Float[] getSummaries(Integer month, Integer year, String userId) throws ParseException {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(LocalDate.now().getYear(), month, 1);
+        calendar.set(year, month, 1);
         String selectedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ").format(calendar.getTime());
 
         Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(this.getStartDayofMonth(selectedDate));
@@ -138,7 +139,7 @@ public class TransactionService {
         
         // insert id if it exists
         try {
-            activity.setId(records.getInt("id"));
+            activity.setId(records.getInt("id", 999));
             
         } catch (Exception ex) {
             // if null, ignore the null value and return without id
@@ -168,6 +169,32 @@ public class TransactionService {
     public List<String> getCurrencies() {
 
         return this.transRepo.getCurrencies();
+    }
+
+    public Boolean insertRecurrenceTransaction(JsonObject jEvent, String userId) throws Exception {
+
+        Boolean result = false;
+        Activity activity = this.convertJsonToActivity(jEvent, userId);
+        Integer recurrence = jEvent.getInt("count");
+
+        switch (jEvent.getString("frequency").toUpperCase()) {
+            case "DAILY":
+                result = this.transRepo.insertDailyRecurrenceTransaction(activity, recurrence, userId);
+                break;
+            case "WEEKLY":
+                result = this.transRepo.insertWeeklyRecurrenceTransaction(activity, recurrence, userId);
+                break;
+            case "MONTHLY":
+                result = this.transRepo.insertMonthlyRecurrenceTransaction(activity, recurrence, userId);
+                break;
+            case "YEARLY":
+                result = this.transRepo.insertYearlyRecurrenceTransaction(activity, recurrence, userId);
+                break;
+            default:
+            
+        }
+
+        return result;
     }
     
 }

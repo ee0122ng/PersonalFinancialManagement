@@ -1,50 +1,59 @@
-<p>
-  <mat-toolbar color="primary">
-    <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="loginSuccess" [routerLink]="loginSuccess ? ['/summary'] : ['']" title="Home">
-      <mat-icon>home</mat-icon>
-    </button>
-    <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="!loginSuccess" [routerLink]="['']" title="User Login">
-      <mat-icon>menu</mat-icon>
-    </button>
+<div class="content-outer-container">
+  <div class="content-inner-container">
+    <p>
+      <mat-toolbar color="primary">
+        <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="loginSuccess" [routerLink]="loginSuccess ? ['/summary'] : ['']" title="Home">
+          <mat-icon>home</mat-icon>
+        </button>
+        <button mat-icon-button class="home-icon" aria-label="Home icon-button with menu icon" *ngIf="!loginSuccess" [routerLink]="['']" title="User Login">
+          <mat-icon>menu</mat-icon>
+        </button>
+    
+        <span>My Wealth Stack</span>
+    
+        <span class="example-spacer"></span>
+    
+        <span *ngIf="loginSuccess">
+          <button mat-button [routerLink]="['/summary']">
+            <mat-icon>summarize</mat-icon>
+            Summary
+          </button>
+      
+          <button mat-button [routerLink]="['/record']">
+            <mat-icon>view_list</mat-icon>
+            Record
+          </button>
+      
+          <button mat-button [routerLink]="['/transaction']">
+            <mat-icon>note_add</mat-icon>
+            Transaction
+          </button>
+        </span>
+    
+        <span class="example-spacer"></span>
+    
+        <button mat-icon-button class="home-icon account-icon" aria-label="Home icon-button with account icon" *ngIf="accountCompleted" title="My Profile" [routerLink]="['/profile', username]">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <button mat-flat-button color="accent" class="add-profile-icon" aria-label="Home icon-button with myinfo icon" *ngIf="!accountCompleted && loginSuccess" [routerLink]="['/activate', accountId]" title="Add Profile">
+          <code style="color: darkslateblue">Add Profile</code>
+        </button>
+    
+        <button mat-icon-button class="home-icon login-icon" aria-label="Home icon-button with login icon" [routerLink]="['/login']" *ngIf="!loginSuccess" title="Login">
+          <mat-icon>login</mat-icon>
+        </button>
+        <button mat-icon-button class="home-icon logout-icon" aria-label="Home icon-button with logout icon" (click)="logout()" *ngIf="loginSuccess" title="Logout">
+          <mat-icon>logout</mat-icon>
+        </button>
+    
+      </mat-toolbar>
+    </p>
+    
+    <router-outlet></router-outlet>
+  </div>
+</div>
 
-    <span>My Wealth Stack</span>
-
-    <span class="example-spacer"></span>
-
-    <span *ngIf="loginSuccess">
-      <button mat-button [routerLink]="['/summary']">
-        <mat-icon>summarize</mat-icon>
-        Summary
-      </button>
-  
-      <button mat-button [routerLink]="['/record']">
-        <mat-icon>view_list</mat-icon>
-        Record
-      </button>
-  
-      <button mat-button [routerLink]="['/transaction']">
-        <mat-icon>note_add</mat-icon>
-        Transaction
-      </button>
-    </span>
-
-    <span class="example-spacer"></span>
-
-    <button mat-icon-button class="home-icon account-icon" aria-label="Home icon-button with account icon" *ngIf="accountCompleted" title="My Profile" [routerLink]="['/profile', username]">
-      <mat-icon>account_circle</mat-icon>
-    </button>
-    <button mat-flat-button color="accent" class="add-profile-icon" aria-label="Home icon-button with myinfo icon" *ngIf="!accountCompleted && accountCompleted != undefined || null" [routerLink]="['/activate', accountId]" title="Add Profile">
-      <code style="color: darkslateblue">Add Profile</code>
-    </button>
-
-    <button mat-icon-button class="home-icon login-icon" aria-label="Home icon-button with login icon" [routerLink]="['/login']" *ngIf="!loginSuccess" title="Login">
-      <mat-icon>login</mat-icon>
-    </button>
-    <button mat-icon-button class="home-icon logout-icon" aria-label="Home icon-button with logout icon" (click)="logout()" *ngIf="loginSuccess" title="Logout">
-      <mat-icon>logout</mat-icon>
-    </button>
-
-  </mat-toolbar>
-</p>
-
-<router-outlet></router-outlet>
+<div class="footer-container">
+    <img src="/assets/images/edson-pfm.png" alt="">
+    <p class="footer-content">Edson PFM Pte Ltd</p>
+</div>

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserExpensesService } from '../Services/user-expenses.service';
-import { EventTable, GoogleEvent, Transaction } from '../models';
 import { GoogleApiService } from '../Services/google-api.service';
 
 @Component({
@@ -17,7 +16,7 @@ export class ExpenseTransactionComponent implements OnInit {
 
   transactionForm !: FormGroup;
   today : Date = new Date()
-  message !: string;
+  message : string = "";
   isChecked : boolean = false;
   isFormValid : boolean = false;
   isTFormValid : boolean = false;
@@ -34,6 +33,11 @@ export class ExpenseTransactionComponent implements OnInit {
           this.CURRENCY = p["currencies"]
         }
       )
+      .catch(
+        (err:any) => {
+          console.info(">>> error: " + JSON.stringify(err))
+        }
+      )
     
   }
 
@@ -41,15 +45,15 @@ export class ExpenseTransactionComponent implements OnInit {
     if (!this.userExpSvc.toSendTransaction) {
       return this.fb.group({
         category: this.fb.control<string>('', [Validators.required]),
-        item: this.fb.control<string>(''),
+        item: this.fb.control<string>('', [Validators.required]),
         amount: this.fb.control<number>(0, [Validators.required, Validators.min(0.01)]),
         transactionDate: this.fb.control<Date>(this.today, [Validators.required]),
-        currency: this.fb.control<string>("SGD"),
+        currency: this.fb.control<string>('SGD'),
       })
     } else {
       return this.fb.group({
         category: this.fb.control<string>(this.userExpSvc.toSendTransaction.category, [Validators.required]),
-        item: this.fb.control<string>(this.userExpSvc.toSendTransaction.item),
+        item: this.fb.control<string>(this.userExpSvc.toSendTransaction.item, [Validators.required]),
         amount: this.fb.control<number>(this.userExpSvc.toSendTransaction.amount, [Validators.required, Validators.min(0.01)]),
         transactionDate: this.fb.control<Date>(this.userExpSvc.toSendTransaction.transactionDate, [Validators.required]),
         currency: this.fb.control<string>(this.userExpSvc.toSendTransaction.currency),
@@ -66,13 +70,13 @@ export class ExpenseTransactionComponent implements OnInit {
       this.userExpSvc.addTransaction()
       .then(
         (p:any) => {
-          console.info(">>> " + p["success"])
           this.transactionForm = this.createForm()
           this.router.navigate(['/summary'])
         }
       )
       .catch(
         (err:any) => {
+          console.info(">>> error: " + JSON.stringify(err))
           this.message = err["error"]["error"]
         }
       )
@@ -87,6 +91,7 @@ export class ExpenseTransactionComponent implements OnInit {
   authenticateGoogleApi() {
     this.userExpSvc.handleCreateTransaction(this.transactionForm)
     this.googleApiSvc.invokeGoogleApi()
+    // this.googleApiSvc.invokeServerForGoogleToken()
   }
 
   toggleRecur($event:any) {

@@ -8,12 +8,12 @@
         <mat-card *ngIf="!!profile">
 
             <div *ngIf="imageUploaded else uploadFail">
-                <code style="color:darkslateblue">Profile picture uploaded successfully</code>
+                <code style="color: green" class="">Profile picture uploaded successfully</code>
             </div>
         
             <ng-template #uploadFail>
-                <div *ngIf="!!errorMessage">
-                    <code style="color:red">{{ errorMessage }}</code>
+                <div *ngIf="!!errorMessage" class="container-error">
+                    <code style="color:red" class="error">{{ errorMessage }}</code>
                 </div>
             </ng-template>
         
@@ -39,47 +39,44 @@
             </div>
         
             <mat-card-content>
-                <table>
-        
-                    <tr>
-                        <td>Account Id</td>
-                        <td>:</td>
-                        <td>{{ accountId }}</td>
-                    </tr>
-        
-                    <tr>
-                        <td>Family Name</td>
-                        <td>:</td>
-                        <td>{{ profile.lastname | titlecase }}</td>
-                    </tr>
-        
-                    <tr>
-                        <td>Age</td>
-                        <td>:</td>
-                        <td>{{ profile.age }}</td>
-                    </tr>
-        
-                    <tr>
-                        <td>Date of Birth</td>
-                        <td>:</td>
-                        <td>{{ profile.dob | date: 'd MMM, y' }}</td>
-                    </tr>
-        
-                    <tr>
-                        <td>Occupation</td>
-                        <td>:</td>
-                        <td>{{ profile.occupation }}</td>
-                    </tr>
-        
-                    <tr>
-                        <td style="vertical-align: top;">Country of Residence</td>
-                        <td style="vertical-align: top;">:</td>
-                        <td>
-                            <img *ngIf="!!profile.country" mat-card-sm-image [src]="flag" alt="" title="{{ profile.country }}" style="width:100px; height:50px">
-                        </td>
-                    </tr>
-        
-                </table>
+                <div class="container-profileinfo">
+                    <table>
+                        <tr>    
+                            <code>Account Id</code>
+                            <p>{{ accountId }}</p>
+                        </tr>
+
+                        <tr>
+                            <code>Family Name</code>
+                            <p>{{ profile.lastname | titlecase }}</p>
+                        </tr>
+
+                        <tr>
+                            <code>Age</code>
+                            <p>{{ profile.age }}</p>
+                        </tr>
+
+                        <tr>
+                            <code>Date of Birth</code>
+                            <p>{{ profile.dob | date: 'd MMM, y' }}</p>
+                        </tr>
+
+                        <tr>
+                            <code>Occupation</code>
+                            <p>{{ profile.occupation }}</p>
+                        </tr>
+
+                        <tr>
+                            <code>Country of Residence</code>
+                            <p>
+                                <img *ngIf="!!profile.country" mat-card-sm-image [src]="flag" alt="" title="{{ profile.country }}" style="width:120px; height:75px; border: solid;">
+                            </p>
+                        </tr>
+
+                    </table>
+
+                </div>
+
             </mat-card-content>
         </mat-card>
     </div>

@@ -2,9 +2,16 @@ package iss.ibf.pfm_expenses_server.repository;
 
 import java.io.StringReader;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +32,7 @@ import iss.ibf.pfm_expenses_server.service.CurrencyConverterService;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
+import jakarta.transaction.Transactional;
 
 @Repository
 public class TransactionRepository {
@@ -148,7 +156,6 @@ public class TransactionRepository {
                 String payload = rep.getBody();
                 JsonReader jReader = Json.createReader(new StringReader(payload));
                 JsonObject result = jReader.readObject();
-
                 JsonObject jCurrency = result.getJsonObject("results");
                 this.CURRENCIES =  jCurrency.entrySet().stream().map(s -> s.getValue().asJsonObject().getString("id")).sorted().toList();
 
@@ -168,6 +175,102 @@ public class TransactionRepository {
     public Float getConversionRate(String fromCurrency) {
 
         return fromCurrency.toUpperCase().equals("SGD") ? 1f : this.currCnvSvc.convertToSGD(fromCurrency);
+    }
+
+    @Transactional
+    public Boolean insertDailyRecurrenceTransaction(Activity activity, Integer recurrCount, String userId) throws Exception {
+        
+        // insert recurrence transactions
+        for (int i = 1; i < recurrCount; i++) {
+            try {
+                Calendar cal = Calendar.getInstance();
+                cal.set(activity.getItemDate().toInstant().atZone(ZoneId.systemDefault()).getYear(), activity.getItemDate().toInstant().atZone(ZoneId.systemDefault()).getMonthValue() - 1, activity.getItemDate().toInstant().atZone(ZoneId.systemDefault()).getDayOfMonth());
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                String toInsertDate = new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
+
+                activity.setItemDate(formatter.parse(toInsertDate));
+                this.insertTransaction(activity);
+
+            } catch (Exception ex) {
+                throw ex;
+            }
+        }
+
+        return true;
+        
+    }
+
+    @Transactional
+    public Boolean insertWeeklyRecurrenceTransaction(Activity activity, Integer recurrCount, String userId) throws Exception {
+
+        // insert recurrence transactions
+        for (int i = 1; i < recurrCount; i++) {
+            try {
+                Calendar cal = Calendar.getInstance();
+                cal.set(activity.getItemDate().toInstant().atZone(ZoneId.systemDefault()).getYear(), activity.getItemDate().toInstant().atZone(ZoneId.systemDefault()).getMonthValue() - 1, activity.getItemDate().toInstant().atZone(ZoneId.systemDefault()).getDayOfMonth());
+                cal.add(Calendar.DAY_OF_MONTH, 7);
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                String toInsertDate = new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
+
+                activity.setItemDate(formatter.parse(toInsertDate));
+                Boolean result = this.insertTransaction(activity);
+
+            } catch (Exception ex) {
+                throw ex;
+            }
+        }
+
+        return true;
+        
+    }
+
+    @Transactional
+    public Boolean insertMonthlyRecurrenceTransaction(Activity activity, Integer recurrCount, String userId) throws Exception {
+
+        // insert recurrence transactions
+        for (int i = 1; i < recurrCount; i++) {
+            try {
+                Calendar cal = Calendar.getInstance();
+                cal.set(activity.getItemDate().toInstant().atZone(ZoneId.systemDefault()).getYear(), activity.getItemDate().toInstant().atZone(ZoneId.systemDefault()).getMonthValue() - 1, activity.getItemDate().toInstant().atZone(ZoneId.systemDefault()).getDayOfMonth());
+                cal.add(Calendar.MONTH, 1);
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                String toInsertDate = new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
+
+                activity.setItemDate(formatter.parse(toInsertDate));
+                this.insertTransaction(activity);
+
+            } catch (Exception ex) {
+                throw ex;
+            }
+        }
+
+        return true;
+        
+    }
+
+    @Transactional
+    public Boolean insertYearlyRecurrenceTransaction(Activity activity, Integer recurrCount, String userId) throws Exception {
+        
+        // insert recurrence transactions
+        for (int i = 1; i < recurrCount; i++) {
+            try {
+                Calendar cal = Calendar.getInstance();
+                cal.set(activity.getItemDate().toInstant().atZone(ZoneId.systemDefault()).getYear(), activity.getItemDate().toInstant().atZone(ZoneId.systemDefault()).getMonthValue() - 1, activity.getItemDate().toInstant().atZone(ZoneId.systemDefault()).getDayOfMonth());
+                cal.add(Calendar.YEAR, 1); // every iteration is a newly updated activity
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                String toInsertDate = new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
+
+                activity.setItemDate(formatter.parse(toInsertDate));
+                this.insertTransaction(activity);
+
+            } catch (Exception ex) {
+                throw ex;
+            }
+        }
+
+        return true;
+        
     }
     
 }

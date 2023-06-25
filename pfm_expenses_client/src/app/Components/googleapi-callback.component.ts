@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GoogleApiService } from '../Services/google-api.service';
 import { GoogleAuthToken } from '../models';
 
 @Component({
@@ -10,10 +9,10 @@ import { GoogleAuthToken } from '../models';
 })
 export class GoogleapiCallbackComponent {
 
-  private token !: string;
-  private expires_in !: number;
+  private token : string = ""
+  private expires_in : number = 0
 
-  constructor(private activatedRoute: ActivatedRoute, private gapiSvc: GoogleApiService, private router: Router) {}
+  constructor(private activatedRoute: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
     this.activatedRoute.fragment
@@ -22,8 +21,6 @@ export class GoogleapiCallbackComponent {
           const v : string[] = f.split("&")
           this.token = v[0].split("=")[1]
           this.expires_in = +v[2].split("=")[1]
-          console.info(">>> token: " + this.token)
-          console.info(">>> expires in: " + this.expires_in)
 
           const ex_date : Date = new Date()
           ex_date.setSeconds(ex_date.getSeconds() + this.expires_in)

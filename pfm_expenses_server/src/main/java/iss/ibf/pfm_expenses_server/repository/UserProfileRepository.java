@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
 import com.amazonaws.services.s3.AmazonS3;
@@ -52,6 +53,7 @@ public class UserProfileRepository {
     private final String UPDATE_USER_INFO_SQL = "update user_details set firstname=?, lastname=?, email=?, dob=?, age=?, country=?, occupation=? where user_id=?";
     private final String INSETR_USER_INFO_SQL = "insert into user_details(user_id, firstname, lastname, email, dob, age, country, occupation) values(?, ?, ?, ?, ?, ?, ?, ?)";
     private final String GET_USER_ID_BY_ACCID_SQL = "select * from accounts where account_id=?";
+    private final String GET_EMAIL_BY_USERNAME = "select email from user_details where username=?";
 
     public Boolean verifyAccountCompletionStatus(String username) {
 
@@ -94,33 +96,38 @@ public class UserProfileRepository {
         String userId = acc.getUserId();
 
         try {
-            UserDetails userDetails = populateFormToUserDetails(getUserDetailsByUserId(userId), form);
-            return jdbcTemplate.update(UPDATE_USER_INFO_SQL, userDetails.getFirstname(), userDetails.getLastname(), userDetails.getEmail() ,userDetails.getDob(), userDetails.getAge(), userDetails.getCountry(), userDetails.getOccupation(), userDetails.getUserId()) > 0;
+            // code below throw errors
+            UserDetails userDetails = populateFormToUserDetails(form);
+
+            return jdbcTemplate.update(UPDATE_USER_INFO_SQL, userDetails.getFirstname(), userDetails.getLastname(), userDetails.getEmail() ,userDetails.getDob(), userDetails.getAge(), userDetails.getCountry(), userDetails.getOccupation(), userId) > 0;
             
-        } catch (UserDetailsException ex) {
-            UserDetails userDetails = populateFormToUserDetails(new UserDetails(userId), form);
-            return jdbcTemplate.update(INSETR_USER_INFO_SQL, userDetails.getUserId(), userDetails.getFirstname(), userDetails.getLastname(), userDetails.getEmail(), userDetails.getDob(), userDetails.getAge(), userDetails.getCountry(), userDetails.getOccupation()) > 0;
+        } catch (Exception ex) {
+            
+            throw ex;
 
         } 
 
     }
 
-    public UserDetails getUserDetailsByUserId(String userId) {
+    // public UserDetails getUserDetailsByUserId(String userId) {
 
-        try {
-            UserDetails userDetails = jdbcTemplate.queryForObject(GET_USER_INFO_SQL, BeanPropertyRowMapper.newInstance(UserDetails.class), userId);
-            return userDetails;
+    //     try {
 
-        } catch (Exception ex) {
+    //         UserDetails userDetails = jdbcTemplate.queryForObject(GET_USER_INFO_SQL, BeanPropertyRowMapper.newInstance(UserDetails.class), userId);
+    //         return userDetails;
 
-            throw new UserDetailsException("No matching user details for user_id=%s".formatted(userId));
-        }
+    //     } catch (Exception ex) {
+
+    //         throw new UserDetailsException("No matching user details for user_id=%s".formatted(userId));
+    //     }
         
-    }
+    // }
 
     // insert user details
 
-    public UserDetails populateFormToUserDetails(UserDetails userDetails, JsonObject form) throws ParseException {
+    public UserDetails populateFormToUserDetails(JsonObject form) throws ParseException {
+
+        UserDetails userDetails = new UserDetails();
 
         userDetails.setEmail(form.getString("email", ""));
         userDetails.setFirstname(form.getString("firstname"));
@@ -143,9 +150,15 @@ public class UserProfileRepository {
 
         try {
             String userId = opt.get();
-            UserDetails userDetails = this.getUserDetailsByUserId(userId);
 
-            return userDetails.getEmail();
+            String email = "";
+            final SqlRowSet rs = jdbcTemplate.queryForRowSet(GET_USER_INFO_SQL, userId);
+            while (rs.next()) {
+                email = rs.getString("email");
+            }
+
+            // UserDetails userDetails = this.getUserDetailsByUserId(userId);
+            return Optional.of(email).orElseThrow(() -> new NoEmailFoundException());
 
         } catch (Exception ex) {
             throw new NoEmailFoundException("No user email found");
@@ -180,9 +193,9 @@ public class UserProfileRepository {
             GetObjectRequest getReq = new GetObjectRequest(BUCKET, fileDirectory);
     
         } catch (AmazonS3Exception ex) {
-            System.out.println(">>> No user profile pic found in S3");
+            throw ex;
         } catch (Exception ex) {
-            System.out.println(">>> Exception captured: " + ex.getMessage());
+            throw ex;
         }
 
          return this.convertProfileToJson(userDetails, userProfileUrl);

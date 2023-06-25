@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
-import { LOGOUT_API_URL } from '../constants';
+import { LOGOUT_API_URL, RAILWAY_DOMAIN } from '../constants';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -15,18 +15,19 @@ export class LogoutAccountService {
 
   logout() {
     const params : HttpParams = new HttpParams();
-    lastValueFrom(this.http.post<any>(LOGOUT_API_URL, { params }))
+    lastValueFrom(this.http.post<any>(RAILWAY_DOMAIN+LOGOUT_API_URL, { params }))
+    // lastValueFrom(this.http.post<any>(LOGOUT_API_URL, { params }))
       .then(
         (p:any) => {
           this.message = p["payload"]
           localStorage.clear();
           sessionStorage.clear();
-          console.info(">>> front: " + this.message)
-          this.router.navigate(['']);
+          this.router.navigate(['/login']);
         }
       )
       .catch(
         (err:any) => {
+          console.info(">>> error: " + JSON.stringify(err))
           this.message = err["error"]
         }
       )
