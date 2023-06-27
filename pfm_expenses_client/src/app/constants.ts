@@ -24,7 +24,7 @@ export const GOOGLEAPICALL_SERVER_API_URL = '/api/googleapi/access';
 // google api service
 export const GOOGLE_AUTH_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth';
 export const GOOGLE_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token';
-// export const REDIRECT_URL = 'https://soonhang-pfmapp.vercel.app/callback';
+export const REDIRECT_URL = 'https://soonhang-pfmapp.vercel.app/callback';
 export const GOOGLE_API_SCOPES = 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/gmail.send';
 export const GOOGLE_EMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.send';
 export const GOOGLE_CALENDARLIST_SCOPE = 'https://www.googleapis.com/auth/calendar';
@@ -34,6 +34,6 @@ export const CLIENT_ID = '1084319231188-82t5bgck7e5on0vvtqequ2boag6abb9f.apps.go
 export const CLIENT_SECRET = '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';
 
 // railway domain
-// export const RAILWAY_DOMAIN = 'https://edson-pfmapp-production.up.railway.app';
-export const RAILWAY_DOMAIN = '';
-export const REDIRECT_URL = 'http://localhost:4200/callback';
+export const RAILWAY_DOMAIN = 'https://edson-pfmapp-production.up.railway.app';
+// export const RAILWAY_DOMAIN = '';
+// export const REDIRECT_URL = 'http://localhost:4200/callback';

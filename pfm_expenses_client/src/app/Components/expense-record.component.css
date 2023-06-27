@@ -185,42 +185,52 @@
 }
 
 .nocontent-word1 {
-    --color-1: #f77f00;
-    --color-2: #003049;
-    --color-3: #d62828;
+    --color-1: #581845;
+    --color-2: #900C3F;
+    --color-3: #C70039;
+    --color-4: #FF5733;
+    --color-5: #FFC300;
 }
 
 .nocontent-word2 {
-    --color-1: #d85959;
-    --color-2: #eda456;
-    --color-3: #384a54;
+    --color-1: #FFC300;
+    --color-2: #581845;
+    --color-3: #900C3F;
+    --color-4: #C70039;
+    --color-5: #FF5733;
 }
 
 .nocontent-word3 {
-    --color-1: #a8b2b8;
-    --color-2: #f29696;
-    --color-3: #f3b87a;
+    --color-1: #FF5733;
+    --color-2: #FFC300;
+    --color-3: #581845;
+    --color-4: #900C3F;
+    --color-5: #C70039;
 }
 
 .nocontent-word4 {
-    --color-1: #ed963a;
-    --color-2: #223946;
-    --color-3: #e33434;
+    --color-1: #C70039;
+    --color-2: #FF5733;
+    --color-3: #FFC300;
+    --color-4: #581845;
+    --color-5: #900C3F;
 }
 
 .nocontent-word5 {
-    --color-1: #ed963a;
-    --color-2: #223946;
-    --color-3: #e33434;
+    --color-1: #900C3F;
+    --color-2: #C70039;
+    --color-3: #FF5733;
+    --color-4: #FFC300;
+    --color-5: #581845;
 }
 
 @keyframes color-animation {
     0%    {color: var(--color-1)}
     32%   {color: var(--color-1)}
     33%   {color: var(--color-2)}
-    65%   {color: var(--color-2)}
-    66%   {color: var(--color-3)}
-    99%   {color: var(--color-3)}
+    65%   {color: var(--color-3)}
+    66%   {color: var(--color-4)}
+    99%   {color: var(--color-5)}
     100%  {color: var(--color-1)}
 }
 
