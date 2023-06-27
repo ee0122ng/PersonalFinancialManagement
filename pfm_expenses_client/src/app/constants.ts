@@ -30,8 +30,8 @@ export const GOOGLE_EMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.send';
 export const GOOGLE_CALENDARLIST_SCOPE = 'https://www.googleapis.com/auth/calendar';
 export const GOOGLE_GET_CALENDAR_ENDPOINT = 'https://www.googleapis.com/calendar/v3/calendars/primary';
 export const GOOGLE_POST_EVENT_ENDPOINT = 'https://www.googleapis.com/calendar/v3/calendars/primary/events';
-export const CLIENT_ID = '1084319231188-82t5bgck7e5on0vvtqequ2boag6abb9f.apps.googleusercontent.com';
-export const CLIENT_SECRET = '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';
+export const CLIENT_ID = 'your_googleapi_client_id';
+export const CLIENT_SECRET = 'your_googleapi_client_secret';
 
 // railway domain
 export const RAILWAY_DOMAIN = 'https://edson-pfmapp-production.up.railway.app';
